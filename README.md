@@ -1,4 +1,4 @@
-# aquaria
+# Aquaria
 
 A new Flutter project.
 
