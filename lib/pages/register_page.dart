@@ -1,4 +1,4 @@
-import 'package:aquaria/homepage.dart';
+import 'package:aquaria/pages/homepage.dart';
 import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';
 import 'package:aquaria/widgets/main_button.dart';

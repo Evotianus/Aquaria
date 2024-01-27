@@ -4,8 +4,10 @@ import 'dart:math' as math;
 import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/login_page.dart';
+import 'package:aquaria/widgets/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rive/rive.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -57,12 +59,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool isStopped = false;
 
   double opacityLevel = 1;
+  double isFinished = 0;
 
   bool isAbsorb = false;
 
   Artboard? _fishingArtboard;
   SMITrigger? trigger;
   StateMachineController? stateMachineController;
+
+  late RiveAnimationController _controller;
 
   @override
   void initState() {
@@ -98,6 +103,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         setState(() => _fishingArtboard = artboard);
       },
     );
+
+    _controller = SimpleAnimation('Timeline 2', autoplay: false);
   }
 
   @override
@@ -127,6 +134,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   _fishingArtboard == null
                       ? const SizedBox()
                       : Rive(artboard: _fishingArtboard!),
+                  RiveAnimation.asset(
+                    'assets/fish.riv',
+                    fit: BoxFit.cover,
+                    controllers: [_controller],
+                  ),
                   Transform.translate(
                     offset: const Offset(0, 200),
                     child: Stack(
@@ -261,11 +273,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       seconds = timerDuration.inSeconds - 1;
                                       if (seconds < 0) {
                                         timer.cancel();
+
+                                        isFinished = 1;
                                       } else if (isStopped) {
                                         timer.cancel();
                                       } else {
                                         timerDuration =
                                             Duration(seconds: seconds);
+                                      }
+
+                                      if (timerDuration.inSeconds == 8) {
+                                        stateMachineController!.isActive =
+                                            false;
+                                      }
+                                      if (timerDuration.inSeconds == 6) {
+                                        _controller.isActive = true;
                                       }
                                     });
                                   }
@@ -347,6 +369,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              timerDuration -= const Duration(seconds: 15);
+                            },
+                            child: const Text("Cut"),
                           ),
                         ),
                       ],
@@ -828,7 +860,117 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-          )
+          ),
+          Visibility(
+            visible: (isFinished == 0 ? false : true),
+            child: Positioned.fill(
+              top: 0,
+              left: 0,
+              child: Align(
+                alignment: Alignment.center,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Opacity(
+                      opacity: 0.4,
+                      child: Expanded(
+                        child: Container(
+                          height: screenHeight,
+                          width: screenWidth,
+                          color: const Color(0xff000000),
+                        ),
+                      ),
+                    ),
+                    SvgPicture.asset(
+                      'assets/fish-caught.svg',
+                      width: screenWidth * 0.95,
+                    ),
+                    Positioned(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            'assets/fish-tank.svg',
+                            width: screenWidth * 0.3,
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "*Insert Fish Name Here*",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            height: 200,
+                            width: screenWidth * 0.65,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              color: const Color(
+                                0xff308BCC,
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(23.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "You finished your focus time!",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "${value.ceil().toInt()}",
+                                        style: const TextStyle(
+                                          color: Color(0xffFE2E00),
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Text(
+                                        " Minutes",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 25),
+                                  GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  const HomePage(),
+                                            ),
+                                          );
+                                        });
+                                      },
+                                      child: MainButton(label: "Confirm")),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
