@@ -23,7 +23,7 @@ class _AquariumPageState extends State<AquariumPage> {
   @override
   void initState() {
     super.initState();
-    _controller = SimpleAnimation('Timeline 1', autoplay: false);
+    _controller = SimpleAnimation('Timeline 2', autoplay: false);
 
     // rootBundle.load("assets/fish.riv").then(
     //   (data) async {
