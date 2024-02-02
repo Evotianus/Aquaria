@@ -46,8 +46,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late final AnimationController _alignmentController;
   late final Animation<Offset> _offsetAnimation;
 
-  // get timerColor => Colors.white;
-  // get todoColor => Colors.black.withOpacity(0.3);
   Color timerColor = Colors.white;
   Color todoColor = Colors.black.withOpacity(0.3);
 
