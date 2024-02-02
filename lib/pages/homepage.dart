@@ -68,6 +68,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   StateMachineController? stateMachineController;
 
   late RiveAnimationController _controller;
+  int? durationTime = 5;
 
   @override
   void initState() {
@@ -255,7 +256,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               onTap: () {
                                 // Duration timerDuration =
                                 //     Duration(minutes: value.ceil().toInt());
-                                // print(timerDuration.inMinutes);
+                                print(timerDuration.inMinutes);
+
+                                durationTime = timerDuration.inMinutes;
+                                if (durationTime == 0) {
+                                  durationTime = 5;
+                                }
 
                                 setState(() {
                                   opacityLevel = 0;
@@ -269,6 +275,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 timer = Timer.periodic(
                                     const Duration(seconds: 1), (timer) {
                                   if (mounted) {
+                                    // print(value.toInt().ceil());
                                     setState(() {
                                       seconds = timerDuration.inSeconds - 1;
                                       if (seconds < 0) {
@@ -664,13 +671,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         },
                         child: Container(
                           padding: const EdgeInsets.all(8.0),
-                          decoration: const BoxDecoration(
-                              // color: Colors.redAccent,
-                              ),
                           child: Text(
                             "To-do",
                             style: TextStyle(
-                              // backgroundColor: Colors.redAccent,
                               fontSize: 14,
                               color: todoColor,
                             ),
@@ -873,12 +876,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   children: [
                     Opacity(
                       opacity: 0.4,
-                      child: Expanded(
-                        child: Container(
-                          height: screenHeight,
-                          width: screenWidth,
-                          color: const Color(0xff000000),
-                        ),
+                      child: Container(
+                        height: screenHeight,
+                        width: screenWidth,
+                        color: const Color(0xff000000),
                       ),
                     ),
                     SvgPicture.asset(
@@ -930,7 +931,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "${value.ceil().toInt()}",
+                                        "$durationTime",
                                         style: const TextStyle(
                                           color: Color(0xffFE2E00),
                                           fontSize: 24,
@@ -947,18 +948,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     ],
                                   ),
                                   const SizedBox(height: 25),
-                                  GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  const HomePage(),
-                                            ),
-                                          );
-                                        });
-                                      },
-                                      child: MainButton(label: "Confirm")),
+                                  MainButton(
+                                    onTap: () {
+                                      setState(() {
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                const HomePage(),
+                                          ),
+                                        );
+                                      });
+                                    },
+                                    label: "Confirm",
+                                  ),
                                 ],
                               ),
                             ),
