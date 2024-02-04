@@ -1,4 +1,4 @@
-import 'package:aquaria/pages/homepage.dart';
+import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/privacy_policy_page.dart';
 import 'package:aquaria/pages/profile_page.dart';
 import 'package:aquaria/pages/terms_of_use_page.dart';
@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SettingsPage extends StatefulWidget {
-  SettingsPage({super.key});
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final Color blueColor = Color(0xff00B4ED);
+  final Color blueColor = const Color(0xff00B4ED);
   bool isConfirm = false;
   bool isEnableNotification = false;
   bool isAnimationSound = false;
@@ -100,7 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -115,7 +115,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -149,7 +149,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 7, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -186,7 +186,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -204,10 +204,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                               );
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Theme',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -224,7 +224,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -233,10 +233,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                           ),
-                          child: Row(
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 'Clear All Record',
                                 style: TextStyle(
                                   fontSize: 14,
@@ -251,7 +251,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -266,7 +266,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -275,16 +275,16 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                           ),
-                          child: Row(
+                          child: const Row(
                             children: [
                               Icon(
                                 Icons.notifications_outlined,
                                 size: 35,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 10,
                               ),
-                              const Text(
+                              Text(
                                 'Sound & Notification',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -300,7 +300,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 7, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -337,7 +337,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 7, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -374,7 +374,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 7, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 7, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -411,7 +411,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -429,10 +429,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                               );
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Casting Reminder',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -448,7 +448,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               Container(
@@ -463,7 +463,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 7),
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 7),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -497,7 +497,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -514,10 +514,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                         const HomePage()),
                               );
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Help',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -534,7 +534,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -551,10 +551,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                         TermsOfUsePage()),
                               );
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Terms of Use',
                                   style: TextStyle(
                                     fontSize: 14,
@@ -571,7 +571,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         Container(
                           width: MediaQuery.of(context).size.width - 70,
-                          padding: EdgeInsets.fromLTRB(0, 21, 0, 21),
+                          padding: const EdgeInsets.fromLTRB(0, 21, 0, 21),
                           decoration: const BoxDecoration(
                             border: BorderDirectional(
                               bottom: BorderSide(
@@ -588,10 +588,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                         PrivacyPolicyPage()),
                               );
                             },
-                            child: Row(
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Privacy Policy',
                                   style: TextStyle(
                                     fontSize: 14,

@@ -44,6 +44,7 @@ dependencies:
   flutter_svg: ^2.0.9
   table_calendar: ^3.0.9
   flutter_time_picker_spinner: ^2.0.0
+  awesome_notifications: ^0.8.2
 
 dev_dependencies:
   flutter_test:

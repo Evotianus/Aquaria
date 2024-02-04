@@ -6,17 +6,15 @@ import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rive/rive.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
-import 'package:flutter/rendering.dart';
-import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
 double radius = 135;
 double strokeWidth = 40;
@@ -72,7 +70,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool isAbsorb = false;
 
   final Color blueColor = const Color(0xff00B4ED);
-  final Color orangeColor = Color(0xffFE4600);
+  final Color orangeColor = const Color(0xffFE4600);
   int deadlineCount = -1;
 
   Artboard? _fishingArtboard;
@@ -95,7 +93,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       5,
       (i) => [
             Colors.white.withOpacity(0.3),
-            Color(0xffFE4600).withOpacity(0.75),
+            const Color(0xffFE4600).withOpacity(0.75),
             null
           ],
       growable: true);
@@ -136,6 +134,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
 
     _controller = SimpleAnimation('Timeline 2', autoplay: false);
+
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+  }
+
+  triggerNotification(id, title, body) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: 'basic_channel',
+        title: title,
+        body: body,
+      ),
+    );
   }
 
   void _checkDeadlineButton(int deadlineCount) {
@@ -151,9 +166,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       this.deadlineCount = deadlineCount;
       print(this.deadlineCount);
 
-      deadlineColor[this.deadlineCount][0] = Color(0xffFF7E4C);
+      deadlineColor[this.deadlineCount][0] = const Color(0xffFF7E4C);
       deadlineColor[this.deadlineCount][1] = Colors.white;
-      deadlineColor[this.deadlineCount][2] = Color(0xffFE4600);
+      deadlineColor[this.deadlineCount][2] = const Color(0xffFE4600);
 
       print(deadlineColor);
     });
@@ -375,8 +390,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   timer.cancel();
 
                                                   isFinished = 1;
-                                                } else if (isStopped) {
-                                                  timer.cancel();
+
+                                                  triggerNotification(
+                                                      1,
+                                                      'Casted!',
+                                                      'Timer has been started, good luck on your study!');
                                                 } else {
                                                   timerDuration = Duration(
                                                       seconds: seconds);
@@ -828,13 +846,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     Positioned(
                       right: 25,
                       bottom: 70,
-                      child: Container(
+                      child: SizedBox(
                         width: 70,
                         height: 70,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(0),
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(0),
                           ),
                           onPressed: () {
                             setState(() {
@@ -979,7 +997,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          SettingsPage(),
+                                          const SettingsPage(),
                                     ),
                                   );
                                 },
@@ -1008,7 +1026,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          SettingsPage(),
+                                          const SettingsPage(),
                                     ),
                                   );
                                 },
@@ -1107,7 +1125,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   MainAxisAlignment.center,
                                               children: [
                                                 Text(
-                                                  "${value.ceil().toInt()}",
+                                                  "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
                                                   style: const TextStyle(
                                                     color: Color(0xffFE2E00),
                                                     fontSize: 24,
@@ -1202,14 +1220,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   bottom: 115,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Color(0xff85E8FE),
+                                      color: const Color(0xff85E8FE),
                                       borderRadius: BorderRadius.circular(20.0),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.3),
                                           blurRadius: 4,
                                           spreadRadius: 2,
-                                          offset: Offset(0, 3),
+                                          offset: const Offset(0, 3),
                                         ),
                                       ],
                                     ),
@@ -1230,8 +1248,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 5, 0, 5),
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
@@ -1365,14 +1383,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ),
                                             ),
                                             calendarStyle: CalendarStyle(
-                                              defaultTextStyle: TextStyle(
+                                              defaultTextStyle: const TextStyle(
                                                 fontSize: 18,
                                               ),
-                                              weekendTextStyle: TextStyle(
+                                              weekendTextStyle: const TextStyle(
                                                 color: Color(0xffFF1F1F),
                                                 fontSize: 18,
                                               ),
-                                              selectedTextStyle: TextStyle(
+                                              selectedTextStyle:
+                                                  const TextStyle(
                                                 color: Color(0xffFFFFFF),
                                                 fontSize: 18,
                                               ),
@@ -1383,7 +1402,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ),
                                               isTodayHighlighted: false,
                                             ),
-                                            weekendDays: [DateTime.sunday],
+                                            weekendDays: const [
+                                              DateTime.sunday
+                                            ],
                                             daysOfWeekStyle:
                                                 const DaysOfWeekStyle(
                                               weekdayStyle: TextStyle(
@@ -1407,14 +1428,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 child: BubbleButton(
                                                   color: deadlineColor[0][0],
                                                   secondaryColor:
-                                                      deadlineColor[0][2] ??
-                                                          null,
+                                                      deadlineColor[0][2],
                                                   label: 'No Date',
                                                   length: 110,
                                                   textColor: deadlineColor[0]
                                                       [1],
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      22, 8, 10, 8),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          22, 8, 10, 8),
                                                   type: 'Button',
                                                 ),
                                               ),
@@ -1425,14 +1446,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 child: BubbleButton(
                                                   color: deadlineColor[1][0],
                                                   secondaryColor:
-                                                      deadlineColor[1][2] ??
-                                                          null,
+                                                      deadlineColor[1][2],
                                                   label: 'Today',
                                                   length: 90,
                                                   textColor: deadlineColor[1]
                                                       [1],
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      22, 8, 10, 8),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          22, 8, 10, 8),
                                                   type: 'Button',
                                                 ),
                                               ),
@@ -1443,14 +1464,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 child: BubbleButton(
                                                   color: deadlineColor[2][0],
                                                   secondaryColor:
-                                                      deadlineColor[2][2] ??
-                                                          null,
+                                                      deadlineColor[2][2],
                                                   label: 'Tomorrow',
                                                   length: 120,
                                                   textColor: deadlineColor[2]
                                                       [1],
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      22, 8, 10, 8),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          22, 8, 10, 8),
                                                   type: 'Button',
                                                 ),
                                               ),
@@ -1461,14 +1482,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 child: BubbleButton(
                                                   color: deadlineColor[3][0],
                                                   secondaryColor:
-                                                      deadlineColor[3][2] ??
-                                                          null,
+                                                      deadlineColor[3][2],
                                                   label: '3 Days Later',
                                                   length: 140,
                                                   textColor: deadlineColor[3]
                                                       [1],
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      22, 8, 10, 8),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          22, 8, 10, 8),
                                                   type: 'Button',
                                                 ),
                                               ),
@@ -1479,14 +1500,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 child: BubbleButton(
                                                   color: deadlineColor[4][0],
                                                   secondaryColor:
-                                                      deadlineColor[4][2] ??
-                                                          null,
+                                                      deadlineColor[4][2],
                                                   label: 'This Sunday',
                                                   length: 140,
                                                   textColor: deadlineColor[4]
                                                       [1],
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      22, 8, 10, 8),
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          22, 8, 10, 8),
                                                   type: 'Button',
                                                 ),
                                               ),
@@ -1609,8 +1630,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   textColor:
                                                                       Colors
                                                                           .white,
-                                                                  padding: EdgeInsets
-                                                                      .fromLTRB(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .fromLTRB(
                                                                           23,
                                                                           8,
                                                                           5,
@@ -1780,7 +1802,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               GestureDetector(
                                                 onTap: () {},
                                                 child: BubbleButton(
-                                                  color: Color(0xffFF7E4C),
+                                                  color:
+                                                      const Color(0xffFF7E4C),
                                                   secondaryColor: orangeColor,
                                                   label: 'Done',
                                                   length: 90,
