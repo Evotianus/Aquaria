@@ -100,24 +100,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ],
       growable: true);
 
-  DateTime? _selectedDay;
-  DateTime _focusedDay = DateTime.now();
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-  bool _isFocusAddEditTask = false;
-  bool isVisibleAddEdit = false;
-  bool isEdit = false;
-  late String taskName;
-  String categoryTask = 'No Category';
-
-  var deadlineColor = List<List>.generate(
-      5,
-      (i) => [
-            Colors.white.withOpacity(0.3),
-            Color(0xffFE4600).withOpacity(0.75),
-            null
-          ],
-      growable: true);
-
   @override
   void initState() {
     super.initState();
