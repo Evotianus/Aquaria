@@ -18,102 +18,115 @@ class RegisterPage extends StatelessWidget {
       // appBar: AppBar(
       //   title: const Text("Login Page"),
       // ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 140),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Image(
-                image: AssetImage("assets/logo.png"),
-              ),
-              const SizedBox(
-                height: 80,
-              ),
-              BubbleTextField(
-                icon: Icons.person_2_outlined,
-                controller: _usernameController,
-                label: "Enter your username...",
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              BubbleTextField(
-                icon: Icons.mail_outline_rounded,
-                controller: _emailController,
-                label: "Enter your email...",
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              BubbleTextField(
-                icon: Icons.lock_outline_rounded,
-                controller: _passwordController,
-                type: "password",
-                label: "Enter your password...",
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              BubbleTextField(
-                icon: Icons.lock_reset_rounded,
-                controller: _confirmPasswordController,
-                type: "password",
-                label: "Confirm your password...",
-              ),
-              const SizedBox(
-                height: 45,
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const HomePage(),
-                    ),
-                  );
-                },
-                child: MainButton(
-                  label: "Sign Up",
+      body: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentNode = FocusScope.of(context);
+          if (!currentNode.hasPrimaryFocus) {
+            currentNode.unfocus();
+          }
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 140),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Image(
+                  image: AssetImage("assets/logo.png"),
                 ),
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Already have an account?"),
-                  const SizedBox(
-                    width: 5,
+                const SizedBox(
+                  height: 80,
+                ),
+                BubbleTextField(
+                  icon: Icons.person_2_outlined,
+                  controller: _usernameController,
+                  label: "Enter your username...",
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                BubbleTextField(
+                  icon: Icons.mail_outline_rounded,
+                  controller: _emailController,
+                  label: "Enter your email...",
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                BubbleTextField(
+                  icon: Icons.lock_outline_rounded,
+                  controller: _passwordController,
+                  type: "password",
+                  label: "Enter your password...",
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                BubbleTextField(
+                  icon: Icons.lock_reset_rounded,
+                  controller: _confirmPasswordController,
+                  type: "password",
+                  label: "Confirm your password...",
+                ),
+                const SizedBox(
+                  height: 45,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    //   final username = _usernameController.text;
+                    //   final email = _emailController.text;
+                    //   final password = _passwordController.text;
+                    //   final confirmPassword = _confirmPasswordController.text;
+
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => const HomePage(),
+                      ),
+                    );
+                  },
+                  child: MainButton(
+                    label: "Sign Up",
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => LoginPage(),
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Already have an account?"),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => LoginPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Log In",
+                        style: TextStyle(
+                          color: Color(0xffFE4600),
+                          decoration: TextDecoration.underline,
                         ),
-                      );
-                    },
-                    child: const Text(
-                      "Log In",
-                      style: TextStyle(
-                        color: Color(0xffFE4600),
-                        decoration: TextDecoration.underline,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              // const Positioned(
-              //   bottom: 0,
-              //   left: 0,
-              //   width: 100,
-              //   height: 100,
-              //   child: Image(
-              //     image: AssetImage("assets/waves.png"),
-              //   ),
-              // ),
-            ],
+                  ],
+                ),
+                // const Positioned(
+                //   bottom: 0,
+                //   left: 0,
+                //   width: 100,
+                //   height: 100,
+                //   child: Image(
+                //     image: AssetImage("assets/waves.png"),
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),

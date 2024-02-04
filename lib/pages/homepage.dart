@@ -12,8 +12,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rive/rive.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import 'package:flutter/rendering.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 
 double radius = 135;
 double strokeWidth = 40;
@@ -57,6 +60,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final PanelController _panelController = PanelController();
   final TextEditingController _taskController = TextEditingController();
   final OverlayPortalController _categoryController = OverlayPortalController();
+  final OverlayPortalController _dateController = OverlayPortalController();
+  final OverlayPortalController _timeController = OverlayPortalController();
 
   Duration timerDuration = const Duration(minutes: 5);
   int minutes = 0;
@@ -68,14 +73,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool isAbsorb = false;
 
-  final Color blueColor = Color(0xff00B4ED);
+  final Color blueColor = const Color(0xff00B4ED);
   final Color orangeColor = Color(0xffFE4600);
+  int deadlineCount = -1;
 
   Artboard? _fishingArtboard;
   SMITrigger? trigger;
   StateMachineController? stateMachineController;
 
   late RiveAnimationController _controller;
+
+  DateTime? _selectedDay;
+  DateTime _focusedDay = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  bool _isFocusAddEditTask = false;
+  bool isVisibleAddEdit = false;
+  bool isEdit = false;
+  late String taskName;
+  String categoryTask = 'No Category';
+
+  var deadlineColor = List<List>.generate(
+      5,
+      (i) => [
+            Colors.white.withOpacity(0.3),
+            Color(0xffFE4600).withOpacity(0.75),
+            null
+          ],
+      growable: true);
 
   @override
   void initState() {
@@ -115,6 +139,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _controller = SimpleAnimation('Timeline 2', autoplay: false);
   }
 
+  void _checkDeadlineButton(int deadlineCount) {
+    setState(() {
+      if (this.deadlineCount != -1) {
+        deadlineColor[this.deadlineCount][0] = Colors.white.withOpacity(0.3);
+        deadlineColor[this.deadlineCount][1] =
+            const Color(0xffFE4600).withOpacity(0.75);
+        deadlineColor[this.deadlineCount][2] = null;
+      }
+
+      print(this.deadlineCount);
+      this.deadlineCount = deadlineCount;
+      print(this.deadlineCount);
+
+      deadlineColor[this.deadlineCount][0] = Color(0xffFF7E4C);
+      deadlineColor[this.deadlineCount][1] = Colors.white;
+      deadlineColor[this.deadlineCount][2] = Color(0xffFE4600);
+
+      print(deadlineColor);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -128,7 +173,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     int minutes = timerDuration.inMinutes.remainder(125);
     int seconds = timerDuration.inSeconds.remainder(60);
 
-    bool isVisibleAddEdit = true;
     double screenDimValue = 0.5;
     List<String> categories = <String>[
       'Critical',
@@ -140,605 +184,514 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: blueColor,
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          ColorFiltered(
-            colorFilter: ColorFilter.mode(
-              Colors.black.withOpacity(isVisibleAddEdit ? 0.5 : 0),
-              BlendMode.darken,
-            ),
-            child: IgnorePointer(
-              ignoring: isVisibleAddEdit ? true : false,
-              child: Stack(
-                children: [
-                  PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _pageController,
-                    children: [
-                      Stack(
-                        children: [
-                          _fishingArtboard == null
-                              ? const SizedBox()
-                              : Rive(artboard: _fishingArtboard!),
-                          RiveAnimation.asset(
-                            'assets/fish.riv',
-                            fit: BoxFit.cover,
-                            controllers: [_controller],
-                          ),
-                          Transform.translate(
-                            offset: const Offset(0, 200),
-                            child: Stack(
-                              alignment: Alignment.topCenter,
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned(
-                                  top: -50,
-                                  child: Text(
-                                    "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                                    style: const TextStyle(
-                                        fontSize: 64, color: Colors.white),
+      body: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentNode = FocusScope.of(context);
+          if (!currentNode.hasPrimaryFocus) {
+            currentNode.unfocus();
+          }
+        },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(isVisibleAddEdit ? 0.5 : 0),
+                BlendMode.darken,
+              ),
+              child: AbsorbPointer(
+                absorbing: isVisibleAddEdit ? true : false,
+                child: Stack(
+                  children: [
+                    PageView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: _pageController,
+                      children: [
+                        Stack(
+                          children: [
+                            _fishingArtboard == null
+                                ? const SizedBox()
+                                : Rive(artboard: _fishingArtboard!),
+                            RiveAnimation.asset(
+                              'assets/fish.riv',
+                              fit: BoxFit.cover,
+                              controllers: [_controller],
+                            ),
+                            Transform.translate(
+                              offset: const Offset(0, 200),
+                              child: Stack(
+                                alignment: Alignment.topCenter,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Positioned(
+                                    top: -50,
+                                    child: Text(
+                                      "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
+                                      style: const TextStyle(
+                                          fontSize: 64, color: Colors.white),
+                                    ),
                                   ),
-                                ),
-                                Positioned.fill(
-                                  top: 120,
-                                  child: Stack(
-                                    alignment: Alignment.topCenter,
-                                    children: [
-                                      Opacity(
-                                        opacity: opacityLevel,
-                                        child: const Image(
-                                          image: AssetImage("assets/reel.png"),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 50,
-                                  left: screenWidth / 2 - 25,
-                                  child: Transform.rotate(
-                                    angle: paddleAngle,
-                                    alignment: Alignment.bottomCenter,
+                                  Positioned.fill(
+                                    top: 120,
                                     child: Stack(
+                                      alignment: Alignment.topCenter,
                                       children: [
                                         Opacity(
                                           opacity: opacityLevel,
                                           child: const Image(
                                             image:
-                                                AssetImage("assets/paddle.png"),
+                                                AssetImage("assets/reel.png"),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  left: knobPos.dx - 25,
-                                  top: knobPos.dy + 30,
-                                  child: GestureDetector(
-                                    onPanStart: (details) {
-                                      RenderBox getBox = context
-                                          .findRenderObject() as RenderBox;
-                                      _currentDragOffset = getBox.globalToLocal(
-                                              details.globalPosition) +
-                                          const Offset(0, -200);
-                                    },
-                                    onPanUpdate: (details) {
-                                      // print(details.globalPosition);
-                                      var previousOffset = _currentDragOffset;
-                                      _currentDragOffset += details.delta;
-                                      var angle = currentAngle +
-                                          toAngle(_currentDragOffset, center) -
-                                          toAngle(previousOffset, center);
-                                      currentAngle = normalizeAngle(angle);
-                                      oldValue =
-                                          (currentAngle / (math.pi * 2)) * 100;
+                                  Positioned(
+                                    top: 50,
+                                    left: screenWidth / 2 - 25,
+                                    child: Transform.rotate(
+                                      angle: paddleAngle,
+                                      alignment: Alignment.bottomCenter,
+                                      child: Stack(
+                                        children: [
+                                          Opacity(
+                                            opacity: opacityLevel,
+                                            child: const Image(
+                                              image: AssetImage(
+                                                  "assets/paddle.png"),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: knobPos.dx - 25,
+                                    top: knobPos.dy + 30,
+                                    child: GestureDetector(
+                                      onPanStart: (details) {
+                                        RenderBox getBox = context
+                                            .findRenderObject() as RenderBox;
+                                        _currentDragOffset =
+                                            getBox.globalToLocal(
+                                                    details.globalPosition) +
+                                                const Offset(0, -200);
+                                      },
+                                      onPanUpdate: (details) {
+                                        // print(details.globalPosition);
+                                        var previousOffset = _currentDragOffset;
+                                        _currentDragOffset += details.delta;
+                                        var angle = currentAngle +
+                                            toAngle(
+                                                _currentDragOffset, center) -
+                                            toAngle(previousOffset, center);
+                                        currentAngle = normalizeAngle(angle);
+                                        oldValue =
+                                            (currentAngle / (math.pi * 2)) *
+                                                100;
 
-                                      var oldRange = (100 - 0);
-                                      var newRange = (120 - 0);
-                                      var newValue =
-                                          (((oldValue - 0) * newRange) /
-                                                  oldRange) +
-                                              0;
+                                        var oldRange = (100 - 0);
+                                        var newRange = (120 - 0);
+                                        var newValue =
+                                            (((oldValue - 0) * newRange) /
+                                                    oldRange) +
+                                                0;
 
-                                      value = 5.0 * ((newValue / 5.0).ceil());
+                                        value = 5.0 * ((newValue / 5.0).ceil());
 
-                                      setState(() {
-                                        timerDuration = Duration(
-                                            minutes: value.ceil().toInt());
-                                        // paddleAngle = (currentAngle / (math.pi * 2)) * 100;
-                                        paddleAngle =
-                                            (currentAngle * math.pi / 3 - 0.2) +
-                                                3.1;
-                                        if (currentAngle >=
-                                                0.0006651366295775674 &&
-                                            3.3 >= currentAngle) {
+                                        setState(() {
+                                          timerDuration = Duration(
+                                              minutes: value.ceil().toInt());
+                                          // paddleAngle = (currentAngle / (math.pi * 2)) * 100;
                                           paddleAngle =
                                               (currentAngle * math.pi / 3 -
                                                       0.2) +
-                                                  3.3;
-                                        }
-                                        // print(currentAngle);
-                                      });
-                                    },
-                                    child: Opacity(
-                                      opacity: opacityLevel,
-                                      child: const _Knob(),
-                                    ),
-                                  ),
-                                ),
-                                Positioned.fill(
-                                  top: 170,
-                                  child: Stack(
-                                    alignment: Alignment.topCenter,
-                                    children: [
-                                      Opacity(
-                                        opacity: opacityLevel,
-                                        child: const Image(
-                                          image:
-                                              AssetImage("assets/center.png"),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 400,
-                                  child: AbsorbPointer(
-                                    absorbing: isAbsorb,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // Duration timerDuration =
-                                        //     Duration(minutes: value.ceil().toInt());
-                                        // print(timerDuration.inMinutes);
-
-                                        setState(() {
-                                          opacityLevel = 0;
-                                        });
-
-                                        isStopped = false;
-                                        isAbsorb = true;
-
-                                        trigger?.fire();
-
-                                        timer = Timer.periodic(
-                                            const Duration(seconds: 1),
-                                            (timer) {
-                                          if (mounted) {
-                                            setState(() {
-                                              seconds =
-                                                  timerDuration.inSeconds - 1;
-                                              if (seconds < 0) {
-                                                timer.cancel();
-
-                                                isFinished = 1;
-                                              } else if (isStopped) {
-                                                timer.cancel();
-                                              } else {
-                                                timerDuration =
-                                                    Duration(seconds: seconds);
-                                              }
-
-                                              if (timerDuration.inSeconds ==
-                                                  8) {
-                                                stateMachineController!
-                                                    .isActive = false;
-                                              }
-                                              if (timerDuration.inSeconds ==
-                                                  6) {
-                                                _controller.isActive = true;
-                                              }
-                                            });
+                                                  3.1;
+                                          if (currentAngle >=
+                                                  0.0006651366295775674 &&
+                                              3.3 >= currentAngle) {
+                                            paddleAngle =
+                                                (currentAngle * math.pi / 3 -
+                                                        0.2) +
+                                                    3.3;
                                           }
+                                          // print(currentAngle);
                                         });
                                       },
                                       child: Opacity(
                                         opacity: opacityLevel,
-                                        child: const Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Image(
-                                              image: AssetImage(
-                                                  "assets/cast-button.png"),
+                                        child: const _Knob(),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned.fill(
+                                    top: 170,
+                                    child: Stack(
+                                      alignment: Alignment.topCenter,
+                                      children: [
+                                        Opacity(
+                                          opacity: opacityLevel,
+                                          child: const Image(
+                                            image:
+                                                AssetImage("assets/center.png"),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 400,
+                                    child: AbsorbPointer(
+                                      absorbing: isAbsorb,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          // Duration timerDuration =
+                                          //     Duration(minutes: value.ceil().toInt());
+                                          // print(timerDuration.inMinutes);
+
+                                          setState(() {
+                                            opacityLevel = 0;
+                                          });
+
+                                          isStopped = false;
+                                          isAbsorb = true;
+
+                                          trigger?.fire();
+
+                                          timer = Timer.periodic(
+                                              const Duration(seconds: 1),
+                                              (timer) {
+                                            if (mounted) {
+                                              setState(() {
+                                                seconds =
+                                                    timerDuration.inSeconds - 1;
+                                                if (seconds < 0) {
+                                                  timer.cancel();
+
+                                                  isFinished = 1;
+                                                } else if (isStopped) {
+                                                  timer.cancel();
+                                                } else {
+                                                  timerDuration = Duration(
+                                                      seconds: seconds);
+                                                }
+
+                                                if (timerDuration.inSeconds ==
+                                                    8) {
+                                                  stateMachineController!
+                                                      .isActive = false;
+                                                }
+                                                if (timerDuration.inSeconds ==
+                                                    6) {
+                                                  _controller.isActive = true;
+                                                }
+                                              });
+                                            }
+                                          });
+                                        },
+                                        child: Opacity(
+                                          opacity: opacityLevel,
+                                          child: const Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              Image(
+                                                image: AssetImage(
+                                                    "assets/cast-button.png"),
+                                              ),
+                                              Text(
+                                                "Cast!",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 450,
+                                    child: AbsorbPointer(
+                                      absorbing: !isAbsorb,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            if (value == 0) {
+                                              timerDuration =
+                                                  const Duration(minutes: 5);
+                                            } else {
+                                              timerDuration = Duration(
+                                                  minutes:
+                                                      (value).ceil().toInt());
+                                            }
+
+                                            opacityLevel = 1;
+                                            isStopped = true;
+
+                                            isAbsorb = false;
+
+                                            stateMachineController!.isActive =
+                                                false;
+                                            // stateMachineController!.
+
+                                            // trigger!.fire();
+                                          });
+                                          Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  const HomePage(),
                                             ),
-                                            Text(
-                                              "Cast!",
-                                              style: TextStyle(
+                                          );
+                                        },
+                                        child: Opacity(
+                                          opacity: (opacityLevel == 0 ? 1 : 0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                width: 2,
+                                                color: const Color(0xffFF1F1F),
+                                              ),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(50)),
+                                            ),
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10, horizontal: 15),
+                                              child: Text(
+                                                "Give Up",
+                                                style: TextStyle(
+                                                  color: Color(0xffFF1F1F),
                                                   fontSize: 16,
-                                                  color: Colors.white),
+                                                ),
+                                              ),
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  top: 450,
-                                  child: AbsorbPointer(
-                                    absorbing: !isAbsorb,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          if (value == 0) {
-                                            timerDuration =
-                                                const Duration(minutes: 5);
-                                          } else {
-                                            timerDuration = Duration(
-                                                minutes:
-                                                    (value).ceil().toInt());
-                                          }
-
-                                          opacityLevel = 1;
-                                          isStopped = true;
-
-                                          isAbsorb = false;
-
-                                          stateMachineController!.isActive =
-                                              false;
-                                          // stateMachineController!.
-
-                                          // trigger!.fire();
-                                        });
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                const HomePage(),
-                                          ),
-                                        );
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        timerDuration -=
+                                            const Duration(seconds: 15);
                                       },
-                                      child: Opacity(
-                                        opacity: (opacityLevel == 0 ? 1 : 0),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              width: 2,
-                                              color: const Color(0xffFF1F1F),
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(50)),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 15),
-                                            child: Text(
-                                              "Give Up",
-                                              style: TextStyle(
-                                                color: Color(0xffFF1F1F),
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      child: const Text("Cut"),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      timerDuration -=
-                                          const Duration(seconds: 15);
-                                    },
-                                    child: const Text("Cut"),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 25),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 160,
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // int isChecked = 0;
-                                    setState(() {
-                                      if (isChecked[0] == 0) {
-                                        isChecked[0] = 1;
-                                      } else {
-                                        isChecked[0] = 0;
-                                      }
-                                    });
-                                  },
-                                  child: Image(
-                                    image: AssetImage(
-                                        "assets/${checkImage[isChecked[0]]}-bubble.png"),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Flexible(
-                                  child: Opacity(
-                                    opacity: (isChecked[0] == 0 ? 1 : 0.7),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Software Engineer Project",
-                                          style: TextStyle(
-                                            overflow: TextOverflow.ellipsis,
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            decoration: (isChecked[0] == 0
-                                                ? TextDecoration.none
-                                                : TextDecoration.lineThrough),
-                                            decorationThickness: 2,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              height: 20,
-                                              width: 90,
-                                              alignment: Alignment.center,
-                                              decoration: const BoxDecoration(
-                                                color: Color(0xffFF1F1F),
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(50),
-                                                ),
-                                              ),
-                                              child: const Text("Important",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14)),
-                                            ),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            const Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.access_time_outlined,
-                                                  color: Colors.white,
-                                                ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(
-                                                  "January 1st",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // int isChecked = 0;
-                                    setState(() {
-                                      if (isChecked[1] == 0) {
-                                        isChecked[1] = 1;
-                                      } else {
-                                        isChecked[1] = 0;
-                                      }
-                                    });
-                                  },
-                                  child: Image(
-                                    image: AssetImage(
-                                        "assets/${checkImage[isChecked[1]]}-bubble.png"),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                Flexible(
-                                  child: Opacity(
-                                    opacity: (isChecked[1] == 0 ? 1 : 0.7),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Character Building Mini Article",
-                                          style: TextStyle(
-                                            overflow: TextOverflow.ellipsis,
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            decoration: (isChecked[1] == 0
-                                                ? TextDecoration.none
-                                                : TextDecoration.lineThrough),
-                                            decorationThickness: 2,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Container(
-                                              height: 20,
-                                              width: 90,
-                                              alignment: Alignment.center,
-                                              decoration: const BoxDecoration(
-                                                color: Color(0xffFF1F1F),
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(50),
-                                                ),
-                                              ),
-                                              child: const Text("Important",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14)),
-                                            ),
-                                            const SizedBox(
-                                              width: 15,
-                                            ),
-                                            const Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.access_time_outlined,
-                                                  color: Colors.white,
-                                                ),
-                                                SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(
-                                                  "January 1st",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                )
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Positioned(
-                    top: 0,
-                    child: Column(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 100,
-                          color: blueColor.withOpacity(0.0),
-                        ),
-                        Container(
-                          width: 160,
-                          height: 30,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(50),
-                            ),
-                          ),
-                          child: Stack(
-                            alignment: Alignment.center,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          child: Column(
                             children: [
-                              AnimatedBuilder(
-                                animation: _offsetAnimation,
-                                builder: (context, child) {
-                                  return Transform.translate(
-                                    offset: Offset(
-                                      _offsetAnimation.value.dx *
-                                          37, // Adjust the width of the red bar
-                                      0,
-                                    ),
-                                    child: child,
-                                  );
-                                },
-                                child: Container(
-                                  width: 80,
-                                  height: 25,
-                                  decoration: BoxDecoration(
-                                    color: orangeColor,
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(30),
-                                    ),
-                                  ),
-                                ),
+                              const SizedBox(
+                                height: 160,
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      _pageController.previousPage(
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          curve: Curves.easeIn);
-
-                                      _panelController.close();
-
+                                      // int isChecked = 0;
                                       setState(() {
-                                        _alignmentController.animateTo(-1.0);
-
-                                        timerColor = Colors.white;
-                                        todoColor =
-                                            Colors.black.withOpacity(0.3);
+                                        if (isChecked[0] == 0) {
+                                          isChecked[0] = 1;
+                                        } else {
+                                          isChecked[0] = 0;
+                                        }
                                       });
                                     },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      decoration: const BoxDecoration(
-                                          // color: Colors.redAccent,
-                                          ),
-                                      child: Text(
-                                        "Timer",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: timerColor,
-                                        ),
-                                      ),
+                                    child: Image(
+                                      image: AssetImage(
+                                          "assets/${checkImage[isChecked[0]]}-bubble.png"),
                                     ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      _pageController.animateTo(
-                                        MediaQuery.of(context).size.width,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                        curve: Curves.easeIn,
-                                      );
-
-                                      _panelController.close();
-
                                       setState(() {
-                                        _alignmentController.animateTo(1.0);
-                                        timerColor =
-                                            Colors.black.withOpacity(0.3);
-                                        todoColor = Colors.white;
+                                        taskName = 'Software Engineer Project';
+                                        categoryTask = 'Critical';
+                                        _taskController.text = taskName;
+                                        isVisibleAddEdit = true;
+                                        isEdit = true;
                                       });
                                     },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8.0),
-                                      decoration: const BoxDecoration(
-                                          // color: Colors.redAccent,
-                                          ),
-                                      child: Text(
-                                        "To-do",
-                                        style: TextStyle(
-                                          // backgroundColor: Colors.redAccent,
-                                          fontSize: 14,
-                                          color: todoColor,
+                                    child: Flexible(
+                                      child: Opacity(
+                                        opacity: (isChecked[0] == 0 ? 1 : 0.7),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Software Engineer Project",
+                                              style: TextStyle(
+                                                overflow: TextOverflow.ellipsis,
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                decoration: (isChecked[0] == 0
+                                                    ? TextDecoration.none
+                                                    : TextDecoration
+                                                        .lineThrough),
+                                                decorationThickness: 2,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  height: 20,
+                                                  width: 90,
+                                                  alignment: Alignment.center,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Color(0xffFF1F1F),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                      Radius.circular(50),
+                                                    ),
+                                                  ),
+                                                  child: const Text("Important",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14)),
+                                                ),
+                                                const SizedBox(
+                                                  width: 15,
+                                                ),
+                                                const Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons
+                                                          .access_time_outlined,
+                                                      color: Colors.white,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      "January 1st",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 25,
+                              ),
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      // int isChecked = 0;
+                                      setState(() {
+                                        if (isChecked[1] == 0) {
+                                          isChecked[1] = 1;
+                                        } else {
+                                          isChecked[1] = 0;
+                                        }
+                                      });
+                                    },
+                                    child: Image(
+                                      image: AssetImage(
+                                          "assets/${checkImage[isChecked[1]]}-bubble.png"),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  Flexible(
+                                    child: Opacity(
+                                      opacity: (isChecked[1] == 0 ? 1 : 0.7),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Character Building Mini Article",
+                                            style: TextStyle(
+                                              overflow: TextOverflow.ellipsis,
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              decoration: (isChecked[1] == 0
+                                                  ? TextDecoration.none
+                                                  : TextDecoration.lineThrough),
+                                              decorationThickness: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 20,
+                                                width: 90,
+                                                alignment: Alignment.center,
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xffFF1F1F),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(50),
+                                                  ),
+                                                ),
+                                                child: const Text("Important",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14)),
+                                              ),
+                                              const SizedBox(
+                                                width: 15,
+                                              ),
+                                              const Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.access_time_outlined,
+                                                    color: Colors.white,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "January 1st",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ],
@@ -746,460 +699,1146 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                       ],
                     ),
-                  ),
-                  Positioned(
-                    right: 25,
-                    bottom: 70,
-                    child: Container(
-                      width: 70,
-                      height: 70,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(0),
-                        ),
-                        onPressed: () {},
-                        child: const Stack(
-                          fit: StackFit.expand,
-                          alignment: Alignment.center,
-                          children: [
-                            Image(
-                              image: AssetImage('assets/add-task-bubble.png'),
-                              fit: BoxFit.fill,
-                            ),
-                            Icon(Icons.add, size: 40),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Opacity(
-                    opacity: opacityLevel,
-                    child: SlidingUpPanel(
-                      controller: _panelController,
-                      maxHeight: 310,
-                      minHeight: 55,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
-                      ),
-                      panel: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 7,
-                              width: 55,
-                              decoration: BoxDecoration(
-                                color: blueColor,
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(50),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const AquariumPage(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Icon(
-                                    MdiIcons.fishbowlOutline,
-                                    color: const Color(0xff117CFB),
-                                    size: 30,
-                                  ),
-                                  const SizedBox(
-                                    width: 25,
-                                  ),
-                                  const Text(
-                                    "Fish Collections",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const AquariumPage(),
-                                  ),
-                                );
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.query_stats_outlined,
-                                    color: Color(0xffFD872D),
-                                    size: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 25,
-                                  ),
-                                  Text(
-                                    "Statistics",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const AquariumPage(),
-                                  ),
-                                );
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline_rounded,
-                                    color: Color(0xff3DC45D),
-                                    size: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 25,
-                                  ),
-                                  Text(
-                                    "About Us",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        SettingsPage(),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    MdiIcons.cogOutline,
-                                    color: const Color(0xff5856D5),
-                                    size: 30,
-                                  ),
-                                  const SizedBox(
-                                    width: 25,
-                                  ),
-                                  const Text(
-                                    "Settings",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        SettingsPage(),
-                                  ),
-                                );
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.logout_outlined,
-                                    color: Color(0xffFE2E00),
-                                    size: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 25,
-                                  ),
-                                  Text(
-                                    "Log Out",
-                                    style: TextStyle(
-                                        fontSize: 16, color: Color(0xffFE2E00)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: (isFinished == 0 ? false : true),
-                    child: Positioned.fill(
+                    Positioned(
                       top: 0,
-                      left: 0,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Opacity(
-                              opacity: 0.4,
-                              child: Expanded(
-                                child: Container(
-                                  height: screenHeight,
-                                  width: screenWidth,
-                                  color: const Color(0xff000000),
-                                ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 100,
+                            color: blueColor.withOpacity(0.0),
+                          ),
+                          Container(
+                            width: 160,
+                            height: 30,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50),
                               ),
                             ),
-                            SvgPicture.asset(
-                              'assets/fish-caught.svg',
-                              width: screenWidth * 0.95,
-                            ),
-                            Positioned(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    'assets/fish-tank.svg',
-                                    width: screenWidth * 0.3,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    "*Insert Fish Name Here*",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Container(
-                                    height: 200,
-                                    width: screenWidth * 0.65,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                AnimatedBuilder(
+                                  animation: _offsetAnimation,
+                                  builder: (context, child) {
+                                    return Transform.translate(
+                                      offset: Offset(
+                                        _offsetAnimation.value.dx *
+                                            37, // Adjust the width of the red bar
+                                        0,
+                                      ),
+                                      child: child,
+                                    );
+                                  },
+                                  child: Container(
+                                    width: 80,
+                                    height: 25,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(40),
-                                      color: const Color(
-                                        0xff308BCC,
+                                      color: orangeColor,
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(30),
                                       ),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(23.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          const Text(
-                                            "You finished your focus time!",
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        _pageController.previousPage(
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                            curve: Curves.easeIn);
+
+                                        _panelController.close();
+
+                                        setState(() {
+                                          _alignmentController.animateTo(-1.0);
+
+                                          timerColor = Colors.white;
+                                          todoColor =
+                                              Colors.black.withOpacity(0.3);
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: const BoxDecoration(
+                                            // color: Colors.redAccent,
                                             ),
-                                            textAlign: TextAlign.center,
+                                        child: Text(
+                                          "Timer",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: timerColor,
                                           ),
-                                          const SizedBox(height: 15),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        _pageController.animateTo(
+                                          MediaQuery.of(context).size.width,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.easeIn,
+                                        );
+
+                                        _panelController.close();
+
+                                        setState(() {
+                                          _alignmentController.animateTo(1.0);
+                                          timerColor =
+                                              Colors.black.withOpacity(0.3);
+                                          todoColor = Colors.white;
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8.0),
+                                        decoration: const BoxDecoration(
+                                            // color: Colors.redAccent,
+                                            ),
+                                        child: Text(
+                                          "To-do",
+                                          style: TextStyle(
+                                            // backgroundColor: Colors.redAccent,
+                                            fontSize: 14,
+                                            color: todoColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      right: 25,
+                      bottom: 70,
+                      child: Container(
+                        width: 70,
+                        height: 70,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(0),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isVisibleAddEdit = true;
+                              taskName = '';
+                            });
+                          },
+                          child: const Stack(
+                            fit: StackFit.expand,
+                            alignment: Alignment.center,
+                            children: [
+                              Image(
+                                image: AssetImage('assets/add-task-bubble.png'),
+                                fit: BoxFit.fill,
+                              ),
+                              Icon(Icons.add, size: 40),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Opacity(
+                      opacity: opacityLevel,
+                      child: SlidingUpPanel(
+                        controller: _panelController,
+                        maxHeight: 310,
+                        minHeight: 55,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
+                        ),
+                        panel: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 7,
+                                width: 55,
+                                decoration: BoxDecoration(
+                                  color: blueColor,
+                                  borderRadius: const BorderRadius.all(
+                                    Radius.circular(50),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const AquariumPage(),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Icon(
+                                      MdiIcons.fishbowlOutline,
+                                      color: const Color(0xff117CFB),
+                                      size: 30,
+                                    ),
+                                    const SizedBox(
+                                      width: 25,
+                                    ),
+                                    const Text(
+                                      "Fish Collections",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const AquariumPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.query_stats_outlined,
+                                      color: Color(0xffFD872D),
+                                      size: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 25,
+                                    ),
+                                    Text(
+                                      "Statistics",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          const AquariumPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline_rounded,
+                                      color: Color(0xff3DC45D),
+                                      size: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 25,
+                                    ),
+                                    Text(
+                                      "About Us",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          SettingsPage(),
+                                    ),
+                                  );
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      MdiIcons.cogOutline,
+                                      color: const Color(0xff5856D5),
+                                      size: 30,
+                                    ),
+                                    const SizedBox(
+                                      width: 25,
+                                    ),
+                                    const Text(
+                                      "Settings",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          SettingsPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.logout_outlined,
+                                      color: Color(0xffFE2E00),
+                                      size: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 25,
+                                    ),
+                                    Text(
+                                      "Log Out",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Color(0xffFE2E00)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: (isFinished == 0 ? false : true),
+                      child: Positioned.fill(
+                        top: 0,
+                        left: 0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Opacity(
+                                opacity: 0.4,
+                                child: Expanded(
+                                  child: Container(
+                                    height: screenHeight,
+                                    width: screenWidth,
+                                    color: const Color(0xff000000),
+                                  ),
+                                ),
+                              ),
+                              SvgPicture.asset(
+                                'assets/fish-caught.svg',
+                                width: screenWidth * 0.95,
+                              ),
+                              Positioned(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/fish-tank.svg',
+                                      width: screenWidth * 0.3,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Text(
+                                      "*Insert Fish Name Here*",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      height: 200,
+                                      width: screenWidth * 0.65,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(40),
+                                        color: const Color(
+                                          0xff308BCC,
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(23.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Text(
+                                              "You finished your focus time!",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const SizedBox(height: 15),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "${value.ceil().toInt()}",
+                                                  style: const TextStyle(
+                                                    color: Color(0xffFE2E00),
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const Text(
+                                                  " Minutes",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 24,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 25),
+                                            GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                      MaterialPageRoute(
+                                                        builder: (BuildContext
+                                                                context) =>
+                                                            const HomePage(),
+                                                      ),
+                                                    );
+                                                  });
+                                                },
+                                                child: MainButton(
+                                                    label: "Confirm")),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              child: Visibility(
+                visible: isVisibleAddEdit,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: blueColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 25.0,
+                      horizontal: 15.0,
+                    ),
+                    child: Column(
+                      children: [
+                        Focus(
+                          onFocusChange: (focus) {
+                            _isFocusAddEditTask = focus;
+                            _categoryController.hide();
+                          },
+                          child: BubbleButton(
+                            color: Colors.white.withOpacity(0.3),
+                            textColor: orangeColor.withOpacity(0.75),
+                            label: 'Input new task here...',
+                            length: MediaQuery.of(context).size.width - 40,
+                            controller: _taskController,
+                            type: 'TextField',
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            OverlayPortal(
+                              controller: _categoryController,
+                              overlayChildBuilder: (BuildContext context) {
+                                return Positioned(
+                                  left: 15,
+                                  bottom: 115,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Color(0xff85E8FE),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    height: 240,
+                                    width: 175,
+                                    child: ListView.separated(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 15,
+                                        horizontal: 22,
+                                      ),
+                                      itemCount: categories.length,
+                                      separatorBuilder:
+                                          (BuildContext context, int index) =>
+                                              const Divider(
+                                        color: Color(0xff808080),
+                                        thickness: 2,
+                                      ),
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 5, 0, 5),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                categoryTask =
+                                                    categories[index];
+                                                _categoryController.hide();
+                                                _isFocusAddEditTask = false;
+                                              });
+                                            },
+                                            child: Text(
+                                              categories[index],
+                                              style: TextStyle(
+                                                color: orangeColor
+                                                    .withOpacity(0.75),
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  if (!_isFocusAddEditTask) {
+                                    _categoryController.toggle();
+                                    _isFocusAddEditTask = true;
+                                  }
+                                },
+                                child: BubbleButton(
+                                  color: Colors.white.withOpacity(0.3),
+                                  textColor: orangeColor.withOpacity(0.75),
+                                  label: isEdit == true
+                                      ? categoryTask
+                                      : 'No Category',
+                                  length:
+                                      MediaQuery.of(context).size.width / 2.8,
+                                  type: "Button",
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            OverlayPortal(
+                              controller: _dateController,
+                              overlayChildBuilder: (BuildContext context) {
+                                return Positioned(
+                                  top: 60,
+                                  left: 26,
+                                  child: Container(
+                                    width: 360,
+                                    height: 730,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff85E8FE),
+                                      borderRadius:
+                                          BorderRadiusDirectional.circular(
+                                              10.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 4,
+                                          spreadRadius: 2,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 0,
+                                        horizontal: 10.0,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          TableCalendar(
+                                            firstDay: DateTime.utc(1930, 1, 1),
+                                            lastDay: DateTime.utc(2119, 12, 31),
+                                            focusedDay: _focusedDay,
+                                            calendarFormat: _calendarFormat,
+                                            selectedDayPredicate: (day) {
+                                              // Use `selectedDayPredicate` to determine which day is currently selected.
+                                              // If this returns true, then `day` will be marked as selected.
+
+                                              // Using `isSameDay` is recommended to disregard
+                                              // the time-part of compared DateTime objects.
+                                              return isSameDay(
+                                                  _selectedDay, day);
+                                            },
+                                            onDaySelected:
+                                                (selectedDay, focusedDay) {
+                                              if (!isSameDay(
+                                                  _selectedDay, selectedDay)) {
+                                                // Call `setState()` when updating the selected day
+                                                setState(() {
+                                                  _selectedDay = selectedDay;
+                                                  _focusedDay = focusedDay;
+                                                });
+                                              }
+                                            },
+                                            onFormatChanged: (format) {
+                                              if (_calendarFormat != format) {
+                                                // Call `setState()` when updating calendar format
+                                                setState(() {
+                                                  _calendarFormat = format;
+                                                });
+                                              }
+                                            },
+                                            onPageChanged: (focusedDay) {
+                                              // No need to call `setState()` here
+                                              _focusedDay = focusedDay;
+                                            },
+                                            headerStyle: HeaderStyle(
+                                              titleCentered: true,
+                                              formatButtonVisible: false,
+                                              leftChevronIcon: Icon(
+                                                Icons.arrow_left_outlined,
+                                                size: 60,
+                                                color: orangeColor,
+                                              ),
+                                              rightChevronIcon: Icon(
+                                                Icons.arrow_right_outlined,
+                                                size: 60,
+                                                color: orangeColor,
+                                              ),
+                                              titleTextStyle: TextStyle(
+                                                color: orangeColor,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            calendarStyle: CalendarStyle(
+                                              defaultTextStyle: TextStyle(
+                                                fontSize: 18,
+                                              ),
+                                              weekendTextStyle: TextStyle(
+                                                color: Color(0xffFF1F1F),
+                                                fontSize: 18,
+                                              ),
+                                              selectedTextStyle: TextStyle(
+                                                color: Color(0xffFFFFFF),
+                                                fontSize: 18,
+                                              ),
+                                              outsideTextStyle: TextStyle(
+                                                color: Colors.black
+                                                    .withOpacity(0.3),
+                                                fontSize: 18,
+                                              ),
+                                              isTodayHighlighted: false,
+                                            ),
+                                            weekendDays: [DateTime.sunday],
+                                            daysOfWeekStyle:
+                                                const DaysOfWeekStyle(
+                                              weekdayStyle: TextStyle(
+                                                fontSize: 16,
+                                              ),
+                                              weekendStyle: TextStyle(
+                                                fontSize: 16,
+                                                color: Color(0xffFF1F1F),
+                                              ),
+                                            ),
+                                          ),
+                                          Wrap(
+                                            alignment: WrapAlignment.center,
+                                            spacing: 3.0,
+                                            runSpacing: 10.0,
                                             children: [
-                                              Text(
-                                                "${value.ceil().toInt()}",
-                                                style: const TextStyle(
-                                                  color: Color(0xffFE2E00),
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _checkDeadlineButton(0);
+                                                },
+                                                child: BubbleButton(
+                                                  color: deadlineColor[0][0],
+                                                  secondaryColor:
+                                                      deadlineColor[0][2] ??
+                                                          null,
+                                                  label: 'No Date',
+                                                  length: 110,
+                                                  textColor: deadlineColor[0]
+                                                      [1],
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      22, 8, 10, 8),
+                                                  type: 'Button',
                                                 ),
                                               ),
-                                              const Text(
-                                                " Minutes",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 24,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _checkDeadlineButton(1);
+                                                },
+                                                child: BubbleButton(
+                                                  color: deadlineColor[1][0],
+                                                  secondaryColor:
+                                                      deadlineColor[1][2] ??
+                                                          null,
+                                                  label: 'Today',
+                                                  length: 90,
+                                                  textColor: deadlineColor[1]
+                                                      [1],
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      22, 8, 10, 8),
+                                                  type: 'Button',
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _checkDeadlineButton(2);
+                                                },
+                                                child: BubbleButton(
+                                                  color: deadlineColor[2][0],
+                                                  secondaryColor:
+                                                      deadlineColor[2][2] ??
+                                                          null,
+                                                  label: 'Tomorrow',
+                                                  length: 120,
+                                                  textColor: deadlineColor[2]
+                                                      [1],
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      22, 8, 10, 8),
+                                                  type: 'Button',
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _checkDeadlineButton(3);
+                                                },
+                                                child: BubbleButton(
+                                                  color: deadlineColor[3][0],
+                                                  secondaryColor:
+                                                      deadlineColor[3][2] ??
+                                                          null,
+                                                  label: '3 Days Later',
+                                                  length: 140,
+                                                  textColor: deadlineColor[3]
+                                                      [1],
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      22, 8, 10, 8),
+                                                  type: 'Button',
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _checkDeadlineButton(4);
+                                                },
+                                                child: BubbleButton(
+                                                  color: deadlineColor[4][0],
+                                                  secondaryColor:
+                                                      deadlineColor[4][2] ??
+                                                          null,
+                                                  label: 'This Sunday',
+                                                  length: 140,
+                                                  textColor: deadlineColor[4]
+                                                      [1],
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      22, 8, 10, 8),
+                                                  type: 'Button',
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 25),
-                                          GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  Navigator.of(context)
-                                                      .pushReplacement(
-                                                    MaterialPageRoute(
-                                                      builder: (BuildContext
-                                                              context) =>
-                                                          const HomePage(),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 15.0,
+                                              vertical: 0.0,
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                OverlayPortal(
+                                                  controller: _timeController,
+                                                  overlayChildBuilder:
+                                                      (BuildContext context) {
+                                                    return Positioned(
+                                                      top: 230,
+                                                      left: 80,
+                                                      child: Container(
+                                                        width: 250,
+                                                        height: 330,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: const Color(
+                                                              0xff85E8FE),
+                                                          borderRadius:
+                                                              BorderRadiusDirectional
+                                                                  .circular(
+                                                                      10.0),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: Colors
+                                                                  .black
+                                                                  .withOpacity(
+                                                                      0.3),
+                                                              blurRadius: 4,
+                                                              spreadRadius: 2,
+                                                              offset:
+                                                                  const Offset(
+                                                                      0, 3),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            vertical: 15.0,
+                                                            horizontal: 15.0,
+                                                          ),
+                                                          child: Column(
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      _timeController
+                                                                          .hide();
+                                                                    },
+                                                                    child:
+                                                                        const Icon(
+                                                                      Icons
+                                                                          .close,
+                                                                      size: 30,
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      'Time',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            20,
+                                                                        color:
+                                                                            orangeColor,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 20,
+                                                              ),
+                                                              TimePickerSpinner(
+                                                                is24HourMode:
+                                                                    true,
+                                                                isForce2Digits:
+                                                                    true,
+                                                                normalTextStyle:
+                                                                    TextStyle(
+                                                                  fontSize: 24,
+                                                                  color: orangeColor
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                ),
+                                                                highlightedTextStyle:
+                                                                    TextStyle(
+                                                                  fontSize: 24,
+                                                                  color:
+                                                                      orangeColor,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 10,
+                                                              ),
+                                                              GestureDetector(
+                                                                onTap: () {},
+                                                                child:
+                                                                    BubbleButton(
+                                                                  color: const Color(
+                                                                      0xffFF7E4C),
+                                                                  secondaryColor:
+                                                                      orangeColor,
+                                                                  label: 'Set',
+                                                                  length: 80,
+                                                                  textColor:
+                                                                      Colors
+                                                                          .white,
+                                                                  padding: EdgeInsets
+                                                                      .fromLTRB(
+                                                                          23,
+                                                                          8,
+                                                                          5,
+                                                                          8),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      _timeController.show();
+                                                    },
+                                                    child: Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 10.0,
+                                                        vertical: 20.0,
+                                                      ),
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                        border:
+                                                            BorderDirectional(
+                                                          bottom: BorderSide(
+                                                            width: 1.0,
+                                                            color: Color(
+                                                                0xff808080),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .access_time_rounded,
+                                                            color: orangeColor,
+                                                            size: 30,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 20,
+                                                          ),
+                                                          Text(
+                                                            'Time',
+                                                            style: TextStyle(
+                                                              color: orangeColor
+                                                                  .withOpacity(
+                                                                      0.75),
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                          Expanded(
+                                                            child: Align(
+                                                              alignment: Alignment
+                                                                  .centerRight,
+                                                              child: Text(
+                                                                'No',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: orangeColor
+                                                                      .withOpacity(
+                                                                          0.75),
+                                                                  fontSize: 16,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  );
-                                                });
-                                              },
-                                              child:
-                                                  MainButton(label: "Confirm")),
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 10.0,
+                                                      vertical: 20.0,
+                                                    ),
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      border: BorderDirectional(
+                                                        bottom: BorderSide(
+                                                          width: 1.0,
+                                                          color:
+                                                              Color(0xff808080),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .notifications_outlined,
+                                                          color: orangeColor,
+                                                          size: 30,
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 20,
+                                                        ),
+                                                        Text(
+                                                          'Reminder',
+                                                          style: TextStyle(
+                                                            color: orangeColor
+                                                                .withOpacity(
+                                                                    0.75),
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              275,
+                                                        ),
+                                                        Expanded(
+                                                          child: Align(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: Text(
+                                                              'No',
+                                                              style: TextStyle(
+                                                                color: orangeColor
+                                                                    .withOpacity(
+                                                                        0.75),
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 35,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _dateController.hide();
+                                                  _isFocusAddEditTask = false;
+                                                },
+                                                child: Text(
+                                                  'Cancel',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    color:
+                                                        const Color(0xff2F86C5)
+                                                            .withOpacity(0.5),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 25,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: BubbleButton(
+                                                  color: Color(0xffFF7E4C),
+                                                  secondaryColor: orangeColor,
+                                                  label: 'Done',
+                                                  length: 90,
+                                                  textColor: Colors.white,
+                                                  padding:
+                                                      const EdgeInsets.fromLTRB(
+                                                          20, 10, 10, 10),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     ),
                                   ),
-                                ],
+                                );
+                              },
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (!_isFocusAddEditTask) {
+                                    _dateController.toggle();
+                                    _isFocusAddEditTask = true;
+                                  }
+                                },
+                                child: BubbleButton(
+                                  icon: Icons.date_range_outlined,
+                                  color: Colors.white.withOpacity(0.3),
+                                  textColor: orangeColor.withOpacity(0.75),
+                                  label:
+                                      isEdit == true ? '27/05/2024' : 'No Date',
+                                  length:
+                                      MediaQuery.of(context).size.width / 2.4,
+                                  type: "Button",
+                                ),
                               ),
                             ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(
+                                  () {
+                                    isVisibleAddEdit = false;
+                                    isEdit = false;
+                                    _taskController.text = '';
+                                  },
+                                );
+                              },
+                              child: const Image(
+                                  image:
+                                      AssetImage('assets/submit-button.png')),
+                            )
                           ],
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: Visibility(
-              visible: isVisibleAddEdit,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: blueColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 25.0,
-                    horizontal: 15.0,
-                  ),
-                  child: Column(
-                    children: [
-                      BubbleButton(
-                        color: blueColor,
-                        textColor: orangeColor.withOpacity(0.75),
-                        label: 'Input new task here...',
-                        length: MediaQuery.of(context).size.width - 40,
-                        controller: _taskController,
-                        type: 'TextField',
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
-                          OverlayPortal(
-                            controller: _categoryController,
-                            overlayChildBuilder: (BuildContext context) {
-                              return Positioned(
-                                left: 15,
-                                bottom: 115,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(0xff70C3FE),
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
-                                        blurRadius: 5,
-                                        spreadRadius: 3,
-                                      ),
-                                    ],
-                                  ),
-                                  height: 240,
-                                  width: 175,
-                                  child: ListView.separated(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                      horizontal: 22,
-                                    ),
-                                    itemCount: categories.length,
-                                    separatorBuilder:
-                                        (BuildContext context, int index) =>
-                                            const Divider(
-                                      color: Color(0xff808080),
-                                      thickness: 2,
-                                    ),
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Container(
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 5, 0, 5),
-                                        child: Text(
-                                          categories[index],
-                                          style: TextStyle(
-                                            color:
-                                                orangeColor.withOpacity(0.75),
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                _categoryController.toggle();
-                              },
-                              child: BubbleButton(
-                                color: blueColor,
-                                textColor: orangeColor.withOpacity(0.75),
-                                label: 'No Category',
-                                length: MediaQuery.of(context).size.width / 2.8,
-                                type: "Button",
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          BubbleButton(
-                            icon: Icons.date_range_outlined,
-                            color: blueColor,
-                            textColor: orangeColor.withOpacity(0.75),
-                            label: '27/05/2024',
-                            length: MediaQuery.of(context).size.width / 2.4,
-                            type: "Button",
-                          ),
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              print('clicked');
-                            },
-                            child: Image(
-                                image: AssetImage('assets/submit-button.png')),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
