@@ -53,7 +53,7 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(
                   height: 45,
                 ),
-                GestureDetector(
+                MainButton(
                   onTap: () {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
@@ -61,9 +61,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     );
                   },
-                  child: MainButton(
-                    label: "Log In",
-                  ),
+                  label: "Log In",
                 ),
                 const SizedBox(
                   height: 25,

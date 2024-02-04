@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
-import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/pages/aquarium_page.dart';
-import 'package:aquaria/pages/login_page.dart';
+import 'package:aquaria/pages/settings_page.dart';
+import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,8 +49,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late final AnimationController _alignmentController;
   late final Animation<Offset> _offsetAnimation;
 
-  // get timerColor => Colors.white;
-  // get todoColor => Colors.black.withOpacity(0.3);
   Color timerColor = Colors.white;
   Color todoColor = Colors.black.withOpacity(0.3);
 
@@ -82,6 +80,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   StateMachineController? stateMachineController;
 
   late RiveAnimationController _controller;
+  int? durationTime = 5;
+
+  DateTime? _selectedDay;
+  DateTime _focusedDay = DateTime.now();
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  bool _isFocusAddEditTask = false;
+  bool isVisibleAddEdit = false;
+  bool isEdit = false;
+  late String taskName;
+  String categoryTask = 'No Category';
+
+  var deadlineColor = List<List>.generate(
+      5,
+      (i) => [
+            Colors.white.withOpacity(0.3),
+            Color(0xffFE4600).withOpacity(0.75),
+            null
+          ],
+      growable: true);
 
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
@@ -347,7 +364,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         onTap: () {
                                           // Duration timerDuration =
                                           //     Duration(minutes: value.ceil().toInt());
-                                          // print(timerDuration.inMinutes);
+                                          print(timerDuration.inMinutes);
+
+                                          durationTime =
+                                              timerDuration.inMinutes;
+                                          if (durationTime == 0) {
+                                            durationTime = 5;
+                                          }
 
                                           setState(() {
                                             opacityLevel = 0;
@@ -362,6 +385,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               const Duration(seconds: 1),
                                               (timer) {
                                             if (mounted) {
+                                              // print(value.toInt().ceil());
                                               setState(() {
                                                 seconds =
                                                     timerDuration.inSeconds - 1;
@@ -1118,21 +1142,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                               ],
                                             ),
                                             const SizedBox(height: 25),
-                                            GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    Navigator.of(context)
-                                                        .pushReplacement(
-                                                      MaterialPageRoute(
+                                            MainButton(
+                                              onTap: () {
+                                                setState(() {
+                                                  Navigator.of(context)
+                                                      .pushReplacement(
+                                                    MaterialPageRoute(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            const HomePage(),
-                                                      ),
-                                                    );
-                                                  });
-                                                },
-                                                child: MainButton(
-                                                    label: "Confirm")),
+                                                            const HomePage()),
+                                                  );
+                                                });
+                                              },
+                                              label: "Confirm",
+                                            ),
                                           ],
                                         ),
                                       ),

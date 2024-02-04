@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class MainButton extends StatelessWidget {
   String label;
+  VoidCallback onTap;
 
   MainButton({
     super.key,
+    required this.onTap,
     required this.label,
   });
 
@@ -19,17 +21,20 @@ class MainButton extends StatelessWidget {
     //   ),
     //   child: const Text("Log In"),
     // );
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        const Image(
-          image: AssetImage("assets/main-button.png"),
-        ),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-        ),
-      ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          const Image(
+            image: AssetImage("assets/main-button.png"),
+          ),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          ),
+        ],
+      ),
     );
   }
 }

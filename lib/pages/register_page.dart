@@ -9,15 +9,13 @@ class RegisterPage extends StatelessWidget {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff00B4ED),
-      // appBar: AppBar(
-      //   title: const Text("Login Page"),
-      // ),
       body: GestureDetector(
         onTap: () {
           FocusScopeNode currentNode = FocusScope.of(context);
@@ -71,7 +69,7 @@ class RegisterPage extends StatelessWidget {
                 const SizedBox(
                   height: 45,
                 ),
-                GestureDetector(
+                MainButton(
                   onTap: () {
                     //   final username = _usernameController.text;
                     //   final email = _emailController.text;
@@ -84,9 +82,7 @@ class RegisterPage extends StatelessWidget {
                       ),
                     );
                   },
-                  child: MainButton(
-                    label: "Sign Up",
-                  ),
+                  label: "Sign Up",
                 ),
                 const SizedBox(
                   height: 25,
