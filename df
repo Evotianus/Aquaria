@@ -1,0 +1,149 @@
+[33mcommit 3338f6a7525880ea31f3e7b374cec68b19901051[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 14:39:43 2024 +0700
+
+    asd2
+
+[33mcommit 68ece0d888fe33ce4308d8a5dcaeff773a0632b1[m
+Merge: c8fe72e 6561a81
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 14:38:16 2024 +0700
+
+    Merge branch 'alt-master'
+
+[33mcommit 6561a8118ec0b6756f102a88c4fb0896779d9d80[m[33m ([m[1;31morigin/alt-master[m[33m, [m[1;32malt-master[m[33m)[m
+Merge: 2674606 b957afe
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 14:29:48 2024 +0700
+
+    Merge branch 'master' of https://github.com/Evotianus/Aquaria into alt-master
+
+[33mcommit c8fe72eb8e7f2e4e56a5c91e976ffa69ed14cad2[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 13:42:28 2024 +0700
+
+    asd
+
+[33mcommit 857770b3dc382bde4fb3504109eecb2a8e6d25ff[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 12:59:33 2024 +0700
+
+    Revert "Add & Edit Task Still Error in Date Time"
+    
+    This reverts commit 26746068599c98dd938b60e9ef82b7d987d6c77f.
+
+[33mcommit 94aaa602dcbf2cc65ff3da8336652344959f859c[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 12:58:19 2024 +0700
+
+    Revert "Add & Edit Task Still Error in Date Time"
+    
+    This reverts commit 26746068599c98dd938b60e9ef82b7d987d6c77f.
+
+[33mcommit 2dc72cb50faaa8d472d0997303e3f60592c646b3[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 12:57:23 2024 +0700
+
+    Revert "Add & Edit Task Still Error in Date Time"
+    
+    This reverts commit 26746068599c98dd938b60e9ef82b7d987d6c77f.
+
+[33mcommit 511592d11142319da87d215da5f9d281f5e034b3[m
+Merge: 2674606 b957afe
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 12:39:38 2024 +0700
+
+    Merge branch 'master' of https://github.com/Evotianus/Aquaria
+
+[33mcommit 26746068599c98dd938b60e9ef82b7d987d6c77f[m[33m ([m[1;32mtmp[m[33m)[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Sun Feb 4 12:26:47 2024 +0700
+
+    Add & Edit Task Still Error in Date Time
+
+[33mcommit b957afe4af83af754d514c63ef8638f322ae2371[m
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Fri Feb 2 21:11:27 2024 +0700
+
+    Merging conflict
+
+[33mcommit bff5ce517bc049282da61c1b21a5f497ad66b7df[m
+Merge: 74597a9 9cba753
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Fri Feb 2 21:11:09 2024 +0700
+
+    Merge branch 'master' of https://github.com/Evotianus/Aquaria
+
+[33mcommit 74597a9996855379a25dd7f1dbcf541c146f440a[m
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Fri Feb 2 21:05:18 2024 +0700
+
+    Main Button onTap Simplified
+
+[33mcommit 9cba753938fc984fb9608553be8b5e0631535bd4[m
+Merge: 8909e97 45f86b9
+Author: Evo <84347836+Evotianus@users.noreply.github.com>
+Date:   Fri Feb 2 11:19:48 2024 +0700
+
+    Merge pull request #2 from Tasiaaaaa/master
+    
+    Clearing Code (Comments)
+
+[33mcommit 45f86b9831f85c998a2ebe0cbbf46bf704292095[m
+Author: Tasiaaaaa <anastasiam4002@gmail.com>
+Date:   Fri Feb 2 11:16:45 2024 +0700
+
+    Clearing Code (Comments)
+
+[33mcommit 8909e97e78dfbb387b035b8891b88a2025fa1916[m
+Merge: 29dd4b0 ffb2f44
+Author: Evo <84347836+Evotianus@users.noreply.github.com>
+Date:   Mon Jan 29 07:16:19 2024 +0700
+
+    Merge pull request #1 from fredysunjaya2/master
+    
+    update (Settings, add To-do)
+
+[33mcommit ffb2f44b4a3535d73cef5c5709a51b3db0b8e2dc[m
+Merge: e1a3a38 29dd4b0
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Mon Jan 29 07:12:24 2024 +0700
+
+    Merge branch 'master' of https://github.com/Evotianus/Aquaria
+
+[33mcommit e1a3a3805472584bd1d6e3af96aaa2c5597d0b81[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Mon Jan 29 06:54:54 2024 +0700
+
+    settings, terms of use, privacy policy, add task
+
+[33mcommit 29dd4b023922b5d13aefd78f82070f2f3bacc1ce[m
+Merge: 0efa963 1b1eb7e
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Sat Jan 27 13:25:31 2024 +0700
+
+    Merge branch 'master' of https://github.com/Evotianus/Aquaria
+
+[33mcommit 0efa963e55bf12d984f89fe85c67069ce5656d4f[m
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Sat Jan 27 13:25:20 2024 +0700
+
+    Homepage - Finished Fishing Popup
+
+[33mcommit 67bf8d81d73d24f10812d8a3270c0c5c4b6a6764[m
+Author: sterben404 <fredy.sunjaya@binus.ac.id>
+Date:   Wed Jan 24 01:07:21 2024 +0700
+
+    updated
+
+[33mcommit 1b1eb7e02162a1a10fb697ccbf9e474a44a13253[m
+Author: Evo <84347836+Evotianus@users.noreply.github.com>
+Date:   Tue Jan 23 08:49:12 2024 +0700
+
+    Update README.md
+
+[33mcommit 0014ad57e2c55a097664f2a5c85432e255a63391[m
+Author: Evotianus <evotianus0110@gmail.com>
+Date:   Tue Jan 23 08:47:17 2024 +0700
+
+    First Commit
