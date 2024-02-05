@@ -27,3 +27,7 @@ Future<dynamic> loginUser(username, password) async {
 
   return 400;
 }
+
+Future<int> timerFinished() async {
+  return 400;
+}
