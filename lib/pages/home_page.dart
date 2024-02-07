@@ -3,7 +3,12 @@ import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/pages/about_us_page.dart';
+<<<<<<< HEAD
+=======
+import 'package:aquaria/functions/functions.dart';
+>>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
 import 'package:aquaria/pages/aquarium_page.dart';
+import 'package:aquaria/pages/fish_collection_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
@@ -396,6 +401,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                       1,
                                                       'Casted!',
                                                       'Timer has been started, good luck on your study!');
+
+                                                  print(
+                                                      timerDuration.inMinutes);
+
+                                                  timerFinished();
                                                 } else {
                                                   timerDuration = Duration(
                                                       seconds: seconds);
@@ -551,75 +561,70 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         isEdit = true;
                                       });
                                     },
-                                    child: Flexible(
-                                      child: Opacity(
-                                        opacity: (isChecked[0] == 0 ? 1 : 0.7),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Software Engineer Project",
-                                              style: TextStyle(
-                                                overflow: TextOverflow.ellipsis,
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                decoration: (isChecked[0] == 0
-                                                    ? TextDecoration.none
-                                                    : TextDecoration
-                                                        .lineThrough),
-                                                decorationThickness: 2,
-                                              ),
+                                    child: Opacity(
+                                      opacity: (isChecked[0] == 0 ? 1 : 0.7),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Software Engineer Project",
+                                            style: TextStyle(
+                                              overflow: TextOverflow.ellipsis,
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              decoration: (isChecked[0] == 0
+                                                  ? TextDecoration.none
+                                                  : TextDecoration.lineThrough),
+                                              decorationThickness: 2,
                                             ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  height: 20,
-                                                  width: 90,
-                                                  alignment: Alignment.center,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    color: Color(0xffFF1F1F),
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                      Radius.circular(50),
-                                                    ),
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: 20,
+                                                width: 90,
+                                                alignment: Alignment.center,
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xffFF1F1F),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(50),
                                                   ),
-                                                  child: const Text("Important",
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14)),
                                                 ),
-                                                const SizedBox(
-                                                  width: 15,
-                                                ),
-                                                const Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .access_time_outlined,
-                                                      color: Colors.white,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 5,
-                                                    ),
-                                                    Text(
-                                                      "January 1st",
-                                                      style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
+                                                child: const Text("Important",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14)),
+                                              ),
+                                              const SizedBox(
+                                                width: 15,
+                                              ),
+                                              const Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.access_time_outlined,
+                                                    color: Colors.white,
+                                                  ),
+                                                  SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    "January 1st",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -909,7 +914,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const AquariumPage(),
+                                          const CollectionPage(),
                                     ),
                                   );
                                 },
@@ -1067,12 +1072,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             children: [
                               Opacity(
                                 opacity: 0.4,
-                                child: Expanded(
-                                  child: Container(
-                                    height: screenHeight,
-                                    width: screenWidth,
-                                    color: const Color(0xff000000),
-                                  ),
+                                child: Container(
+                                  height: screenHeight,
+                                  width: screenWidth,
+                                  color: const Color(0xff000000),
                                 ),
                               ),
                               SvgPicture.asset(

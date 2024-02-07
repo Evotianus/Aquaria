@@ -90,8 +90,8 @@ flutter:
     - assets/fish.riv
     - assets/fish-caught.svg
     - assets/fish-tank.svg
-    # - assets/fish-coll.svg
-    # - assets/page.svg
+    - assets/fish-coll.svg
+    - assets/page.svg
     - assets/evo.png
     - assets/cath.png
     - assets/didi.png
