@@ -3,7 +3,9 @@ import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/functions/functions.dart';
+import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/pages/aquarium_page.dart';
+import 'package:aquaria/pages/fish_collection_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
@@ -909,7 +911,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const AquariumPage(),
+                                          const CollectionPage(),
                                     ),
                                   );
                                 },
@@ -969,7 +971,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const AquariumPage(),
+                                          const AboutUsPage(),
                                     ),
                                   );
                                 },
