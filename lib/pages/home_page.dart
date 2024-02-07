@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
+import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/pages/aquarium_page.dart';

@@ -92,6 +92,15 @@ flutter:
     - assets/fish-tank.svg
     - assets/fish-coll.svg
     - assets/page.svg
+<<<<<<< HEAD
+=======
+    - assets/evo.png
+    - assets/cath.png
+    - assets/didi.png
+    - assets/peter.png
+    - assets/tasia.png
+    - assets/dosen.png
+>>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
