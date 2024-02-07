@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
-<<<<<<< HEAD
 import 'package:aquaria/pages/about_us_page.dart';
-=======
 import 'package:aquaria/functions/functions.dart';
->>>>>>> 981a5a09fab5c98aefec025edda55610e69c6b8f
 import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/fish_collection_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
