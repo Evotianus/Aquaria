@@ -1,30 +1,12 @@
 import 'package:aquaria/pages/home_page.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-=======
 import 'package:flutter_svg/flutter_svg.dart';
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
 
 class AboutUsPage extends StatelessWidget
 {
   const AboutUsPage({super.key});
 
   @override
-<<<<<<< HEAD
-  Widget build(BuildContext context)
-  {
-    return Scaffold
-    (
-      appBar: AppBar(
-        backgroundColor: const Color(0xff007D0FC),
-        leading: GestureDetector(
-          onTap: ()
-          {
-            Navigator.of(context).pushReplacement
-            (
-              MaterialPageRoute
-              (
-=======
   Widget build(BuildContext context){
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
@@ -38,7 +20,6 @@ class AboutUsPage extends StatelessWidget
           onTap: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                 builder: (BuildContext context) => const HomePage()
               ),
             );
@@ -49,56 +30,6 @@ class AboutUsPage extends StatelessWidget
         centerTitle: true,
       ),
 
-<<<<<<< HEAD
-      body: SingleChildScrollView
-      (  
-        child: Column
-        (
-          children:
-          [
-            Padding
-            (
-              padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-              child: Container
-              (
-                decoration: BoxDecoration(color: Color(0xffEEEEEE), borderRadius: BorderRadius.circular(15)),
-                width: 450, height: 500,
-
-                child: Center(child: Text("About Us", style: TextStyle(fontSize: 25, height: 5),))
-              ),
-            ),
-
-            Padding
-            (
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-              child: Container
-              (
-                decoration: BoxDecoration(color: Color(0xffEEEEEE), borderRadius: BorderRadius.circular(15)),
-                width: 450, height: 500,
-              ),
-            ),
-
-            Padding
-            (
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-              child: Container
-              (
-                decoration: BoxDecoration(color: Color(0xffEEEEEE), borderRadius: BorderRadius.circular(15)),
-                width: 450, height: 500,
-              ),
-            ),
-
-            Padding
-            (
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 15),
-              child: Container
-              (
-                decoration: BoxDecoration(color: Color(0xffEEEEEE), borderRadius: BorderRadius.circular(15)),
-                width: 450, height: 500,
-              ),
-            ),
-
-=======
       body: SingleChildScrollView(  
         child: Column(
           children:[
@@ -541,7 +472,6 @@ class AboutUsPage extends StatelessWidget
                 ),
               ),
             ),
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
           ],
         ),
       )
