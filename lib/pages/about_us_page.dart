@@ -136,11 +136,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "The Legendary Weeb who has reached the peak of wisdom in the world of weeb. He has the ability to sleep for 25 hours, which increases his life expectancy. The others also call him 'Sepuh Weeboo'. He love Hatsune Miku.",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,
@@ -201,11 +197,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "Just an ordinary person who studies diligently and loves cleanliness. A short girl who likes coding.",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,
@@ -266,11 +258,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "The Runner that never give up on do the best for his life. Good people who sharing his love and care with other. He a chinese.",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,
@@ -331,11 +319,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "Best world assets that always help other peoples and do his best for future world, he love do works charity and do caring with his own way. He fight the villian with his genius talent and brain for other sake. His favourrite food is Indomie and Milk for its drink.",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,
@@ -396,11 +380,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "A good mother who love her child and the best mother figure for other moms. She love cooking and always do his best for cooking indomie for her best son and world assets child. Oh dont forget she an Asian Mother too.",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,
@@ -478,11 +458,7 @@ class AboutUsPage extends StatelessWidget
                           ),
                           const SizedBox(height: 25),
                           const Text(
-<<<<<<< HEAD
                             "Just Dosen",
-=======
-                            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit, sunt culpa. Fuga accusantium consequuntur cumque magnam quam excepturi quia explicabo itaque, dolorum porro aliquam odit obcaecati temporibus totam. Officia asperiores sit esse corporis magni atque dignissimos numquam provident obcaecati mollitia. Illum exercitationem itaque perferendis nihil, facilis nostrum cupiditate culpa doloremque.",
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.white,

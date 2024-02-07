@@ -3,10 +3,7 @@ import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/pages/about_us_page.dart';
-<<<<<<< HEAD
-=======
 import 'package:aquaria/functions/functions.dart';
->>>>>>> b2f8be590a52d85950e0068bec96f11d41a0c50c
 import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/fish_collection_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
