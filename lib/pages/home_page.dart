@@ -394,13 +394,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                   triggerNotification(
                                                       1,
-                                                      'Casted!',
-                                                      'Timer has been started, good luck on your study!');
+                                                      'Strike!',
+                                                      'Your timer has ended, you got a fish!');
 
                                                   print(
-                                                      timerDuration.inMinutes);
+                                                      "test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
 
-                                                  timerFinished();
+                                                  int totalMinutes =
+                                                      value.toInt().ceil();
+
+                                                  timerFinished(totalMinutes);
                                                 } else {
                                                   timerDuration = Duration(
                                                       seconds: seconds);
