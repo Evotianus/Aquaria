@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:aquaria/classes/timer.dart';
+import 'package:aquaria/classes/fish.dart';
 import 'package:aquaria/classes/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,7 +41,7 @@ Future<User?> verifyUser(user) async {
   return null;
 }
 
-Future<Timer?> createTimer(timer) async {
+Future<Fish?> createTimer(timer) async {
   final response = await http.post(
     Uri.parse("$uri/create-timer"),
     headers: <String, String>{
@@ -54,7 +54,7 @@ Future<Timer?> createTimer(timer) async {
   print(jsonEncode(timer));
 
   if (response.statusCode == 200) {
-    return Timer.fromJson(jsonDecode(response.body));
+    return Fish.fromJson(jsonDecode(response.body));
   }
 
   return null;
