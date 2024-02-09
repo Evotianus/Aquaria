@@ -1,3 +1,4 @@
+import 'package:aquaria/classes/fish.dart';
 import 'package:aquaria/classes/timer.dart';
 import 'package:aquaria/classes/user.dart';
 import 'package:aquaria/services/http_service.dart';
@@ -42,4 +43,9 @@ Future<dynamic> timerFinished(minutes) async {
   }
 
   return 400;
+}
+
+Future<dynamic> fishcollection(name,description,image) async{
+  Fish fish = Fish(null, name, description, image);
+
 }
