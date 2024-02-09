@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:aquaria/features/utils.dart';
-import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/fish_collection_page.dart';
+import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
@@ -398,13 +398,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   triggerNotification(
                                                       1,
                                                       'Strike!',
-                                                      'Your timer has ended, you got a fish!');
+                                                      'Your timer has ended, you caught a fish!');
 
                                                   print(
                                                       "test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
 
                                                   int totalMinutes =
-                                                      value.toInt().ceil();
+                                                      value.toInt().ceil() == 0
+                                                          ? 5
+                                                          : value
+                                                              .toInt()
+                                                              .ceil();
 
                                                   timerFinished(totalMinutes);
                                                 } else {
@@ -1033,7 +1037,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                       builder: (BuildContext context) =>
-                                          const SettingsPage(),
+                                          LoginPage(),
                                     ),
                                   );
                                 },
@@ -1087,9 +1091,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    SvgPicture.asset(
-                                      'assets/fish-tank.svg',
-                                      width: screenWidth * 0.3,
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        SvgPicture.asset(
+                                          'assets/fish-tank.svg',
+                                          width: screenWidth * 0.3,
+                                        ),
+                                        SvgPicture.asset(
+                                          'assets/fish/stingray.svg',
+                                          width: screenWidth * 0.20,
+                                          alignment: Alignment.center,
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 10),
                                     const Text(
