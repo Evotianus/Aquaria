@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
-
-class Fish{
+class Fish {
   int? id;
   String? name;
   String? description;
@@ -10,21 +8,22 @@ class Fish{
     this.id,
     this.name,
     this.description,
-    this.image
-    );
-  
-  Map<String,dynamic> toJson() => {
-    "id" : id,
-    "name" : name,
-    "description" : description,
-    "image" : image
-  };
+    this.image,
+  );
 
-  factory Fish.fromJson(Map<String, dynamic> json){
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'image': image,
+      };
+
+  factory Fish.fromJson(Map<String, dynamic> json) {
     return Fish(
-      json['id'], 
-      json['name'], 
+      json['id'],
+      json['name'],
       json['description'],
-      json['image']);
+      json['image'],
+    );
   }
 }
