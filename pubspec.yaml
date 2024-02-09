@@ -99,6 +99,7 @@ flutter:
     - assets/peter.png
     - assets/tasia.png
     - assets/dosen.png
+    - assets/fish/stingray.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

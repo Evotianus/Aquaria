@@ -35,8 +35,7 @@ Future<dynamic> loginUser(username, password) async {
 }
 
 Future<dynamic> timerFinished(minutes) async {
-  Timer timer = Timer(null, minutes, 1, null);
-  // Timer timer = Timer(null, minutes, currentUser!.id, null);
+  Timer timer = Timer(null, minutes, currentUser!.id, null);
   dynamic request = await createTimer(timer);
 
   if (request is Timer) {

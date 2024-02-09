@@ -49,11 +49,10 @@ Future<Timer?> createTimer(timer) async {
       "Content-Type": "application/json",
       "Accept": "application/json",
     },
-    body: jsonEncode({
-      "minutes": timer.minutes,
-      "user_id": timer.userId,
-    }),
+    body: jsonEncode(timer),
   );
+
+  print(jsonEncode(timer));
 
   if (response.statusCode == 200) {
     return Timer.fromJson(jsonDecode(response.body));

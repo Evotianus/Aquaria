@@ -1,3 +1,5 @@
+import 'package:aquaria/classes/user.dart';
+import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/register_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';
@@ -46,27 +48,27 @@ class LoginPage extends StatelessWidget {
               MainButton(
                 onTap: () async {
                   // // For deployment purposes
-                  // final username = _usernameController.text;
-                  // final password = _passwordController.text;
+                  final username = _usernameController.text;
+                  final password = _passwordController.text;
 
-                  // final response = await loginUser(username, password);
+                  final response = await loginUser(username, password);
 
-                  // if (response is User) {
-                  //   Navigator.of(context).pushReplacement(
-                  //     MaterialPageRoute(
-                  //       builder: (BuildContext context) => const HomePage(),
-                  //     ),
-                  //   );
-                  // } else {
-                  //   print("Login Failed!");
-                  // }
+                  if (response is User) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => const HomePage(),
+                      ),
+                    );
+                  } else {
+                    print("Login Failed!");
+                  }
 
                   // For development purposes
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const HomePage(),
-                    ),
-                  );
+                  // Navigator.of(context).pushReplacement(
+                  //   MaterialPageRoute(
+                  //     builder: (BuildContext context) => const HomePage(),
+                  //   ),
+                  // );
                 },
                 label: "Log In",
               ),
