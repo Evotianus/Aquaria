@@ -68,7 +68,6 @@ Future<Fish?> getFish(fish) async {
       "Content-Type": "application/json",
       "Accept": "application/json",
     },
-    
   );
 
   if (response.statusCode == 200) {
@@ -78,3 +77,24 @@ Future<Fish?> getFish(fish) async {
   return null;
 }
 
+Future<List<Timer>?> getTimerByUser(userId) async {
+  final response = await http.post(
+    Uri.parse("$uri/get-timer"),
+    headers: <String, String>{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: jsonEncode({"userId": userId}),
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> body = jsonDecode(response.body);
+
+    List<Timer> timerList =
+        body.map((dynamic item) => Timer.fromJson(item)).toList();
+
+    return timerList;
+  }
+
+  return null;
+}

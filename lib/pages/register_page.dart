@@ -1,4 +1,3 @@
-import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';
@@ -65,33 +64,33 @@ class RegisterPage extends StatelessWidget {
               ),
               MainButton(
                 onTap: () async {
-                  // For deployment purposes
-                  final username = _usernameController.text;
-                  final email = _emailController.text;
-                  final password = _passwordController.text;
-                  final confirmPassword = _confirmPasswordController.text;
+                  // // For deployment purposes
+                  // final username = _usernameController.text;
+                  // final email = _emailController.text;
+                  // final password = _passwordController.text;
+                  // final confirmPassword = _confirmPasswordController.text;
 
-                  final response = await registerUser(
-                      username, email, password, confirmPassword);
+                  // final response = await registerUser(
+                  //     username, email, password, confirmPassword);
 
-                  if (response == 200) {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const HomePage(),
-                      ),
-                    );
-                  } else if (response == 400) {
-                    print("Password doesn't match!");
-                  } else {
-                    print("Server trouble!");
-                  }
+                  // if (response == 200) {
+                  //   Navigator.of(context).pushReplacement(
+                  //     MaterialPageRoute(
+                  //       builder: (BuildContext context) => const HomePage(),
+                  //     ),
+                  //   );
+                  // } else if (response == 400) {
+                  //   print("Password doesn't match!");
+                  // } else {
+                  //   print("Server trouble!");
+                  // }
 
-                  // // For development purposes
-                  // Navigator.of(context).pushReplacement(
-                  //   MaterialPageRoute(
-                  //     builder: (BuildContext context) => const HomePage(),
-                  //   ),
-                  // );
+                  // For development purposes
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => const HomePage(),
+                    ),
+                  );
                 },
                 label: "Sign Up",
               ),
