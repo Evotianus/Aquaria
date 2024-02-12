@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:intl/intl.dart';
 import 'package:aquaria/features/utils.dart';
+import 'package:aquaria/classes/task.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/about_us_page.dart';
 import 'package:aquaria/pages/aquarium_page.dart';
@@ -46,19 +48,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   double paddleAngle = 3.1;
 
+  Task? currentTask;
+
   final _pageController = PageController();
+  final _pageDateTimeController = PageController();
 
   late final AnimationController _alignmentController;
   late final Animation<Offset> _offsetAnimation;
+  late final AnimationController _alignmentControllerDateTime;
+  late final Animation<Offset> _offsetAnimationDateTime;
 
   Color timerColor = Colors.white;
   Color todoColor = Colors.black.withOpacity(0.3);
+  Color dateColor = Colors.white;
+  Color timeColor = Colors.black.withOpacity(0.3);
 
   List<String> checkImage = ["unchecked", "checked"];
-  List<int> isChecked = [0, 0];
 
   final PanelController _panelController = PanelController();
-  final TextEditingController _taskController = TextEditingController();
+  final TextEditingController _titleTaskController = TextEditingController();
   final OverlayPortalController _categoryController = OverlayPortalController();
   final OverlayPortalController _dateController = OverlayPortalController();
   final OverlayPortalController _timeController = OverlayPortalController();
@@ -76,6 +84,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final Color blueColor = const Color(0xff00B4ED);
   final Color orangeColor = const Color(0xffFE4600);
   int deadlineCount = -1;
+  int deadlineCount2 = -1;
 
   Artboard? _fishingArtboard;
   SMITrigger? trigger;
@@ -87,24 +96,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   DateTime? _selectedDay;
   DateTime _focusedDay = DateTime.now();
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  bool _isFocusAddEditTask = false;
-  bool isVisibleAddEdit = false;
-  bool isEdit = false;
+  DateTime _focusedTime = DateTime.now();
   late String taskName;
   String categoryTask = 'No Category';
+  DateTime taskDateTime = DateTime.now();
+  bool isNoDate = true;
+  bool isNoTime = true;
 
-  var deadlineColor = List<List>.generate(
-      5,
-      (i) => [
-            Colors.white.withOpacity(0.3),
-            const Color(0xffFE4600).withOpacity(0.75),
-            null
-          ],
-      growable: true);
+  bool _isFocusAddEditTask = false;
+  bool isVisibleAddEdit = false;
+  bool isEditTask = false;
+  bool isTodo = false;
+
+  var deadlineColor = List<List>.generate(5, (i) => [Colors.white.withOpacity(0.3), const Color(0xffFE4600).withOpacity(0.75), null], growable: true);
+  var deadlineColor2 =
+      List<List>.generate(5, (i) => [Colors.white.withOpacity(0.3), const Color(0xffFE4600).withOpacity(0.75), null], growable: true);
+  late Future<List<Task>?> _futureTask;
 
   @override
   void initState() {
     super.initState();
+
+    _futureTask = showAllTask();
 
     _alignmentController = AnimationController(
       vsync: this,
@@ -116,12 +129,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       end: const Offset(1.0, 0.0),
     ).animate(_alignmentController);
 
+    _alignmentControllerDateTime = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _offsetAnimationDateTime = Tween<Offset>(
+      begin: const Offset(-1.0, 0.0),
+      end: const Offset(1.0, 0.0),
+    ).animate(_alignmentControllerDateTime);
+
     rootBundle.load('assets/test-vid.riv').then(
       (data) {
         final file = RiveFile.import(data);
         final artboard = file.mainArtboard;
-        stateMachineController =
-            StateMachineController.fromArtboard(artboard, "State Machine 2");
+        stateMachineController = StateMachineController.fromArtboard(artboard, "State Machine 2");
         if (stateMachineController != null) {
           artboard.addController(stateMachineController!);
           trigger = stateMachineController!.findSMI('Start Animation');
@@ -161,20 +183,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     setState(() {
       if (this.deadlineCount != -1) {
         deadlineColor[this.deadlineCount][0] = Colors.white.withOpacity(0.3);
-        deadlineColor[this.deadlineCount][1] =
-            const Color(0xffFE4600).withOpacity(0.75);
+        deadlineColor[this.deadlineCount][1] = const Color(0xffFE4600).withOpacity(0.75);
         deadlineColor[this.deadlineCount][2] = null;
       }
 
-      print(this.deadlineCount);
+      // print(this.deadlineCount);
+      // print(this.deadlineCount);
       this.deadlineCount = deadlineCount;
-      print(this.deadlineCount);
 
       deadlineColor[this.deadlineCount][0] = const Color(0xffFF7E4C);
       deadlineColor[this.deadlineCount][1] = Colors.white;
       deadlineColor[this.deadlineCount][2] = const Color(0xffFE4600);
 
-      print(deadlineColor);
+      // print(deadlineColor);
+    });
+  }
+
+  void _checkDeadlineButton2(int deadlineCount) {
+    setState(() {
+      if (this.deadlineCount2 != -1) {
+        deadlineColor2[this.deadlineCount2][0] = Colors.white.withOpacity(0.3);
+        deadlineColor2[this.deadlineCount2][1] = const Color(0xffFE4600).withOpacity(0.75);
+        deadlineColor2[this.deadlineCount2][2] = null;
+      }
+
+      // print(this.deadlineCount);
+      this.deadlineCount2 = deadlineCount;
+      // print(this.deadlineCount);
+
+      deadlineColor2[this.deadlineCount2][0] = const Color(0xffFF7E4C);
+      deadlineColor2[this.deadlineCount2][1] = Colors.white;
+      deadlineColor2[this.deadlineCount2][2] = const Color(0xffFE4600);
+
+      // print(deadlineColor2);
     });
   }
 
@@ -185,20 +226,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     double screenHeight = screenSize.height;
     Size canvasSize = Size(screenSize.width, screenSize.width - 35);
     Offset center = canvasSize.center(Offset.zero);
-    Offset knobPos = toPolar(center - Offset(strokeWidth, strokeWidth),
-        currentAngle + startAngle, radius);
+    Offset knobPos = toPolar(center - Offset(strokeWidth, strokeWidth), currentAngle + startAngle, radius);
     Timer? timer;
     int minutes = timerDuration.inMinutes.remainder(125);
     int seconds = timerDuration.inSeconds.remainder(60);
 
     double screenDimValue = 0.5;
-    List<String> categories = <String>[
-      'Critical',
-      'High',
-      'Medium',
-      'Low',
-      'Very Low'
-    ];
+    List<String> categories = <String>['Critical', 'High', 'Medium', 'Low', 'Very Low'];
 
     return Scaffold(
       backgroundColor: blueColor,
@@ -227,9 +261,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       children: [
                         Stack(
                           children: [
-                            _fishingArtboard == null
-                                ? const SizedBox()
-                                : Rive(artboard: _fishingArtboard!),
+                            _fishingArtboard == null ? const SizedBox() : Rive(artboard: _fishingArtboard!),
                             RiveAnimation.asset(
                               'assets/fish.riv',
                               fit: BoxFit.cover,
@@ -245,8 +277,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     top: -50,
                                     child: Text(
                                       "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                                      style: const TextStyle(
-                                          fontSize: 64, color: Colors.white),
+                                      style: const TextStyle(fontSize: 64, color: Colors.white),
                                     ),
                                   ),
                                   Positioned.fill(
@@ -257,8 +288,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         Opacity(
                                           opacity: opacityLevel,
                                           child: const Image(
-                                            image:
-                                                AssetImage("assets/reel.png"),
+                                            image: AssetImage("assets/reel.png"),
                                           ),
                                         ),
                                       ],
@@ -275,8 +305,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           Opacity(
                                             opacity: opacityLevel,
                                             child: const Image(
-                                              image: AssetImage(
-                                                  "assets/paddle.png"),
+                                              image: AssetImage("assets/paddle.png"),
                                             ),
                                           ),
                                         ],
@@ -288,50 +317,29 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     top: knobPos.dy + 30,
                                     child: GestureDetector(
                                       onPanStart: (details) {
-                                        RenderBox getBox = context
-                                            .findRenderObject() as RenderBox;
-                                        _currentDragOffset =
-                                            getBox.globalToLocal(
-                                                    details.globalPosition) +
-                                                const Offset(0, -200);
+                                        RenderBox getBox = context.findRenderObject() as RenderBox;
+                                        _currentDragOffset = getBox.globalToLocal(details.globalPosition) + const Offset(0, -200);
                                       },
                                       onPanUpdate: (details) {
                                         // print(details.globalPosition);
                                         var previousOffset = _currentDragOffset;
                                         _currentDragOffset += details.delta;
-                                        var angle = currentAngle +
-                                            toAngle(
-                                                _currentDragOffset, center) -
-                                            toAngle(previousOffset, center);
+                                        var angle = currentAngle + toAngle(_currentDragOffset, center) - toAngle(previousOffset, center);
                                         currentAngle = normalizeAngle(angle);
-                                        oldValue =
-                                            (currentAngle / (math.pi * 2)) *
-                                                100;
+                                        oldValue = (currentAngle / (math.pi * 2)) * 100;
 
                                         var oldRange = (100 - 0);
                                         var newRange = (120 - 0);
-                                        var newValue =
-                                            (((oldValue - 0) * newRange) /
-                                                    oldRange) +
-                                                0;
+                                        var newValue = (((oldValue - 0) * newRange) / oldRange) + 0;
 
                                         value = 5.0 * ((newValue / 5.0).ceil());
 
                                         setState(() {
-                                          timerDuration = Duration(
-                                              minutes: value.ceil().toInt());
+                                          timerDuration = Duration(minutes: value.ceil().toInt());
                                           // paddleAngle = (currentAngle / (math.pi * 2)) * 100;
-                                          paddleAngle =
-                                              (currentAngle * math.pi / 3 -
-                                                      0.2) +
-                                                  3.1;
-                                          if (currentAngle >=
-                                                  0.0006651366295775674 &&
-                                              3.3 >= currentAngle) {
-                                            paddleAngle =
-                                                (currentAngle * math.pi / 3 -
-                                                        0.2) +
-                                                    3.3;
+                                          paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.1;
+                                          if (currentAngle >= 0.0006651366295775674 && 3.3 >= currentAngle) {
+                                            paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.3;
                                           }
                                           // print(currentAngle);
                                         });
@@ -350,8 +358,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         Opacity(
                                           opacity: opacityLevel,
                                           child: const Image(
-                                            image:
-                                                AssetImage("assets/center.png"),
+                                            image: AssetImage("assets/center.png"),
                                           ),
                                         ),
                                       ],
@@ -367,8 +374,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           //     Duration(minutes: value.ceil().toInt());
                                           print(timerDuration.inMinutes);
 
-                                          durationTime =
-                                              timerDuration.inMinutes;
+                                          durationTime = timerDuration.inMinutes;
                                           if (durationTime == 0) {
                                             durationTime = 5;
                                           }
@@ -382,47 +388,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                           trigger?.fire();
 
-                                          timer = Timer.periodic(
-                                              const Duration(seconds: 1),
-                                              (timer) {
+                                          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
                                             if (mounted) {
                                               // print(value.toInt().ceil());
                                               setState(() {
-                                                seconds =
-                                                    timerDuration.inSeconds - 1;
+                                                seconds = timerDuration.inSeconds - 1;
                                                 if (seconds < 0) {
                                                   timer.cancel();
 
                                                   isFinished = 1;
 
-                                                  triggerNotification(
-                                                      1,
-                                                      'Strike!',
-                                                      'Your timer has ended, you caught a fish!');
+                                                  triggerNotification(1, 'Strike!', 'Your timer has ended, you caught a fish!');
 
-                                                  print(
-                                                      "test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
+                                                  print("test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
 
-                                                  int totalMinutes =
-                                                      value.toInt().ceil() == 0
-                                                          ? 5
-                                                          : value
-                                                              .toInt()
-                                                              .ceil();
+                                                  int totalMinutes = value.toInt().ceil() == 0 ? 5 : value.toInt().ceil();
 
                                                   timerFinished(totalMinutes);
                                                 } else {
-                                                  timerDuration = Duration(
-                                                      seconds: seconds);
+                                                  timerDuration = Duration(seconds: seconds);
                                                 }
 
-                                                if (timerDuration.inSeconds ==
-                                                    8) {
-                                                  stateMachineController!
-                                                      .isActive = false;
+                                                if (timerDuration.inSeconds == 8) {
+                                                  stateMachineController!.isActive = false;
                                                 }
-                                                if (timerDuration.inSeconds ==
-                                                    6) {
+                                                if (timerDuration.inSeconds == 6) {
                                                   _controller.isActive = true;
                                                 }
                                               });
@@ -435,14 +425,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             alignment: Alignment.center,
                                             children: [
                                               Image(
-                                                image: AssetImage(
-                                                    "assets/cast-button.png"),
+                                                image: AssetImage("assets/cast-button.png"),
                                               ),
                                               Text(
                                                 "Cast!",
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.white),
+                                                style: TextStyle(fontSize: 16, color: Colors.white),
                                               ),
                                             ],
                                           ),
@@ -458,12 +445,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         onTap: () {
                                           setState(() {
                                             if (value == 0) {
-                                              timerDuration =
-                                                  const Duration(minutes: 5);
+                                              timerDuration = const Duration(minutes: 5);
                                             } else {
-                                              timerDuration = Duration(
-                                                  minutes:
-                                                      (value).ceil().toInt());
+                                              timerDuration = Duration(minutes: (value).ceil().toInt());
                                             }
 
                                             opacityLevel = 1;
@@ -471,16 +455,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                             isAbsorb = false;
 
-                                            stateMachineController!.isActive =
-                                                false;
+                                            stateMachineController!.isActive = false;
                                             // stateMachineController!.
 
                                             // trigger!.fire();
                                           });
                                           Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  const HomePage(),
+                                              builder: (BuildContext context) => const HomePage(),
                                             ),
                                           );
                                         },
@@ -492,13 +474,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 width: 2,
                                                 color: const Color(0xffFF1F1F),
                                               ),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(50)),
+                                              borderRadius: const BorderRadius.all(Radius.circular(50)),
                                             ),
                                             child: const Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 10, horizontal: 15),
+                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                                               child: Text(
                                                 "Give Up",
                                                 style: TextStyle(
@@ -517,8 +496,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     right: 0,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        timerDuration -=
-                                            const Duration(seconds: 15);
+                                        timerDuration -= const Duration(seconds: 15);
                                       },
                                       child: const Text("Cut"),
                                     ),
@@ -529,207 +507,132 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25),
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 160,
-                              ),
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // int isChecked = 0;
-                                      setState(() {
-                                        if (isChecked[0] == 0) {
-                                          isChecked[0] = 1;
-                                        } else {
-                                          isChecked[0] = 0;
-                                        }
-                                      });
-                                    },
-                                    child: Image(
-                                      image: AssetImage(
-                                          "assets/${checkImage[isChecked[0]]}-bubble.png"),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 15,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        taskName = 'Software Engineer Project';
-                                        categoryTask = 'Critical';
-                                        _taskController.text = taskName;
-                                        isVisibleAddEdit = true;
-                                        isEdit = true;
-                                      });
-                                    },
-                                    child: Opacity(
-                                      opacity: (isChecked[0] == 0 ? 1 : 0.7),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Software Engineer Project",
-                                            style: TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              decoration: (isChecked[0] == 0
-                                                  ? TextDecoration.none
-                                                  : TextDecoration.lineThrough),
-                                              decorationThickness: 2,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
+                          padding: const EdgeInsets.fromLTRB(25, 160, 25, 50),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: [
+                                // const SizedBox(
+                                //   height: 160,
+                                // ),
+                                FutureBuilder(
+                                  future: _futureTask,
+                                  builder: (BuildContext context, AsyncSnapshot<List<Task>?> snapshot) {
+                                    List<Task>? taskList = snapshot.data;
+                                    if (taskList != null) {
+                                      return Wrap(
+                                        direction: Axis.vertical,
+                                        spacing: 10,
+                                        children: taskList.map((Task task) {
+                                          return Row(
                                             children: [
-                                              Container(
-                                                height: 20,
-                                                width: 90,
-                                                alignment: Alignment.center,
-                                                decoration: const BoxDecoration(
-                                                  color: Color(0xffFF1F1F),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(50),
-                                                  ),
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  await checkTask(currentTask);
+                                                  setState(() {
+                                                    if (task.isFinished! == 0) {
+                                                      task.isFinished = 1;
+                                                    } else {
+                                                      task.isFinished = 0;
+                                                    }
+                                                  });
+                                                },
+                                                child: Image(
+                                                  image: AssetImage("assets/${checkImage[task.isFinished!]}-bubble.png"),
                                                 ),
-                                                child: const Text("Important",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14)),
                                               ),
                                               const SizedBox(
                                                 width: 15,
                                               ),
-                                              const Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.access_time_outlined,
-                                                    color: Colors.white,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "January 1st",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 25,
-                              ),
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // int isChecked = 0;
-                                      setState(() {
-                                        if (isChecked[1] == 0) {
-                                          isChecked[1] = 1;
-                                        } else {
-                                          isChecked[1] = 0;
-                                        }
-                                      });
-                                    },
-                                    child: Image(
-                                      image: AssetImage(
-                                          "assets/${checkImage[isChecked[1]]}-bubble.png"),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 15,
-                                  ),
-                                  Flexible(
-                                    child: Opacity(
-                                      opacity: (isChecked[1] == 0 ? 1 : 0.7),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Character Building Mini Article",
-                                            style: TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              decoration: (isChecked[1] == 0
-                                                  ? TextDecoration.none
-                                                  : TextDecoration.lineThrough),
-                                              decorationThickness: 2,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                height: 20,
-                                                width: 90,
-                                                alignment: Alignment.center,
-                                                decoration: const BoxDecoration(
-                                                  color: Color(0xffFF1F1F),
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                    Radius.circular(50),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(
+                                                    () {
+                                                      taskName = task.title!;
+                                                      categoryTask = task.urgency!;
+                                                      taskDateTime = task.due!;
+                                                      _titleTaskController.text = taskName;
+                                                      isVisibleAddEdit = true;
+                                                      isEditTask = true;
+                                                      currentTask = task;
+                                                    },
+                                                  );
+                                                },
+                                                child: Container(
+                                                  child: Opacity(
+                                                    opacity: (task.isFinished! == 0 ? 1 : 0.7),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          task.title!,
+                                                          style: TextStyle(
+                                                            overflow: TextOverflow.ellipsis,
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            decoration: (task.isFinished! == 0 ? TextDecoration.none : TextDecoration.lineThrough),
+                                                            decorationThickness: 2,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            Container(
+                                                              height: 20,
+                                                              width: 90,
+                                                              alignment: Alignment.center,
+                                                              decoration: const BoxDecoration(
+                                                                color: Color(0xffFF1F1F),
+                                                                borderRadius: BorderRadius.all(
+                                                                  Radius.circular(50),
+                                                                ),
+                                                              ),
+                                                              child: Text(task.urgency!, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 15,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.access_time_outlined,
+                                                                  color: Colors.white,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                                Text(
+                                                                  DateFormat('MMM dd, HH:mm').format(task.due!),
+                                                                  style: TextStyle(color: Colors.white, fontSize: 14),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                                child: const Text("Important",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14)),
-                                              ),
-                                              const SizedBox(
-                                                width: 15,
-                                              ),
-                                              const Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.access_time_outlined,
-                                                    color: Colors.white,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    "January 1st",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14),
-                                                  ),
-                                                ],
                                               ),
                                             ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
+                                          );
+                                        }).toList(),
+                                      );
+                                    } else {
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 25,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -760,8 +663,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   builder: (context, child) {
                                     return Transform.translate(
                                       offset: Offset(
-                                        _offsetAnimation.value.dx *
-                                            37, // Adjust the width of the red bar
+                                        _offsetAnimation.value.dx * 37, // Adjust the width of the red bar
                                         0,
                                       ),
                                       child: child,
@@ -779,15 +681,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        _pageController.previousPage(
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            curve: Curves.easeIn);
+                                        _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
 
                                         _panelController.close();
 
@@ -795,8 +693,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           _alignmentController.animateTo(-1.0);
 
                                           timerColor = Colors.white;
-                                          todoColor =
-                                              Colors.black.withOpacity(0.3);
+                                          todoColor = Colors.black.withOpacity(0.3);
+                                          isTodo = false;
                                         });
                                       },
                                       child: Container(
@@ -817,8 +715,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       onTap: () {
                                         _pageController.animateTo(
                                           MediaQuery.of(context).size.width,
-                                          duration:
-                                              const Duration(milliseconds: 300),
+                                          duration: const Duration(milliseconds: 300),
                                           curve: Curves.easeIn,
                                         );
 
@@ -826,9 +723,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                         setState(() {
                                           _alignmentController.animateTo(1.0);
-                                          timerColor =
-                                              Colors.black.withOpacity(0.3);
+                                          timerColor = Colors.black.withOpacity(0.3);
                                           todoColor = Colors.white;
+                                          isTodo = true;
                                         });
                                       },
                                       child: Container(
@@ -854,33 +751,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    Positioned(
-                      right: 25,
-                      bottom: 70,
-                      child: SizedBox(
-                        width: 70,
-                        height: 70,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(0),
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              isVisibleAddEdit = true;
-                              taskName = '';
-                            });
-                          },
-                          child: const Stack(
-                            fit: StackFit.expand,
-                            alignment: Alignment.center,
-                            children: [
-                              Image(
-                                image: AssetImage('assets/add-task-bubble.png'),
-                                fit: BoxFit.fill,
-                              ),
-                              Icon(Icons.add, size: 40),
-                            ],
+                    Visibility(
+                      visible: isTodo,
+                      child: Positioned(
+                        right: 25,
+                        bottom: 70,
+                        child: SizedBox(
+                          width: 70,
+                          height: 70,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(0),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                isVisibleAddEdit = true;
+                                isNoDate = true;
+                                isNoTime = true;
+
+                                // taskName = '';
+                              });
+                            },
+                            child: const Stack(
+                              fit: StackFit.expand,
+                              alignment: Alignment.center,
+                              children: [
+                                Image(
+                                  image: AssetImage('assets/add-task-bubble.png'),
+                                  fit: BoxFit.fill,
+                                ),
+                                Icon(Icons.add, size: 40),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -896,8 +799,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           topRight: Radius.circular(40),
                         ),
                         panel: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 15),
+                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -918,8 +820,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const CollectionPage(),
+                                      builder: (BuildContext context) => const CollectionPage(),
                                     ),
                                   );
                                 },
@@ -949,8 +850,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const AquariumPage(),
+                                      builder: (BuildContext context) => const AquariumPage(),
                                     ),
                                   );
                                 },
@@ -978,8 +878,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const AboutUsPage(),
+                                      builder: (BuildContext context) => const AboutUsPage(),
                                     ),
                                   );
                                 },
@@ -1007,8 +906,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const SettingsPage(),
+                                      builder: (BuildContext context) => const SettingsPage(),
                                     ),
                                   );
                                 },
@@ -1036,8 +934,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          LoginPage(),
+                                      builder: (BuildContext context) => LoginPage(),
                                     ),
                                   );
                                 },
@@ -1053,9 +950,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     ),
                                     Text(
                                       "Log Out",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color(0xffFE2E00)),
+                                      style: TextStyle(fontSize: 16, color: Color(0xffFE2E00)),
                                     ),
                                   ],
                                 ),
@@ -1127,8 +1022,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       child: Padding(
                                         padding: const EdgeInsets.all(23.0),
                                         child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             const Text(
                                               "You finished your focus time!",
@@ -1140,8 +1034,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             ),
                                             const SizedBox(height: 15),
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
@@ -1164,12 +1057,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             MainButton(
                                               onTap: () {
                                                 setState(() {
-                                                  Navigator.of(context)
-                                                      .pushReplacement(
-                                                    MaterialPageRoute(
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            const HomePage()),
+                                                  Navigator.of(context).pushReplacement(
+                                                    MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
                                                   );
                                                 });
                                               },
@@ -1222,7 +1111,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             textColor: orangeColor.withOpacity(0.75),
                             label: 'Input new task here...',
                             length: MediaQuery.of(context).size.width - 40,
-                            controller: _taskController,
+                            controller: _titleTaskController,
                             type: 'TextField',
                           ),
                         ),
@@ -1258,31 +1147,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         horizontal: 22,
                                       ),
                                       itemCount: categories.length,
-                                      separatorBuilder:
-                                          (BuildContext context, int index) =>
-                                              const Divider(
+                                      separatorBuilder: (BuildContext context, int index) => const Divider(
                                         color: Color(0xff808080),
                                         thickness: 2,
                                       ),
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
+                                      itemBuilder: (BuildContext context, int index) {
                                         return Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 5, 0, 5),
+                                          padding: const EdgeInsets.fromLTRB(0, 5, 0, 5),
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                categoryTask =
-                                                    categories[index];
+                                                categoryTask = categories[index];
                                                 _categoryController.hide();
                                                 _isFocusAddEditTask = false;
+
+                                                print(categoryTask);
                                               });
                                             },
                                             child: Text(
                                               categories[index],
                                               style: TextStyle(
-                                                color: orangeColor
-                                                    .withOpacity(0.75),
+                                                color: orangeColor.withOpacity(0.75),
                                                 fontSize: 16,
                                               ),
                                             ),
@@ -1297,18 +1182,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () {
                                   if (!_isFocusAddEditTask) {
-                                    _categoryController.toggle();
+                                    _categoryController.show();
                                     _isFocusAddEditTask = true;
                                   }
                                 },
                                 child: BubbleButton(
                                   color: Colors.white.withOpacity(0.3),
                                   textColor: orangeColor.withOpacity(0.75),
-                                  label: isEdit == true
-                                      ? categoryTask
-                                      : 'No Category',
-                                  length:
-                                      MediaQuery.of(context).size.width / 2.8,
+                                  label: categoryTask,
+                                  length: MediaQuery.of(context).size.width / 2.8,
                                   type: "Button",
                                 ),
                               ),
@@ -1323,13 +1205,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   top: 60,
                                   left: 26,
                                   child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8),
                                     width: 360,
-                                    height: 730,
+                                    height: 765,
                                     decoration: BoxDecoration(
                                       color: const Color(0xff85E8FE),
-                                      borderRadius:
-                                          BorderRadiusDirectional.circular(
-                                              10.0),
+                                      borderRadius: BorderRadiusDirectional.circular(10.0),
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black.withOpacity(0.3),
@@ -1339,503 +1220,523 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ],
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 0,
-                                        horizontal: 10.0,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          TableCalendar(
-                                            firstDay: DateTime.utc(1930, 1, 1),
-                                            lastDay: DateTime.utc(2119, 12, 31),
-                                            focusedDay: _focusedDay,
-                                            calendarFormat: _calendarFormat,
-                                            selectedDayPredicate: (day) {
-                                              // Use `selectedDayPredicate` to determine which day is currently selected.
-                                              // If this returns true, then `day` will be marked as selected.
-
-                                              // Using `isSameDay` is recommended to disregard
-                                              // the time-part of compared DateTime objects.
-                                              return isSameDay(
-                                                  _selectedDay, day);
-                                            },
-                                            onDaySelected:
-                                                (selectedDay, focusedDay) {
-                                              if (!isSameDay(
-                                                  _selectedDay, selectedDay)) {
-                                                // Call `setState()` when updating the selected day
-                                                setState(() {
-                                                  _selectedDay = selectedDay;
-                                                  _focusedDay = focusedDay;
-                                                });
-                                              }
-                                            },
-                                            onFormatChanged: (format) {
-                                              if (_calendarFormat != format) {
-                                                // Call `setState()` when updating calendar format
-                                                setState(() {
-                                                  _calendarFormat = format;
-                                                });
-                                              }
-                                            },
-                                            onPageChanged: (focusedDay) {
-                                              // No need to call `setState()` here
-                                              _focusedDay = focusedDay;
-                                            },
-                                            headerStyle: HeaderStyle(
-                                              titleCentered: true,
-                                              formatButtonVisible: false,
-                                              leftChevronIcon: Icon(
-                                                Icons.arrow_left_outlined,
-                                                size: 60,
-                                                color: orangeColor,
-                                              ),
-                                              rightChevronIcon: Icon(
-                                                Icons.arrow_right_outlined,
-                                                size: 60,
-                                                color: orangeColor,
-                                              ),
-                                              titleTextStyle: TextStyle(
-                                                color: orangeColor,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                            calendarStyle: CalendarStyle(
-                                              defaultTextStyle: const TextStyle(
-                                                fontSize: 18,
-                                              ),
-                                              weekendTextStyle: const TextStyle(
-                                                color: Color(0xffFF1F1F),
-                                                fontSize: 18,
-                                              ),
-                                              selectedTextStyle:
-                                                  const TextStyle(
-                                                color: Color(0xffFFFFFF),
-                                                fontSize: 18,
-                                              ),
-                                              outsideTextStyle: TextStyle(
-                                                color: Colors.black
-                                                    .withOpacity(0.3),
-                                                fontSize: 18,
-                                              ),
-                                              isTodayHighlighted: false,
-                                            ),
-                                            weekendDays: const [
-                                              DateTime.sunday
-                                            ],
-                                            daysOfWeekStyle:
-                                                const DaysOfWeekStyle(
-                                              weekdayStyle: TextStyle(
-                                                fontSize: 16,
-                                              ),
-                                              weekendStyle: TextStyle(
-                                                fontSize: 16,
-                                                color: Color(0xffFF1F1F),
-                                              ),
-                                            ),
-                                          ),
-                                          Wrap(
-                                            alignment: WrapAlignment.center,
-                                            spacing: 3.0,
-                                            runSpacing: 10.0,
+                                    child: Stack(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                                          child: Column(
                                             children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _checkDeadlineButton(0);
-                                                },
-                                                child: BubbleButton(
-                                                  color: deadlineColor[0][0],
-                                                  secondaryColor:
-                                                      deadlineColor[0][2],
-                                                  label: 'No Date',
-                                                  length: 110,
-                                                  textColor: deadlineColor[0]
-                                                      [1],
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          22, 8, 10, 8),
-                                                  type: 'Button',
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _checkDeadlineButton(1);
-                                                },
-                                                child: BubbleButton(
-                                                  color: deadlineColor[1][0],
-                                                  secondaryColor:
-                                                      deadlineColor[1][2],
-                                                  label: 'Today',
-                                                  length: 90,
-                                                  textColor: deadlineColor[1]
-                                                      [1],
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          22, 8, 10, 8),
-                                                  type: 'Button',
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _checkDeadlineButton(2);
-                                                },
-                                                child: BubbleButton(
-                                                  color: deadlineColor[2][0],
-                                                  secondaryColor:
-                                                      deadlineColor[2][2],
-                                                  label: 'Tomorrow',
-                                                  length: 120,
-                                                  textColor: deadlineColor[2]
-                                                      [1],
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          22, 8, 10, 8),
-                                                  type: 'Button',
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _checkDeadlineButton(3);
-                                                },
-                                                child: BubbleButton(
-                                                  color: deadlineColor[3][0],
-                                                  secondaryColor:
-                                                      deadlineColor[3][2],
-                                                  label: '3 Days Later',
-                                                  length: 140,
-                                                  textColor: deadlineColor[3]
-                                                      [1],
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          22, 8, 10, 8),
-                                                  type: 'Button',
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _checkDeadlineButton(4);
-                                                },
-                                                child: BubbleButton(
-                                                  color: deadlineColor[4][0],
-                                                  secondaryColor:
-                                                      deadlineColor[4][2],
-                                                  label: 'This Sunday',
-                                                  length: 140,
-                                                  textColor: deadlineColor[4]
-                                                      [1],
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          22, 8, 10, 8),
-                                                  type: 'Button',
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 15.0,
-                                              vertical: 0.0,
-                                            ),
-                                            child: Column(
-                                              children: [
-                                                OverlayPortal(
-                                                  controller: _timeController,
-                                                  overlayChildBuilder:
-                                                      (BuildContext context) {
-                                                    return Positioned(
-                                                      top: 230,
-                                                      left: 80,
-                                                      child: Container(
-                                                        width: 250,
-                                                        height: 330,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: const Color(
-                                                              0xff85E8FE),
-                                                          borderRadius:
-                                                              BorderRadiusDirectional
-                                                                  .circular(
-                                                                      10.0),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.3),
-                                                              blurRadius: 4,
-                                                              spreadRadius: 2,
-                                                              offset:
-                                                                  const Offset(
-                                                                      0, 3),
+                                              Column(
+                                                children: [
+                                                  Container(
+                                                    width: 360,
+                                                    height: 545,
+                                                    child: PageView(
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      controller: _pageDateTimeController,
+                                                      children: [
+                                                        Column(
+                                                          children: [
+                                                            TableCalendar(
+                                                              firstDay: DateTime.utc(1930, 1, 1),
+                                                              lastDay: DateTime.utc(2119, 12, 31),
+                                                              focusedDay: _focusedDay,
+                                                              calendarFormat: _calendarFormat,
+                                                              selectedDayPredicate: (day) {
+                                                                // Use `selectedDayPredicate` to determine which day is currently selected.
+                                                                // If this returns true, then `day` will be marked as selected.
+
+                                                                // Using `isSameDay` is recommended to disregard
+                                                                // the time-part of compared DateTime objects.
+                                                                return isSameDay(_selectedDay, day);
+                                                              },
+                                                              onDaySelected: (selectedDay, focusedDay) {
+                                                                if (!isSameDay(_selectedDay, selectedDay)) {
+                                                                  // Call `setState()` when updating the selected day
+                                                                  setState(() {
+                                                                    isNoDate = false;
+                                                                    _selectedDay = selectedDay;
+                                                                    _focusedDay = focusedDay;
+                                                                  });
+                                                                }
+                                                              },
+                                                              onFormatChanged: (format) {
+                                                                if (_calendarFormat != format) {
+                                                                  // Call `setState()` when updating calendar format
+                                                                  setState(() {
+                                                                    _calendarFormat = format;
+                                                                  });
+                                                                }
+                                                              },
+                                                              // onPageChanged: (focusedDay) {
+                                                              //   // No need to call `setState()` here
+                                                              //   _focusedDay = focusedDay;
+                                                              // },
+                                                              headerStyle: HeaderStyle(
+                                                                titleCentered: true,
+                                                                formatButtonVisible: false,
+                                                                leftChevronIcon: Icon(
+                                                                  Icons.arrow_left_outlined,
+                                                                  size: 60,
+                                                                  color: orangeColor,
+                                                                ),
+                                                                rightChevronIcon: Icon(
+                                                                  Icons.arrow_right_outlined,
+                                                                  size: 60,
+                                                                  color: orangeColor,
+                                                                ),
+                                                                titleTextStyle: TextStyle(
+                                                                  color: orangeColor,
+                                                                  fontSize: 20,
+                                                                ),
+                                                              ),
+                                                              calendarStyle: CalendarStyle(
+                                                                defaultTextStyle: const TextStyle(
+                                                                  fontSize: 18,
+                                                                ),
+                                                                weekendTextStyle: const TextStyle(
+                                                                  color: Color(0xffFF1F1F),
+                                                                  fontSize: 18,
+                                                                ),
+                                                                selectedTextStyle: const TextStyle(
+                                                                  color: Color(0xffFFFFFF),
+                                                                  fontSize: 18,
+                                                                ),
+                                                                outsideTextStyle: TextStyle(
+                                                                  color: Colors.black.withOpacity(0.3),
+                                                                  fontSize: 18,
+                                                                ),
+                                                                isTodayHighlighted: true,
+                                                              ),
+                                                              weekendDays: const [DateTime.sunday],
+                                                              daysOfWeekStyle: const DaysOfWeekStyle(
+                                                                weekdayStyle: TextStyle(
+                                                                  fontSize: 16,
+                                                                ),
+                                                                weekendStyle: TextStyle(
+                                                                  fontSize: 16,
+                                                                  color: Color(0xffFF1F1F),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 5,
+                                                            ),
+                                                            Wrap(
+                                                              alignment: WrapAlignment.center,
+                                                              spacing: 3.0,
+                                                              runSpacing: 10.0,
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton(0);
+                                                                    isNoDate = true;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor[0][0],
+                                                                    secondaryColor: deadlineColor[0][2],
+                                                                    label: 'No Date',
+                                                                    length: 110,
+                                                                    textColor: deadlineColor[0][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton(1);
+                                                                    isNoDate = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor[1][0],
+                                                                    secondaryColor: deadlineColor[1][2],
+                                                                    label: 'Today',
+                                                                    length: 90,
+                                                                    textColor: deadlineColor[1][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton(2);
+                                                                    isNoDate = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor[2][0],
+                                                                    secondaryColor: deadlineColor[2][2],
+                                                                    label: 'Tomorrow',
+                                                                    length: 120,
+                                                                    textColor: deadlineColor[2][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton(3);
+                                                                    isNoDate = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor[3][0],
+                                                                    secondaryColor: deadlineColor[3][2],
+                                                                    label: '3 Days Later',
+                                                                    length: 140,
+                                                                    textColor: deadlineColor[3][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton(4);
+                                                                    isNoDate = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor[4][0],
+                                                                    secondaryColor: deadlineColor[4][2],
+                                                                    label: 'This Sunday',
+                                                                    length: 140,
+                                                                    textColor: deadlineColor[4][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
                                                         ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            vertical: 15.0,
-                                                            horizontal: 15.0,
-                                                          ),
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                children: [
-                                                                  GestureDetector(
-                                                                    onTap: () {
-                                                                      _timeController
-                                                                          .hide();
-                                                                    },
-                                                                    child:
-                                                                        const Icon(
-                                                                      Icons
-                                                                          .close,
-                                                                      size: 30,
-                                                                    ),
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      'Time',
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            20,
-                                                                        color:
-                                                                            orangeColor,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 20,
-                                                              ),
-                                                              TimePickerSpinner(
-                                                                is24HourMode:
-                                                                    true,
-                                                                isForce2Digits:
-                                                                    true,
-                                                                normalTextStyle:
-                                                                    TextStyle(
-                                                                  fontSize: 24,
-                                                                  color: orangeColor
-                                                                      .withOpacity(
-                                                                          0.5),
-                                                                ),
-                                                                highlightedTextStyle:
-                                                                    TextStyle(
-                                                                  fontSize: 24,
-                                                                  color:
-                                                                      orangeColor,
-                                                                ),
-                                                              ),
-                                                              const SizedBox(
-                                                                height: 10,
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap: () {},
-                                                                child:
-                                                                    BubbleButton(
-                                                                  color: const Color(
-                                                                      0xffFF7E4C),
-                                                                  secondaryColor:
-                                                                      orangeColor,
-                                                                  label: 'Set',
-                                                                  length: 80,
-                                                                  textColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .fromLTRB(
-                                                                          23,
-                                                                          8,
-                                                                          5,
-                                                                          8),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      _timeController.show();
-                                                    },
-                                                    child: Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 20.0,
-                                                      ),
-                                                      decoration:
-                                                          const BoxDecoration(
-                                                        border:
-                                                            BorderDirectional(
-                                                          bottom: BorderSide(
-                                                            width: 1.0,
-                                                            color: Color(
-                                                                0xff808080),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                            Icons
-                                                                .access_time_rounded,
-                                                            color: orangeColor,
-                                                            size: 30,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 20,
-                                                          ),
-                                                          Text(
-                                                            'Time',
-                                                            style: TextStyle(
-                                                              color: orangeColor
-                                                                  .withOpacity(
-                                                                      0.75),
-                                                              fontSize: 16,
+                                                        Column(
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 50,
                                                             ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Align(
-                                                              alignment: Alignment
-                                                                  .centerRight,
-                                                              child: Text(
-                                                                'No',
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: orangeColor
-                                                                      .withOpacity(
-                                                                          0.75),
-                                                                  fontSize: 16,
-                                                                ),
+                                                            TimePickerSpinner(
+                                                              time: _focusedTime,
+                                                              alignment: Alignment.center,
+                                                              itemWidth: 80,
+                                                              itemHeight: 110,
+                                                              is24HourMode: true,
+                                                              isForce2Digits: true,
+                                                              normalTextStyle: TextStyle(
+                                                                fontSize: 42,
+                                                                color: orangeColor.withOpacity(0.5),
                                                               ),
+                                                              highlightedTextStyle: TextStyle(
+                                                                fontSize: 42,
+                                                                color: orangeColor,
+                                                              ),
+                                                              onTimeChange: (time) {
+                                                                _focusedTime = time;
+                                                                isNoTime = false;
+                                                              },
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                            const SizedBox(
+                                                              height: 40,
+                                                            ),
+                                                            Wrap(
+                                                              alignment: WrapAlignment.center,
+                                                              spacing: 3.0,
+                                                              runSpacing: 10.0,
+                                                              children: [
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton2(0);
+                                                                    isNoTime = true;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor2[0][0],
+                                                                    secondaryColor: deadlineColor2[0][2],
+                                                                    label: 'No Time',
+                                                                    length: 110,
+                                                                    textColor: deadlineColor2[0][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton2(1);
+                                                                    isNoTime = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor2[1][0],
+                                                                    secondaryColor: deadlineColor2[1][2],
+                                                                    label: '00:00',
+                                                                    length: 90,
+                                                                    textColor: deadlineColor2[1][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton2(2);
+                                                                    isNoTime = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor2[2][0],
+                                                                    secondaryColor: deadlineColor2[2][2],
+                                                                    label: '06:00',
+                                                                    length: 90,
+                                                                    textColor: deadlineColor2[2][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton2(3);
+                                                                    isNoTime = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor2[3][0],
+                                                                    secondaryColor: deadlineColor2[3][2],
+                                                                    label: '12:00',
+                                                                    length: 90,
+                                                                    textColor: deadlineColor2[3][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    _checkDeadlineButton2(4);
+                                                                    isNoTime = false;
+                                                                  },
+                                                                  child: BubbleButton(
+                                                                    color: deadlineColor2[4][0],
+                                                                    secondaryColor: deadlineColor2[4][2],
+                                                                    label: '18:00',
+                                                                    length: 90,
+                                                                    textColor: deadlineColor2[4][1],
+                                                                    padding: const EdgeInsets.fromLTRB(22, 8, 10, 8),
+                                                                    type: 'Button',
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () {},
-                                                  child: Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 10.0,
-                                                      vertical: 20.0,
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(horizontal: 10),
+                                                    child: Column(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {},
+                                                          child: Container(
+                                                            padding: const EdgeInsets.symmetric(
+                                                              horizontal: 10.0,
+                                                              vertical: 20.0,
+                                                            ),
+                                                            child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                              children: [
+                                                                Row(
+                                                                  children: [
+                                                                    Icon(
+                                                                      Icons.notifications_outlined,
+                                                                      color: orangeColor,
+                                                                      size: 30,
+                                                                    ),
+                                                                    const SizedBox(
+                                                                      width: 20,
+                                                                    ),
+                                                                    Text(
+                                                                      'Reminder',
+                                                                      style: TextStyle(
+                                                                        color: orangeColor.withOpacity(0.75),
+                                                                        fontSize: 16,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                Text(
+                                                                  'No',
+                                                                  style: TextStyle(
+                                                                    color: orangeColor.withOpacity(0.75),
+                                                                    fontSize: 16,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 30,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.end,
+                                                          children: [
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                _dateController.hide();
+                                                                _isFocusAddEditTask = false;
+                                                                _alignmentControllerDateTime.animateTo(-1.0);
+                                                              },
+                                                              child: Text(
+                                                                'Cancel',
+                                                                style: TextStyle(
+                                                                  fontSize: 20,
+                                                                  color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 25,
+                                                            ),
+                                                            GestureDetector(
+                                                              onTap: () {
+                                                                _dateController.hide();
+                                                                _isFocusAddEditTask = false;
+                                                                _alignmentControllerDateTime.animateTo(-1.0);
+
+                                                                String? tempParsedDate;
+                                                                String? tempParsedTime;
+
+                                                                setState(() {
+                                                                  if (!isNoDate) {
+                                                                    tempParsedDate = DateFormat('yyyy-MM-dd').format(_focusedDay);
+                                                                  }
+                                                                  if (!isNoTime) {
+                                                                    tempParsedTime = DateFormat('HH:mm:ss').format(_focusedTime);
+                                                                  }
+
+                                                                  if (!isNoDate && !isNoTime) {
+                                                                    taskDateTime = DateTime.parse('$tempParsedDate $tempParsedTime');
+                                                                  } else if (isNoTime) {
+                                                                    taskDateTime = DateTime.parse(tempParsedDate!);
+                                                                  }
+                                                                });
+                                                                print(taskDateTime);
+                                                              },
+                                                              child: BubbleButton(
+                                                                color: const Color(0xffFF7E4C),
+                                                                secondaryColor: orangeColor,
+                                                                label: 'Done',
+                                                                length: 90,
+                                                                textColor: Colors.white,
+                                                                padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      border: BorderDirectional(
-                                                        bottom: BorderSide(
-                                                          width: 1.0,
-                                                          color:
-                                                              Color(0xff808080),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Positioned.fill(
+                                          top: 35,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                width: 160,
+                                                height: 30,
+                                                decoration: const BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.all(
+                                                    Radius.circular(50),
+                                                  ),
+                                                ),
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    AnimatedBuilder(
+                                                      animation: _offsetAnimationDateTime,
+                                                      builder: (context, child) {
+                                                        return Transform.translate(
+                                                          offset: Offset(
+                                                            _offsetAnimationDateTime.value.dx * 37, // Adjust the width of the red bar
+                                                            0,
+                                                          ),
+                                                          child: child,
+                                                        );
+                                                      },
+                                                      child: Container(
+                                                        width: 80,
+                                                        height: 25,
+                                                        decoration: BoxDecoration(
+                                                          color: orangeColor,
+                                                          borderRadius: const BorderRadius.all(
+                                                            Radius.circular(30),
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                    child: Row(
+                                                    Row(
+                                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                                                       children: [
-                                                        Icon(
-                                                          Icons
-                                                              .notifications_outlined,
-                                                          color: orangeColor,
-                                                          size: 30,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 20,
-                                                        ),
-                                                        Text(
-                                                          'Reminder',
-                                                          style: TextStyle(
-                                                            color: orangeColor
-                                                                .withOpacity(
-                                                                    0.75),
-                                                            fontSize: 16,
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            _pageDateTimeController.previousPage(
+                                                                duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+
+                                                            setState(() {
+                                                              _alignmentControllerDateTime.animateTo(-1.0);
+
+                                                              dateColor = Colors.white;
+                                                              timeColor = Colors.black.withOpacity(0.3);
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            decoration: const BoxDecoration(
+                                                                // color: Colors.redAccent,
+                                                                ),
+                                                            child: Text(
+                                                              "Date",
+                                                              style: TextStyle(
+                                                                fontSize: 14,
+                                                                color: dateColor,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                        SizedBox(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              275,
-                                                        ),
-                                                        Expanded(
-                                                          child: Align(
-                                                            alignment: Alignment
-                                                                .centerRight,
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            _pageDateTimeController.animateTo(
+                                                              MediaQuery.of(context).size.width,
+                                                              duration: const Duration(milliseconds: 300),
+                                                              curve: Curves.easeIn,
+                                                            );
+
+                                                            setState(() {
+                                                              _alignmentControllerDateTime.animateTo(1.0);
+                                                              dateColor = Colors.black.withOpacity(0.3);
+                                                              timeColor = Colors.white;
+                                                            });
+                                                          },
+                                                          child: Container(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            decoration: const BoxDecoration(
+                                                                // color: Colors.redAccent,
+                                                                ),
                                                             child: Text(
-                                                              'No',
+                                                              "Time",
                                                               style: TextStyle(
-                                                                color: orangeColor
-                                                                    .withOpacity(
-                                                                        0.75),
-                                                                fontSize: 16,
+                                                                // backgroundColor: Colors.redAccent,
+                                                                fontSize: 14,
+                                                                color: timeColor,
                                                               ),
                                                             ),
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 35,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  _dateController.hide();
-                                                  _isFocusAddEditTask = false;
-                                                },
-                                                child: Text(
-                                                  'Cancel',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color:
-                                                        const Color(0xff2F86C5)
-                                                            .withOpacity(0.5),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {},
-                                                child: BubbleButton(
-                                                  color:
-                                                      const Color(0xffFF7E4C),
-                                                  secondaryColor: orangeColor,
-                                                  label: 'Done',
-                                                  length: 90,
-                                                  textColor: Colors.white,
-                                                  padding:
-                                                      const EdgeInsets.fromLTRB(
-                                                          20, 10, 10, 10),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -1843,18 +1744,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               child: GestureDetector(
                                 onTap: () {
                                   if (!_isFocusAddEditTask) {
-                                    _dateController.toggle();
+                                    _dateController.show();
                                     _isFocusAddEditTask = true;
+
+                                    _alignmentControllerDateTime.animateTo(-1.0);
+                                    dateColor = Colors.white;
+                                    timeColor = Colors.black.withOpacity(0.3);
                                   }
                                 },
                                 child: BubbleButton(
-                                  icon: Icons.date_range_outlined,
                                   color: Colors.white.withOpacity(0.3),
                                   textColor: orangeColor.withOpacity(0.75),
-                                  label:
-                                      isEdit == true ? '27/05/2024' : 'No Date',
-                                  length:
-                                      MediaQuery.of(context).size.width / 2.4,
+                                  label: isNoDate ? 'No Date' : DateFormat('MMM dd, HH:mm').format(taskDateTime),
+                                  length: MediaQuery.of(context).size.width / 2.4,
                                   type: "Button",
                                 ),
                               ),
@@ -1863,18 +1765,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               width: 5,
                             ),
                             GestureDetector(
-                              onTap: () {
-                                setState(
-                                  () {
-                                    isVisibleAddEdit = false;
-                                    isEdit = false;
-                                    _taskController.text = '';
-                                  },
-                                );
+                              onTap: () async {
+                                taskName = _titleTaskController.text;
+                                if (isEditTask) {
+                                  final response = await updateTask(currentTask, taskName, categoryTask, taskDateTime);
+
+                                  if (response > 0) {
+                                    setState(() {
+                                      _futureTask = showAllTask();
+                                      isVisibleAddEdit = false;
+                                      // isEditTask = false;
+                                    });
+                                  }
+                                } else {
+                                  final response = await addTask(taskName, categoryTask, taskDateTime);
+                                  if (response == 200) {
+                                    setState(() {
+                                      _futureTask = showAllTask();
+                                      isVisibleAddEdit = false;
+                                      // isEditTask = false;
+                                    });
+                                  }
+
+                                  // _titleTaskController.text = '';
+                                }
                               },
-                              child: const Image(
-                                  image:
-                                      AssetImage('assets/submit-button.png')),
+                              child: const Image(image: AssetImage('assets/submit-button.png')),
                             )
                           ],
                         ),

@@ -1,0 +1,6 @@
+{
+    "editor.wordWrapColumn": 200,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.minimap.maxColumn": 200,
+    "dart.lineLength": 150
+}
