@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:aquaria/classes/fish.dart';
 import 'package:intl/intl.dart';
 import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/classes/task.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/about_us_page.dart';
-import 'package:aquaria/pages/aquarium_page.dart';
 import 'package:aquaria/pages/fish_collection_page.dart';
 import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
+import 'package:aquaria/pages/statistics_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
 import 'package:aquaria/widgets/main_button.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -230,6 +231,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     Timer? timer;
     int minutes = timerDuration.inMinutes.remainder(125);
     int seconds = timerDuration.inSeconds.remainder(60);
+    String? fishName;
+    String? fishImage;
 
     double screenDimValue = 0.5;
     List<String> categories = <String>['Critical', 'High', 'Medium', 'Low', 'Very Low'];
@@ -404,7 +407,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                   int totalMinutes = value.toInt().ceil() == 0 ? 5 : value.toInt().ceil();
 
-                                                  timerFinished(totalMinutes);
+                                                  Fish? fishCaught =
+                                                      timerFinished(
+                                                              totalMinutes)
+                                                          as Fish?;
+
+                                                  fishName = fishCaught!.name;
+                                                  fishImage = fishCaught.image;
                                                 } else {
                                                   timerDuration = Duration(seconds: seconds);
                                                 }
@@ -415,6 +424,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 if (timerDuration.inSeconds == 6) {
                                                   _controller.isActive = true;
                                                 }
+
+                                                return;
                                               });
                                             }
                                           });
@@ -850,7 +861,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 onTap: () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) => const AquariumPage(),
+                                      builder: (BuildContext context) =>
+                                          const StatisticPage(),
                                     ),
                                   );
                                 },
@@ -994,16 +1006,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           width: screenWidth * 0.3,
                                         ),
                                         SvgPicture.asset(
-                                          'assets/fish/stingray.svg',
+                                          'assets/fish/${(fishImage ?? "")}.svg',
                                           width: screenWidth * 0.20,
                                           alignment: Alignment.center,
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    const Text(
-                                      "*Insert Fish Name Here*",
-                                      style: TextStyle(
+                                    Text(
+                                      (fishName ?? ""),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,

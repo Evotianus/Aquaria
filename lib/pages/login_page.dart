@@ -1,5 +1,3 @@
-import 'package:aquaria/classes/user.dart';
-import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/register_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';

@@ -1,3 +1,4 @@
+import 'package:aquaria/classes/fish.dart';
 import 'dart:convert';
 
 import 'package:aquaria/classes/timer.dart';
@@ -46,6 +47,10 @@ Future<dynamic> timerFinished(minutes) async {
   }
 
   return 400;
+}
+
+Future<dynamic> fishcollection(name, description, image) async {
+  Fish fish = Fish(null, name, description, image);
 }
 
 Future<List<Task>?> showAllTask() async {
