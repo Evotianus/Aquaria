@@ -25,4 +25,5 @@ Route::post('/create-user', [UserController::class, 'register']);
 Route::post('/verify-user', [UserController::class, 'login']);
 
 Route::post('/create-timer', [TimerController::class, 'timerFinished']);
+Route::post('/get-timer-by-user', [TimerController::class, 'getTotalTimerByUserId']);
 // Route::get('', [FishController])

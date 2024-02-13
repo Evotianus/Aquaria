@@ -40,7 +40,7 @@ class UserController extends Controller
         $user = User::where('username', $request->username)->where('password', $request->password)->first()->get();
 
         if ($user->count() != 0) {
-            return $user;
+            return $user->first();
         }
 
         return response()->json(['Message' => 'Login Error'], 400);
