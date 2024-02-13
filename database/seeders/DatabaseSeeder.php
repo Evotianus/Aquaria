@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Task;
 use App\Models\Fish;
 
 class DatabaseSeeder extends Seeder
@@ -53,5 +54,8 @@ class DatabaseSeeder extends Seeder
         foreach ($userArray as $user) {
             User::create($user);
         }
+
+        User::factory(5)->create();
+        Task::factory(50)->create();
     }
 }
