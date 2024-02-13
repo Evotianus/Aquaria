@@ -47,6 +47,7 @@ dependencies:
   awesome_notifications: ^0.8.2
   http: ^1.1.0
   fl_chart: ^0.66.2
+  delayed_widget: ^1.1.2
 
 dev_dependencies:
   flutter_test:

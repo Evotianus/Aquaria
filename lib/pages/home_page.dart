@@ -366,6 +366,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       absorbing: isAbsorb,
                                       child: GestureDetector(
                                         onTap: () {
+                                          print(minutes);
                                           // Duration timerDuration =
                                           //     Duration(minutes: value.ceil().toInt());
                                           print(timerDuration.inMinutes);
@@ -375,6 +376,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           if (durationTime == 0) {
                                             durationTime = 5;
                                           }
+
+                                          int totalMinutes =
+                                              value.toInt().ceil() == 0
+                                                  ? 5
+                                                  : value.toInt().ceil();
+
+                                          Timer(const Duration(seconds: 3),
+                                              () async {
+                                            Fish? fishCaught =
+                                                await timerFinished(
+                                                    totalMinutes);
+
+                                            // print(fishCaught!.image);
+
+                                            fishName = fishCaught!.name;
+                                            fishImage = fishCaught.image;
+                                            setState(() {});
+                                          });
 
                                           setState(() {
                                             opacityLevel = 0;
@@ -405,21 +424,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                   print(
                                                       "test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
-
-                                                  int totalMinutes =
-                                                      value.toInt().ceil() == 0
-                                                          ? 5
-                                                          : value
-                                                              .toInt()
-                                                              .ceil();
-
-                                                  Fish? fishCaught =
-                                                      timerFinished(
-                                                              totalMinutes)
-                                                          as Fish?;
-
-                                                  fishName = fishCaught!.name;
-                                                  fishImage = fishCaught.image;
                                                 } else {
                                                   timerDuration = Duration(
                                                       seconds: seconds);
@@ -1083,117 +1087,127 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         left: 0,
                         child: Align(
                           alignment: Alignment.center,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Opacity(
-                                opacity: 0.4,
-                                child: Container(
-                                  height: screenHeight,
-                                  width: screenWidth,
-                                  color: const Color(0xff000000),
-                                ),
-                              ),
-                              SvgPicture.asset(
-                                'assets/fish-caught.svg',
-                                width: screenWidth * 0.95,
-                              ),
-                              Positioned(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.center,
+                          child: FutureBuilder(
+                            future: timerFinished(minutes),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<dynamic> snapshot) {
+                              return Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Opacity(
+                                    opacity: 0.4,
+                                    child: Container(
+                                      height: screenHeight,
+                                      width: screenWidth,
+                                      color: const Color(0xff000000),
+                                    ),
+                                  ),
+                                  SvgPicture.asset(
+                                    'assets/fish-caught.svg',
+                                    width: screenWidth * 0.95,
+                                  ),
+                                  Positioned(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        SvgPicture.asset(
-                                          'assets/fish-tank.svg',
-                                          width: screenWidth * 0.3,
-                                        ),
-                                        SvgPicture.asset(
-                                          'assets/fish/${(fishImage ?? "")}.svg',
-                                          width: screenWidth * 0.20,
+                                        Stack(
                                           alignment: Alignment.center,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      (fishName ?? ""),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Container(
-                                      height: 200,
-                                      width: screenWidth * 0.65,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                        color: const Color(
-                                          0xff308BCC,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(23.0),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
                                           children: [
-                                            const Text(
-                                              "You finished your focus time!",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                              ),
-                                              textAlign: TextAlign.center,
+                                            SvgPicture.asset(
+                                              'assets/fish-tank.svg',
+                                              width: screenWidth * 0.3,
                                             ),
-                                            const SizedBox(height: 15),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
-                                                  style: const TextStyle(
-                                                    color: Color(0xffFE2E00),
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  " Minutes",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 24,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 25),
-                                            MainButton(
-                                              onTap: () {
-                                                setState(() {
-                                                  Navigator.of(context)
-                                                      .pushReplacement(
-                                                    MaterialPageRoute(
-                                                        builder: (BuildContext
-                                                                context) =>
-                                                            const HomePage()),
-                                                  );
-                                                });
-                                              },
-                                              label: "Confirm",
+                                            SvgPicture.asset(
+                                              'assets/fish/${(fishImage ?? "")}.svg',
+                                              width: screenWidth * 0.20,
+                                              alignment: Alignment.center,
                                             ),
                                           ],
                                         ),
-                                      ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          (fishName ?? ""),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Container(
+                                          height: 250,
+                                          width: screenWidth * 0.65,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            color: const Color(
+                                              0xff308BCC,
+                                            ),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(23.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Text(
+                                                  "You finished your focus time!",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                const SizedBox(height: 15),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xffFE2E00),
+                                                        fontSize: 24,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const Text(
+                                                      " Minutes",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 24,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 25),
+                                                MainButton(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      Navigator.of(context)
+                                                          .pushReplacement(
+                                                        MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                    context) =>
+                                                                const HomePage()),
+                                                      );
+                                                    });
+                                                  },
+                                                  label: "Confirm",
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -1662,7 +1676,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                           .white,
                                                                   padding:
                                                                       const EdgeInsets
-                                                                              .fromLTRB(
+                                                                          .fromLTRB(
                                                                           23,
                                                                           8,
                                                                           5,
