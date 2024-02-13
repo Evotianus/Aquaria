@@ -26,12 +26,12 @@ class Task {
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
-      json['id'] as int,
-      json['user_id'] as int,
-      json['title'] as String,
-      json['urgency'] as String,
+      json['id'],
+      json['user_id'],
+      json['title'],
+      json['urgency'],
       DateTime.parse(json['due'].toString()),
-      json['isFinished'] as int,
+      json['isFinished'],
     );
   }
 }

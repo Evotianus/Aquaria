@@ -95,6 +95,19 @@ Future<dynamic> updateTask(oldTask, title, urgency, due) async {
   return 400;
 }
 
+Future<dynamic> deleteTask(oldTask) async {
+  Task task = Task(oldTask.id, currentUser!.id, oldTask.title, oldTask.urgency, oldTask.due, oldTask.isFinished);
+
+  dynamic request = await removeTask(task);
+
+  if (request > 0) {
+    print("berhasil delete task");
+    return 200;
+  }
+
+  return 400;
+}
+
 Future<dynamic> checkTask(task) async {
   dynamic request = await markTask(task);
   try {

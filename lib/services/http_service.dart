@@ -91,8 +91,7 @@ Future<List<Timer>?> getTimerByUser(userId) async {
   if (response.statusCode == 200) {
     List<dynamic> body = jsonDecode(response.body);
 
-    List<Timer> timerList =
-        body.map((dynamic item) => Timer.fromJson(item)).toList();
+    List<Timer> timerList = body.map((dynamic item) => Timer.fromJson(item)).toList();
 
     return timerList;
   }
@@ -128,7 +127,7 @@ Future<int?> renewTask(task) async {
   );
 
   if (response.statusCode == 200) {
-    print("update successa");
+    print("update success");
 
     return jsonDecode(response.body)["changed_row"];
   }
@@ -136,7 +135,7 @@ Future<int?> renewTask(task) async {
   return null;
 }
 
-Future<bool?> removeTask(task) async {
+Future<dynamic> removeTask(task) async {
   final response = await http.post(
     Uri.parse("$uri/delete-task"),
     headers: <String, String>{
@@ -147,7 +146,7 @@ Future<bool?> removeTask(task) async {
   );
 
   if (response.statusCode == 200) {
-    return jsonDecode(response.body);
+    return jsonDecode(response.body)["isDeleted"];
   }
 
   return null;
@@ -166,12 +165,20 @@ Future<List<Task>?> viewTasks(user) async {
   if (response.statusCode == 200) {
     print("berhasil");
 
-    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
-    List<Task> taskList = [];
+    // final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    // List<Task> taskList = [];
 
-    jsonMap.forEach((key, value) {
-      taskList.add(Task.fromJson(value));
-    });
+    // jsonMap.forEach((key, value) {
+    //   taskList.add(Task.fromJson(value));
+    // });
+
+    List<dynamic> body = jsonDecode(response.body);
+
+    // print(body);
+
+    List<Task> taskList = (body as List).map((itemWord) => Task.fromJson(itemWord)).toList();
+
+    // print(taskList);
 
     return taskList;
   }
@@ -195,3 +202,4 @@ Future<bool?> markTask(task) async {
 
   return null;
 }
+

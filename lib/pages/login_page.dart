@@ -3,6 +3,7 @@ import 'package:aquaria/pages/register_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';
 import 'package:aquaria/widgets/main_button.dart';
 import 'package:flutter/material.dart';
+import 'package:aquaria/functions/functions.dart';
 
 class LoginPage extends StatelessWidget {
   final _usernameController = TextEditingController();

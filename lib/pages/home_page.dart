@@ -241,259 +241,267 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: blueColor,
       body: GestureDetector(
         onTap: () {
-          FocusScopeNode currentNode = FocusScope.of(context);
-          if (!currentNode.hasPrimaryFocus) {
-            currentNode.unfocus();
-          }
+          FocusManager.instance.primaryFocus?.unfocus();
         },
         child: Stack(
           alignment: Alignment.center,
           children: [
-            ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(isVisibleAddEdit ? 0.5 : 0),
-                BlendMode.darken,
-              ),
-              child: AbsorbPointer(
-                absorbing: isVisibleAddEdit ? true : false,
-                child: Stack(
-                  children: [
-                    PageView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: _pageController,
-                      children: [
-                        Stack(
-                          children: [
-                            _fishingArtboard == null ? const SizedBox() : Rive(artboard: _fishingArtboard!),
-                            RiveAnimation.asset(
-                              'assets/fish.riv',
-                              fit: BoxFit.cover,
-                              controllers: [_controller],
-                            ),
-                            Transform.translate(
-                              offset: const Offset(0, 200),
-                              child: Stack(
-                                alignment: Alignment.topCenter,
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Positioned(
-                                    top: -50,
-                                    child: Text(
-                                      "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
-                                      style: const TextStyle(fontSize: 64, color: Colors.white),
+            GestureDetector(
+              onTap: () {
+                if (isVisibleAddEdit) {
+                  setState(() {
+                    isVisibleAddEdit = false;
+                    isEditTask = false;
+                  });
+                }
+              },
+              child: ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(isVisibleAddEdit ? 0.5 : 0),
+                  BlendMode.darken,
+                ),
+                child: AbsorbPointer(
+                  absorbing: isVisibleAddEdit ? true : false,
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 100,
+                        color: blueColor,
+                      ),
+                      PageView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: _pageController,
+                        children: [
+                          Stack(
+                            children: [
+                              _fishingArtboard == null ? const SizedBox() : Rive(artboard: _fishingArtboard!),
+                              RiveAnimation.asset(
+                                'assets/fish.riv',
+                                fit: BoxFit.cover,
+                                controllers: [_controller],
+                              ),
+                              Transform.translate(
+                                offset: const Offset(0, 200),
+                                child: Stack(
+                                  alignment: Alignment.topCenter,
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Positioned(
+                                      top: -50,
+                                      child: Text(
+                                        "${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}",
+                                        style: const TextStyle(fontSize: 64, color: Colors.white),
+                                      ),
                                     ),
-                                  ),
-                                  Positioned.fill(
-                                    top: 120,
-                                    child: Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        Opacity(
-                                          opacity: opacityLevel,
-                                          child: const Image(
-                                            image: AssetImage("assets/reel.png"),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 50,
-                                    left: screenWidth / 2 - 25,
-                                    child: Transform.rotate(
-                                      angle: paddleAngle,
-                                      alignment: Alignment.bottomCenter,
+                                    Positioned.fill(
+                                      top: 120,
                                       child: Stack(
+                                        alignment: Alignment.topCenter,
                                         children: [
                                           Opacity(
                                             opacity: opacityLevel,
                                             child: const Image(
-                                              image: AssetImage("assets/paddle.png"),
+                                              image: AssetImage("assets/reel.png"),
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    left: knobPos.dx - 25,
-                                    top: knobPos.dy + 30,
-                                    child: GestureDetector(
-                                      onPanStart: (details) {
-                                        RenderBox getBox = context.findRenderObject() as RenderBox;
-                                        _currentDragOffset = getBox.globalToLocal(details.globalPosition) + const Offset(0, -200);
-                                      },
-                                      onPanUpdate: (details) {
-                                        // print(details.globalPosition);
-                                        var previousOffset = _currentDragOffset;
-                                        _currentDragOffset += details.delta;
-                                        var angle = currentAngle + toAngle(_currentDragOffset, center) - toAngle(previousOffset, center);
-                                        currentAngle = normalizeAngle(angle);
-                                        oldValue = (currentAngle / (math.pi * 2)) * 100;
-
-                                        var oldRange = (100 - 0);
-                                        var newRange = (120 - 0);
-                                        var newValue = (((oldValue - 0) * newRange) / oldRange) + 0;
-
-                                        value = 5.0 * ((newValue / 5.0).ceil());
-
-                                        setState(() {
-                                          timerDuration = Duration(minutes: value.ceil().toInt());
-                                          // paddleAngle = (currentAngle / (math.pi * 2)) * 100;
-                                          paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.1;
-                                          if (currentAngle >= 0.0006651366295775674 && 3.3 >= currentAngle) {
-                                            paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.3;
-                                          }
-                                          // print(currentAngle);
-                                        });
-                                      },
-                                      child: Opacity(
-                                        opacity: opacityLevel,
-                                        child: const _Knob(),
+                                    Positioned(
+                                      top: 50,
+                                      left: screenWidth / 2 - 25,
+                                      child: Transform.rotate(
+                                        angle: paddleAngle,
+                                        alignment: Alignment.bottomCenter,
+                                        child: Stack(
+                                          children: [
+                                            Opacity(
+                                              opacity: opacityLevel,
+                                              child: const Image(
+                                                image: AssetImage("assets/paddle.png"),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned.fill(
-                                    top: 170,
-                                    child: Stack(
-                                      alignment: Alignment.topCenter,
-                                      children: [
-                                        Opacity(
-                                          opacity: opacityLevel,
-                                          child: const Image(
-                                            image: AssetImage("assets/center.png"),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 400,
-                                    child: AbsorbPointer(
-                                      absorbing: isAbsorb,
+                                    Positioned(
+                                      left: knobPos.dx - 25,
+                                      top: knobPos.dy + 30,
                                       child: GestureDetector(
-                                        onTap: () {
-                                          // Duration timerDuration =
-                                          //     Duration(minutes: value.ceil().toInt());
-                                          print(timerDuration.inMinutes);
+                                        onPanStart: (details) {
+                                          RenderBox getBox = context.findRenderObject() as RenderBox;
+                                          _currentDragOffset = getBox.globalToLocal(details.globalPosition) + const Offset(0, -200);
+                                        },
+                                        onPanUpdate: (details) {
+                                          // print(details.globalPosition);
+                                          var previousOffset = _currentDragOffset;
+                                          _currentDragOffset += details.delta;
+                                          var angle = currentAngle + toAngle(_currentDragOffset, center) - toAngle(previousOffset, center);
+                                          currentAngle = normalizeAngle(angle);
+                                          oldValue = (currentAngle / (math.pi * 2)) * 100;
 
-                                          durationTime = timerDuration.inMinutes;
-                                          if (durationTime == 0) {
-                                            durationTime = 5;
-                                          }
+                                          var oldRange = (100 - 0);
+                                          var newRange = (120 - 0);
+                                          var newValue = (((oldValue - 0) * newRange) / oldRange) + 0;
+
+                                          value = 5.0 * ((newValue / 5.0).ceil());
 
                                           setState(() {
-                                            opacityLevel = 0;
-                                          });
-
-                                          isStopped = false;
-                                          isAbsorb = true;
-
-                                          trigger?.fire();
-
-                                          timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                                            if (mounted) {
-                                              // print(value.toInt().ceil());
-                                              setState(() {
-                                                seconds = timerDuration.inSeconds - 1;
-                                                if (seconds < 0) {
-                                                  timer.cancel();
-
-                                                  isFinished = 1;
-
-                                                  triggerNotification(1, 'Strike!', 'Your timer has ended, you caught a fish!');
-
-                                                  print("test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
-
-                                                  int totalMinutes = value.toInt().ceil() == 0 ? 5 : value.toInt().ceil();
-
-                                                  Fish? fishCaught =
-                                                      timerFinished(
-                                                              totalMinutes)
-                                                          as Fish?;
-
-                                                  fishName = fishCaught!.name;
-                                                  fishImage = fishCaught.image;
-                                                } else {
-                                                  timerDuration = Duration(seconds: seconds);
-                                                }
-
-                                                if (timerDuration.inSeconds == 8) {
-                                                  stateMachineController!.isActive = false;
-                                                }
-                                                if (timerDuration.inSeconds == 6) {
-                                                  _controller.isActive = true;
-                                                }
-
-                                                return;
-                                              });
+                                            timerDuration = Duration(minutes: value.ceil().toInt());
+                                            // paddleAngle = (currentAngle / (math.pi * 2)) * 100;
+                                            paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.1;
+                                            if (currentAngle >= 0.0006651366295775674 && 3.3 >= currentAngle) {
+                                              paddleAngle = (currentAngle * math.pi / 3 - 0.2) + 3.3;
                                             }
+                                            // print(currentAngle);
                                           });
                                         },
                                         child: Opacity(
                                           opacity: opacityLevel,
-                                          child: const Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              Image(
-                                                image: AssetImage("assets/cast-button.png"),
-                                              ),
-                                              Text(
-                                                "Cast!",
-                                                style: TextStyle(fontSize: 16, color: Colors.white),
-                                              ),
-                                            ],
+                                          child: const _Knob(),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned.fill(
+                                      top: 170,
+                                      child: Stack(
+                                        alignment: Alignment.topCenter,
+                                        children: [
+                                          Opacity(
+                                            opacity: opacityLevel,
+                                            child: const Image(
+                                              image: AssetImage("assets/center.png"),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 400,
+                                      child: AbsorbPointer(
+                                        absorbing: isAbsorb,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // Duration timerDuration =
+                                            //     Duration(minutes: value.ceil().toInt());
+                                            print(timerDuration.inMinutes);
+
+                                            durationTime = timerDuration.inMinutes;
+                                            if (durationTime == 0) {
+                                              durationTime = 5;
+                                            }
+
+                                            setState(() {
+                                              opacityLevel = 0;
+                                            });
+
+                                            isStopped = false;
+                                            isAbsorb = true;
+
+                                            trigger?.fire();
+
+                                            timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                                              if (mounted) {
+                                                // print(value.toInt().ceil());
+                                                setState(() {
+                                                  seconds = timerDuration.inSeconds - 1;
+                                                  if (seconds < 0) {
+                                                    timer.cancel();
+
+                                                    isFinished = 1;
+
+                                                    triggerNotification(1, 'Strike!', 'Your timer has ended, you caught a fish!');
+
+                                                    print("test: ${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}");
+
+                                                    int totalMinutes = value.toInt().ceil() == 0 ? 5 : value.toInt().ceil();
+
+                                                    Fish? fishCaught = timerFinished(totalMinutes) as Fish?;
+
+                                                    fishName = fishCaught!.name;
+                                                    fishImage = fishCaught.image;
+                                                  } else {
+                                                    timerDuration = Duration(seconds: seconds);
+                                                  }
+
+                                                  if (timerDuration.inSeconds == 8) {
+                                                    stateMachineController!.isActive = false;
+                                                  }
+                                                  if (timerDuration.inSeconds == 6) {
+                                                    _controller.isActive = true;
+                                                  }
+
+                                                  return;
+                                                });
+                                              }
+                                            });
+                                          },
+                                          child: Opacity(
+                                            opacity: opacityLevel,
+                                            child: const Stack(
+                                              alignment: Alignment.center,
+                                              children: [
+                                                Image(
+                                                  image: AssetImage("assets/cast-button.png"),
+                                                ),
+                                                Text(
+                                                  "Cast!",
+                                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    top: 450,
-                                    child: AbsorbPointer(
-                                      absorbing: !isAbsorb,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            if (value == 0) {
-                                              timerDuration = const Duration(minutes: 5);
-                                            } else {
-                                              timerDuration = Duration(minutes: (value).ceil().toInt());
-                                            }
+                                    Positioned(
+                                      top: 450,
+                                      child: AbsorbPointer(
+                                        absorbing: !isAbsorb,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (value == 0) {
+                                                timerDuration = const Duration(minutes: 5);
+                                              } else {
+                                                timerDuration = Duration(minutes: (value).ceil().toInt());
+                                              }
 
-                                            opacityLevel = 1;
-                                            isStopped = true;
+                                              opacityLevel = 1;
+                                              isStopped = true;
 
-                                            isAbsorb = false;
+                                              isAbsorb = false;
 
-                                            stateMachineController!.isActive = false;
-                                            // stateMachineController!.
+                                              stateMachineController!.isActive = false;
+                                              // stateMachineController!.
 
-                                            // trigger!.fire();
-                                          });
-                                          Navigator.of(context).pushReplacement(
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) => const HomePage(),
-                                            ),
-                                          );
-                                        },
-                                        child: Opacity(
-                                          opacity: (opacityLevel == 0 ? 1 : 0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 2,
-                                                color: const Color(0xffFF1F1F),
+                                              // trigger!.fire();
+                                            });
+                                            Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                                builder: (BuildContext context) => const HomePage(),
                                               ),
-                                              borderRadius: const BorderRadius.all(Radius.circular(50)),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                              child: Text(
-                                                "Give Up",
-                                                style: TextStyle(
-                                                  color: Color(0xffFF1F1F),
-                                                  fontSize: 16,
+                                            );
+                                          },
+                                          child: Opacity(
+                                            opacity: (opacityLevel == 0 ? 1 : 0),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  width: 2,
+                                                  color: const Color(0xffFF1F1F),
+                                                ),
+                                                borderRadius: const BorderRadius.all(Radius.circular(50)),
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                                child: Text(
+                                                  "Give Up",
+                                                  style: TextStyle(
+                                                    color: Color(0xffFF1F1F),
+                                                    fontSize: 16,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -501,594 +509,599 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    top: 0,
-                                    right: 0,
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        timerDuration -= const Duration(seconds: 15);
-                                      },
-                                      child: const Text("Cut"),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          timerDuration -= const Duration(seconds: 15);
+                                        },
+                                        child: const Text("Cut"),
+                                      ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(25, 160, 25, 50),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                children: [
+                                  // const SizedBox(
+                                  //   height: 160,
+                                  // ),
+                                  FutureBuilder(
+                                    future: _futureTask,
+                                    builder: (BuildContext context, AsyncSnapshot<List<Task>?> snapshot) {
+                                      List<Task>? taskList = snapshot.data;
+                                      if (taskList != null) {
+                                        return Wrap(
+                                          direction: Axis.vertical,
+                                          spacing: 20,
+                                          children: taskList.map((Task task) {
+                                            return Row(
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    currentTask = task;
+                                                    final response = await checkTask(currentTask);
+
+                                                    // print(response);
+                                                    setState(() {
+                                                      if (task.isFinished! == 0) {
+                                                        task.isFinished = 1;
+                                                      } else {
+                                                        task.isFinished = 0;
+                                                      }
+                                                    });
+                                                  },
+                                                  child: Image(
+                                                    image: AssetImage("assets/${checkImage[task.isFinished!]}-bubble.png"),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 5,
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(
+                                                      () {
+                                                        taskName = task.title!;
+                                                        categoryTask = task.urgency!;
+                                                        taskDateTime = task.due!;
+                                                        _titleTaskController.text = taskName;
+                                                        isVisibleAddEdit = true;
+                                                        isEditTask = true;
+                                                        currentTask = task;
+                                                        isNoDate = false;
+                                                        isNoTime = false;
+                                                      },
+                                                    );
+                                                  },
+                                                  child: Container(
+                                                    child: Opacity(
+                                                      opacity: (task.isFinished! == 0 ? 1 : 0.7),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            task.title!,
+                                                            style: TextStyle(
+                                                              overflow: TextOverflow.ellipsis,
+                                                              color: Colors.white,
+                                                              fontSize: 16,
+                                                              decoration: (task.isFinished! == 0 ? TextDecoration.none : TextDecoration.lineThrough),
+                                                              decorationThickness: 2,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          Row(
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: [
+                                                              Container(
+                                                                height: 20,
+                                                                width: 90,
+                                                                alignment: Alignment.center,
+                                                                decoration: const BoxDecoration(
+                                                                  color: Color(0xffFF1F1F),
+                                                                  borderRadius: BorderRadius.all(
+                                                                    Radius.circular(50),
+                                                                  ),
+                                                                ),
+                                                                child: Text(task.urgency!, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                                                              ),
+                                                              const SizedBox(
+                                                                width: 15,
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Icons.access_time_outlined,
+                                                                    color: Colors.white,
+                                                                  ),
+                                                                  SizedBox(
+                                                                    width: 5,
+                                                                  ),
+                                                                  Text(
+                                                                    DateFormat('MMM dd, HH:mm').format(task.due!),
+                                                                    style: TextStyle(color: Colors.white, fontSize: 14),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList(),
+                                        );
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 25,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Positioned.fill(
+                        top: 100,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 160,
+                              height: 30,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(50),
+                                ),
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  AnimatedBuilder(
+                                    animation: _offsetAnimation,
+                                    builder: (context, child) {
+                                      return Transform.translate(
+                                        offset: Offset(
+                                          _offsetAnimation.value.dx * 37, // Adjust the width of the red bar
+                                          0,
+                                        ),
+                                        child: child,
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 80,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: orangeColor,
+                                        borderRadius: const BorderRadius.all(
+                                          Radius.circular(30),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+
+                                          _panelController.close();
+
+                                          setState(() {
+                                            _alignmentController.animateTo(-1.0);
+
+                                            timerColor = Colors.white;
+                                            todoColor = Colors.black.withOpacity(0.3);
+                                            isTodo = false;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                                          decoration: const BoxDecoration(
+                                              // color: Colors.redAccent,
+                                              ),
+                                          child: Text(
+                                            "Timer",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: timerColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          _pageController.animateTo(
+                                            MediaQuery.of(context).size.width,
+                                            duration: const Duration(milliseconds: 300),
+                                            curve: Curves.easeIn,
+                                          );
+
+                                          _panelController.close();
+
+                                          setState(() {
+                                            _alignmentController.animateTo(1.0);
+                                            timerColor = Colors.black.withOpacity(0.3);
+                                            todoColor = Colors.white;
+                                            isTodo = true;
+                                          });
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                                          decoration: const BoxDecoration(
+                                              // color: Colors.redAccent,
+                                              ),
+                                          child: Text(
+                                            "To-do",
+                                            style: TextStyle(
+                                              // backgroundColor: Colors.redAccent,
+                                              fontSize: 14,
+                                              color: todoColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(25, 160, 25, 50),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
+                      ),
+                      Visibility(
+                        visible: isTodo,
+                        child: Positioned(
+                          right: 25,
+                          bottom: 70,
+                          child: SizedBox(
+                            width: 70,
+                            height: 70,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(0),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  isVisibleAddEdit = true;
+                                  isNoDate = true;
+                                  isNoTime = true;
+
+                                  _titleTaskController.text = '';
+                                  taskName = '';
+                                  categoryTask = 'No Category';
+                                });
+                              },
+                              child: const Stack(
+                                fit: StackFit.expand,
+                                alignment: Alignment.center,
+                                children: [
+                                  Image(
+                                    image: AssetImage('assets/add-task-bubble.png'),
+                                    fit: BoxFit.fill,
+                                  ),
+                                  Icon(
+                                    Icons.add,
+                                    size: 40,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Opacity(
+                        opacity: opacityLevel,
+                        child: SlidingUpPanel(
+                          controller: _panelController,
+                          maxHeight: 310,
+                          minHeight: 55,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(40),
+                            topRight: Radius.circular(40),
+                          ),
+                          panel: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                // const SizedBox(
-                                //   height: 160,
-                                // ),
-                                FutureBuilder(
-                                  future: _futureTask,
-                                  builder: (BuildContext context, AsyncSnapshot<List<Task>?> snapshot) {
-                                    List<Task>? taskList = snapshot.data;
-                                    if (taskList != null) {
-                                      return Wrap(
-                                        direction: Axis.vertical,
-                                        spacing: 10,
-                                        children: taskList.map((Task task) {
-                                          return Row(
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () async {
-                                                  await checkTask(currentTask);
-                                                  setState(() {
-                                                    if (task.isFinished! == 0) {
-                                                      task.isFinished = 1;
-                                                    } else {
-                                                      task.isFinished = 0;
-                                                    }
-                                                  });
-                                                },
-                                                child: Image(
-                                                  image: AssetImage("assets/${checkImage[task.isFinished!]}-bubble.png"),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                width: 15,
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      taskName = task.title!;
-                                                      categoryTask = task.urgency!;
-                                                      taskDateTime = task.due!;
-                                                      _titleTaskController.text = taskName;
-                                                      isVisibleAddEdit = true;
-                                                      isEditTask = true;
-                                                      currentTask = task;
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                  child: Opacity(
-                                                    opacity: (task.isFinished! == 0 ? 1 : 0.7),
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          task.title!,
-                                                          style: TextStyle(
-                                                            overflow: TextOverflow.ellipsis,
-                                                            color: Colors.white,
-                                                            fontSize: 16,
-                                                            decoration: (task.isFinished! == 0 ? TextDecoration.none : TextDecoration.lineThrough),
-                                                            decorationThickness: 2,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Row(
-                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                          children: [
-                                                            Container(
-                                                              height: 20,
-                                                              width: 90,
-                                                              alignment: Alignment.center,
-                                                              decoration: const BoxDecoration(
-                                                                color: Color(0xffFF1F1F),
-                                                                borderRadius: BorderRadius.all(
-                                                                  Radius.circular(50),
-                                                                ),
-                                                              ),
-                                                              child: Text(task.urgency!, style: const TextStyle(color: Colors.white, fontSize: 14)),
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 15,
-                                                            ),
-                                                            Row(
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.access_time_outlined,
-                                                                  color: Colors.white,
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 5,
-                                                                ),
-                                                                Text(
-                                                                  DateFormat('MMM dd, HH:mm').format(task.due!),
-                                                                  style: TextStyle(color: Colors.white, fontSize: 14),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        }).toList(),
-                                      );
-                                    } else {
-                                      return Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-                                  },
+                                Container(
+                                  height: 7,
+                                  width: 55,
+                                  decoration: BoxDecoration(
+                                    color: blueColor,
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(50),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(
-                                  height: 25,
+                                  height: 30,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => const CollectionPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Icon(
+                                        MdiIcons.fishbowlOutline,
+                                        color: const Color(0xff117CFB),
+                                        size: 30,
+                                      ),
+                                      const SizedBox(
+                                        width: 25,
+                                      ),
+                                      const Text(
+                                        "Fish Collections",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => const StatisticPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.query_stats_outlined,
+                                        color: Color(0xffFD872D),
+                                        size: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 25,
+                                      ),
+                                      Text(
+                                        "Statistics",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => const AboutUsPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        color: Color(0xff3DC45D),
+                                        size: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 25,
+                                      ),
+                                      Text(
+                                        "About Us",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => const SettingsPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        MdiIcons.cogOutline,
+                                        color: const Color(0xff5856D5),
+                                        size: 30,
+                                      ),
+                                      const SizedBox(
+                                        width: 25,
+                                      ),
+                                      const Text(
+                                        "Settings",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) => LoginPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.logout_outlined,
+                                        color: Color(0xffFE2E00),
+                                        size: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 25,
+                                      ),
+                                      Text(
+                                        "Log Out",
+                                        style: TextStyle(fontSize: 16, color: Color(0xffFE2E00)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 0,
-                      child: Column(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 100,
-                            color: blueColor.withOpacity(0.0),
-                          ),
-                          Container(
-                            width: 160,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50),
-                              ),
-                            ),
+                      ),
+                      Visibility(
+                        visible: (isFinished == 0 ? false : true),
+                        child: Positioned.fill(
+                          top: 0,
+                          left: 0,
+                          child: Align(
+                            alignment: Alignment.center,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
-                                AnimatedBuilder(
-                                  animation: _offsetAnimation,
-                                  builder: (context, child) {
-                                    return Transform.translate(
-                                      offset: Offset(
-                                        _offsetAnimation.value.dx * 37, // Adjust the width of the red bar
-                                        0,
-                                      ),
-                                      child: child,
-                                    );
-                                  },
+                                Opacity(
+                                  opacity: 0.4,
                                   child: Container(
-                                    width: 80,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: orangeColor,
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(30),
-                                      ),
-                                    ),
+                                    height: screenHeight,
+                                    width: screenWidth,
+                                    color: const Color(0xff000000),
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
-
-                                        _panelController.close();
-
-                                        setState(() {
-                                          _alignmentController.animateTo(-1.0);
-
-                                          timerColor = Colors.white;
-                                          todoColor = Colors.black.withOpacity(0.3);
-                                          isTodo = false;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: const BoxDecoration(
-                                            // color: Colors.redAccent,
-                                            ),
-                                        child: Text(
-                                          "Timer",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: timerColor,
+                                SvgPicture.asset(
+                                  'assets/fish-caught.svg',
+                                  width: screenWidth * 0.95,
+                                ),
+                                Positioned(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/fish-tank.svg',
+                                            width: screenWidth * 0.3,
+                                          ),
+                                          SvgPicture.asset(
+                                            'assets/fish/${(fishImage ?? "")}.svg',
+                                            width: screenWidth * 0.20,
+                                            alignment: Alignment.center,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        (fishName ?? ""),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        height: 200,
+                                        width: screenWidth * 0.65,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(40),
+                                          color: const Color(
+                                            0xff308BCC,
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        _pageController.animateTo(
-                                          MediaQuery.of(context).size.width,
-                                          duration: const Duration(milliseconds: 300),
-                                          curve: Curves.easeIn,
-                                        );
-
-                                        _panelController.close();
-
-                                        setState(() {
-                                          _alignmentController.animateTo(1.0);
-                                          timerColor = Colors.black.withOpacity(0.3);
-                                          todoColor = Colors.white;
-                                          isTodo = true;
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: const BoxDecoration(
-                                            // color: Colors.redAccent,
-                                            ),
-                                        child: Text(
-                                          "To-do",
-                                          style: TextStyle(
-                                            // backgroundColor: Colors.redAccent,
-                                            fontSize: 14,
-                                            color: todoColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Visibility(
-                      visible: isTodo,
-                      child: Positioned(
-                        right: 25,
-                        bottom: 70,
-                        child: SizedBox(
-                          width: 70,
-                          height: 70,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isVisibleAddEdit = true;
-                                isNoDate = true;
-                                isNoTime = true;
-
-                                // taskName = '';
-                              });
-                            },
-                            child: const Stack(
-                              fit: StackFit.expand,
-                              alignment: Alignment.center,
-                              children: [
-                                Image(
-                                  image: AssetImage('assets/add-task-bubble.png'),
-                                  fit: BoxFit.fill,
-                                ),
-                                Icon(Icons.add, size: 40),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Opacity(
-                      opacity: opacityLevel,
-                      child: SlidingUpPanel(
-                        controller: _panelController,
-                        maxHeight: 310,
-                        minHeight: 55,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(40),
-                          topRight: Radius.circular(40),
-                        ),
-                        panel: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 7,
-                                width: 55,
-                                decoration: BoxDecoration(
-                                  color: blueColor,
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(50),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) => const CollectionPage(),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Icon(
-                                      MdiIcons.fishbowlOutline,
-                                      color: const Color(0xff117CFB),
-                                      size: 30,
-                                    ),
-                                    const SizedBox(
-                                      width: 25,
-                                    ),
-                                    const Text(
-                                      "Fish Collections",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          const StatisticPage(),
-                                    ),
-                                  );
-                                },
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.query_stats_outlined,
-                                      color: Color(0xffFD872D),
-                                      size: 30,
-                                    ),
-                                    SizedBox(
-                                      width: 25,
-                                    ),
-                                    Text(
-                                      "Statistics",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) => const AboutUsPage(),
-                                    ),
-                                  );
-                                },
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      color: Color(0xff3DC45D),
-                                      size: 30,
-                                    ),
-                                    SizedBox(
-                                      width: 25,
-                                    ),
-                                    Text(
-                                      "About Us",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) => const SettingsPage(),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      MdiIcons.cogOutline,
-                                      color: const Color(0xff5856D5),
-                                      size: 30,
-                                    ),
-                                    const SizedBox(
-                                      width: 25,
-                                    ),
-                                    const Text(
-                                      "Settings",
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) => LoginPage(),
-                                    ),
-                                  );
-                                },
-                                child: const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.logout_outlined,
-                                      color: Color(0xffFE2E00),
-                                      size: 30,
-                                    ),
-                                    SizedBox(
-                                      width: 25,
-                                    ),
-                                    Text(
-                                      "Log Out",
-                                      style: TextStyle(fontSize: 16, color: Color(0xffFE2E00)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: (isFinished == 0 ? false : true),
-                      child: Positioned.fill(
-                        top: 0,
-                        left: 0,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Opacity(
-                                opacity: 0.4,
-                                child: Container(
-                                  height: screenHeight,
-                                  width: screenWidth,
-                                  color: const Color(0xff000000),
-                                ),
-                              ),
-                              SvgPicture.asset(
-                                'assets/fish-caught.svg',
-                                width: screenWidth * 0.95,
-                              ),
-                              Positioned(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/fish-tank.svg',
-                                          width: screenWidth * 0.3,
-                                        ),
-                                        SvgPicture.asset(
-                                          'assets/fish/${(fishImage ?? "")}.svg',
-                                          width: screenWidth * 0.20,
-                                          alignment: Alignment.center,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      (fishName ?? ""),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Container(
-                                      height: 200,
-                                      width: screenWidth * 0.65,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(40),
-                                        color: const Color(
-                                          0xff308BCC,
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(23.0),
-                                        child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            const Text(
-                                              "You finished your focus time!",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(23.0),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              const Text(
+                                                "You finished your focus time!",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                ),
+                                                textAlign: TextAlign.center,
                                               ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const SizedBox(height: 15),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
-                                                  style: const TextStyle(
-                                                    color: Color(0xffFE2E00),
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
+                                              const SizedBox(height: 15),
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
+                                                    style: const TextStyle(
+                                                      color: Color(0xffFE2E00),
+                                                      fontSize: 24,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
                                                   ),
-                                                ),
-                                                const Text(
-                                                  " Minutes",
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 24,
+                                                  const Text(
+                                                    " Minutes",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 24,
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 25),
-                                            MainButton(
-                                              onTap: () {
-                                                setState(() {
-                                                  Navigator.of(context).pushReplacement(
-                                                    MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
-                                                  );
-                                                });
-                                              },
-                                              label: "Confirm",
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                              const SizedBox(height: 25),
+                                              MainButton(
+                                                onTap: () {
+                                                  setState(() {
+                                                    Navigator.of(context).pushReplacement(
+                                                      MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
+                                                    );
+                                                  });
+                                                },
+                                                label: "Confirm",
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1113,19 +1126,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                     child: Column(
                       children: [
-                        Focus(
-                          onFocusChange: (focus) {
-                            _isFocusAddEditTask = focus;
-                            _categoryController.hide();
-                          },
-                          child: BubbleButton(
-                            color: Colors.white.withOpacity(0.3),
-                            textColor: orangeColor.withOpacity(0.75),
-                            label: 'Input new task here...',
-                            length: MediaQuery.of(context).size.width - 40,
-                            controller: _titleTaskController,
-                            type: 'TextField',
-                          ),
+                        Row(
+                          children: [
+                            Focus(
+                              onFocusChange: (focus) {
+                                _isFocusAddEditTask = focus;
+                                _categoryController.hide();
+                              },
+                              child: BubbleButton(
+                                color: Colors.white.withOpacity(0.3),
+                                textColor: orangeColor.withOpacity(0.75),
+                                label: 'Input new task here...',
+                                length: isEditTask ? MediaQuery.of(context).size.width - 85 : MediaQuery.of(context).size.width - 35,
+                                controller: _titleTaskController,
+                                type: 'TextField',
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Visibility(
+                              visible: isEditTask,
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(0),
+                                  ),
+                                  onPressed: () async {
+                                    final response = await deleteTask(currentTask);
+
+                                    if (response > 0) {
+                                      setState(() {
+                                        _futureTask = showAllTask();
+                                        isVisibleAddEdit = false;
+                                        // isEditTask = false;
+                                      });
+                                    }
+                                  },
+                                  child: const Stack(
+                                    fit: StackFit.expand,
+                                    alignment: Alignment.center,
+                                    children: [
+                                      Image(
+                                        image: AssetImage('assets/add-task-bubble.png'),
+                                        fit: BoxFit.fill,
+                                      ),
+                                      Icon(
+                                        Icons.delete_outline_rounded,
+                                        size: 30,
+                                        color: Colors.white,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(
                           height: 15,
@@ -1698,7 +1757,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                             });
                                                           },
                                                           child: Container(
-                                                            padding: const EdgeInsets.all(8.0),
+                                                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
                                                             decoration: const BoxDecoration(
                                                                 // color: Colors.redAccent,
                                                                 ),
@@ -1726,7 +1785,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                             });
                                                           },
                                                           child: Container(
-                                                            padding: const EdgeInsets.all(8.0),
+                                                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
                                                             decoration: const BoxDecoration(
                                                                 // color: Colors.redAccent,
                                                                 ),
@@ -1776,34 +1835,52 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             const SizedBox(
                               width: 5,
                             ),
-                            GestureDetector(
-                              onTap: () async {
-                                taskName = _titleTaskController.text;
-                                if (isEditTask) {
-                                  final response = await updateTask(currentTask, taskName, categoryTask, taskDateTime);
+                            SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(0),
+                                ),
+                                onPressed: () async {
+                                  taskName = _titleTaskController.text;
+                                  if (isEditTask) {
+                                    final response = await updateTask(currentTask, taskName, categoryTask, taskDateTime);
 
-                                  if (response > 0) {
-                                    setState(() {
-                                      _futureTask = showAllTask();
-                                      isVisibleAddEdit = false;
-                                      // isEditTask = false;
-                                    });
+                                    if (response > 0) {
+                                      setState(() {
+                                        _futureTask = showAllTask();
+                                        isVisibleAddEdit = false;
+                                        // isEditTask = false;
+                                      });
+                                    }
+                                  } else {
+                                    final response = await addTask(taskName, categoryTask, taskDateTime);
+                                    if (response == 200) {
+                                      setState(() {
+                                        _futureTask = showAllTask();
+                                        isVisibleAddEdit = false;
+                                        // isEditTask = false;
+                                      });
+                                    }
                                   }
-                                } else {
-                                  final response = await addTask(taskName, categoryTask, taskDateTime);
-                                  if (response == 200) {
-                                    setState(() {
-                                      _futureTask = showAllTask();
-                                      isVisibleAddEdit = false;
-                                      // isEditTask = false;
-                                    });
-                                  }
-
-                                  // _titleTaskController.text = '';
-                                }
-                              },
-                              child: const Image(image: AssetImage('assets/submit-button.png')),
-                            )
+                                },
+                                child: const Stack(
+                                  fit: StackFit.expand,
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Image(
+                                      image: AssetImage('assets/add-task-bubble.png'),
+                                      fit: BoxFit.fill,
+                                    ),
+                                    Image(
+                                      image: AssetImage('assets/submit-button.png'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ],
