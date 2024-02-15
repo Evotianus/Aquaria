@@ -16,7 +16,7 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-        $urgency = array('Critical', 'High', 'Medium', 'Low', 'Very Low');
+        $urgency = array('Critical', 'High', 'Medium', 'Low', 'No Category');
 
         return [
             'user_id' => mt_rand(1, 5),
