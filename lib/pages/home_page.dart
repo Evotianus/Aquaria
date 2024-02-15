@@ -22,6 +22,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:rive/rive.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter/rendering.dart';
 
 double radius = 135;
 double strokeWidth = 40;
@@ -49,8 +50,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   double paddleAngle = 3.1;
 
-  Task? currentTask;
-
   final _pageController = PageController();
   final _pageDateTimeController = PageController();
 
@@ -59,11 +58,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late final AnimationController _alignmentControllerDateTime;
   late final Animation<Offset> _offsetAnimationDateTime;
 
-  Color timerColor = Colors.white;
-  Color todoColor = Colors.black.withOpacity(0.3);
-  Color dateColor = Colors.white;
-  Color timeColor = Colors.black.withOpacity(0.3);
-
   List<String> checkImage = ["unchecked", "checked"];
 
   final PanelController _panelController = PanelController();
@@ -71,6 +65,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final OverlayPortalController _categoryController = OverlayPortalController();
   final OverlayPortalController _dateController = OverlayPortalController();
   final OverlayPortalController _timeController = OverlayPortalController();
+  final OverlayPortalController _confirmController = OverlayPortalController();
 
   Duration timerDuration = const Duration(minutes: 5);
   int minutes = 0;
@@ -82,8 +77,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   bool isAbsorb = false;
 
-  final Color blueColor = const Color(0xff00B4ED);
-  final Color orangeColor = const Color(0xffFE4600);
   int deadlineCount = -1;
   int deadlineCount2 = -1;
 
@@ -105,20 +98,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   bool isNoTime = true;
 
   bool _isFocusAddEditTask = false;
-  bool isVisibleAddEdit = false;
   bool isEditTask = false;
   bool isTodo = false;
+  bool isVisibleAddEdit = false;
+
+  Task? currentTask;
+  late Future<List<Task>?> futureTask;
 
   var deadlineColor = List<List>.generate(5, (i) => [Colors.white.withOpacity(0.3), const Color(0xffFE4600).withOpacity(0.75), null], growable: true);
   var deadlineColor2 =
       List<List>.generate(5, (i) => [Colors.white.withOpacity(0.3), const Color(0xffFE4600).withOpacity(0.75), null], growable: true);
-  late Future<List<Task>?> _futureTask;
+  List<String> categories = <String>['Critical', 'High', 'Medium', 'Low', 'No Category'];
+  List<Color> categoriesColor = <Color>[
+    const Color(0xffFF1F1F),
+    const Color(0xffFF9900),
+    const Color(0xffE2E701),
+    const Color(0xff7FFF00),
+    const Color(0xff808080)
+  ];
 
   @override
   void initState() {
     super.initState();
 
-    _futureTask = showAllTask();
+    futureTask = showAllTask();
 
     _alignmentController = AnimationController(
       vsync: this,
@@ -200,6 +203,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     });
   }
 
+  Color findCategoryColor(categoryName) {
+    if (categoryName == categories[0]) {
+      return categoriesColor[0];
+    } else if (categoryName == categories[1]) {
+      return categoriesColor[1];
+    } else if (categoryName == categories[2]) {
+      return categoriesColor[2];
+    } else if (categoryName == categories[3]) {
+      return categoriesColor[3];
+    }
+    return categoriesColor[4];
+  }
+
   void _checkDeadlineButton2(int deadlineCount) {
     setState(() {
       if (this.deadlineCount2 != -1) {
@@ -222,6 +238,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // debugPaintSizeEnabled = true;
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     double screenHeight = screenSize.height;
@@ -235,13 +252,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     String? fishImage;
 
     double screenDimValue = 0.5;
-    List<String> categories = <String>['Critical', 'High', 'Medium', 'Low', 'Very Low'];
 
     return Scaffold(
       backgroundColor: blueColor,
       body: GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
+          print(isVisibleAddEdit);
         },
         child: Stack(
           alignment: Alignment.center,
@@ -524,17 +541,95 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               ),
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(25, 160, 25, 50),
+                          Container(
+                            width: screenWidth - 70,
+                            padding: const EdgeInsets.fromLTRB(35, 160, 35, 50),
                             child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Column(
                                 children: [
+                                  OverlayPortal(
+                                    controller: _confirmController,
+                                    overlayChildBuilder: (context) {
+                                      return Positioned(
+                                        child: Align(
+                                          alignment: Alignment.center,
+                                          child: Container(
+                                            width: 350,
+                                            height: 150,
+                                            child: Stack(
+                                              children: [
+                                                const Image(
+                                                  image: AssetImage('assets/confirmation-popup.png'),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                                const Align(
+                                                  alignment: Alignment(-0.15, -0.5),
+                                                  child: Text(
+                                                    "Are you sure to delete?",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Positioned(
+                                                  top: 70,
+                                                  right: 70,
+                                                  child: Row(
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          _confirmController.hide();
+                                                        },
+                                                        child: Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 25,
+                                                      ),
+                                                      GestureDetector(
+                                                        onTap: () async {
+                                                          final response = await deleteTask(currentTask);
+
+                                                          if (response > 0) {
+                                                            setState(() {
+                                                              futureTask = showAllTask();
+                                                              isVisibleAddEdit = false;
+                                                              _confirmController.hide();
+                                                              // isEditTask = false;
+                                                            });
+                                                          }
+                                                        },
+                                                        child: BubbleButton(
+                                                          color: const Color(0xffFF7E4C),
+                                                          secondaryColor: orangeColor,
+                                                          label: 'Done',
+                                                          length: 90,
+                                                          textColor: Colors.white,
+                                                          padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                   // const SizedBox(
                                   //   height: 160,
                                   // ),
                                   FutureBuilder(
-                                    future: _futureTask,
+                                    future: futureTask,
                                     builder: (BuildContext context, AsyncSnapshot<List<Task>?> snapshot) {
                                       List<Task>? taskList = snapshot.data;
                                       if (taskList != null) {
@@ -563,7 +658,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   ),
                                                 ),
                                                 const SizedBox(
-                                                  width: 5,
+                                                  width: 10,
                                                 ),
                                                 GestureDetector(
                                                   onTap: () {
@@ -607,8 +702,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                 height: 20,
                                                                 width: 90,
                                                                 alignment: Alignment.center,
-                                                                decoration: const BoxDecoration(
-                                                                  color: Color(0xffFF1F1F),
+                                                                decoration: BoxDecoration(
+                                                                  color: findCategoryColor(task.urgency!),
                                                                   borderRadius: BorderRadius.all(
                                                                     Radius.circular(50),
                                                                   ),
@@ -787,6 +882,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   isVisibleAddEdit = true;
                                   isNoDate = true;
                                   isNoTime = true;
+                                  isEditTask = false;
 
                                   _titleTaskController.text = '';
                                   taskName = '';
@@ -1110,7 +1206,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Visibility(
                 visible: isVisibleAddEdit,
                 child: Container(
-                  width: MediaQuery.of(context).size.width,
+                  width: screenWidth,
                   height: 200,
                   decoration: BoxDecoration(
                     color: blueColor,
@@ -1137,7 +1233,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 color: Colors.white.withOpacity(0.3),
                                 textColor: orangeColor.withOpacity(0.75),
                                 label: 'Input new task here...',
-                                length: isEditTask ? MediaQuery.of(context).size.width - 85 : MediaQuery.of(context).size.width - 35,
+                                length: isEditTask ? screenWidth - 85 : screenWidth - 35,
                                 controller: _titleTaskController,
                                 type: 'TextField',
                               ),
@@ -1156,14 +1252,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     padding: const EdgeInsets.all(0),
                                   ),
                                   onPressed: () async {
-                                    final response = await deleteTask(currentTask);
+                                    if (isConfirmDelete) {
+                                      _confirmController.show();
+                                    } else {
+                                      final response = await deleteTask(currentTask);
 
-                                    if (response > 0) {
-                                      setState(() {
-                                        _futureTask = showAllTask();
-                                        isVisibleAddEdit = false;
-                                        // isEditTask = false;
-                                      });
+                                      if (response > 0) {
+                                        setState(() {
+                                          futureTask = showAllTask();
+                                          isVisibleAddEdit = false;
+                                          // isEditTask = false;
+                                        });
+                                      }
                                     }
                                   },
                                   child: const Stack(
@@ -1210,7 +1310,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ],
                                     ),
-                                    height: 240,
+                                    height: 255,
                                     width: 175,
                                     child: ListView.separated(
                                       padding: const EdgeInsets.symmetric(
@@ -1261,7 +1361,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   color: Colors.white.withOpacity(0.3),
                                   textColor: orangeColor.withOpacity(0.75),
                                   label: categoryTask,
-                                  length: MediaQuery.of(context).size.width / 2.8,
+                                  length: screenWidth / 2.8,
                                   type: "Button",
                                 ),
                               ),
@@ -1309,6 +1409,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                         Column(
                                                           children: [
                                                             TableCalendar(
+                                                              daysOfWeekHeight: 18,
                                                               firstDay: DateTime.utc(1930, 1, 1),
                                                               lastDay: DateTime.utc(2119, 12, 31),
                                                               focusedDay: _focusedDay,
@@ -1827,7 +1928,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   color: Colors.white.withOpacity(0.3),
                                   textColor: orangeColor.withOpacity(0.75),
                                   label: isNoDate ? 'No Date' : DateFormat('MMM dd, HH:mm').format(taskDateTime),
-                                  length: MediaQuery.of(context).size.width / 2.4,
+                                  length: screenWidth / 2.4,
                                   type: "Button",
                                 ),
                               ),
@@ -1850,7 +1951,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                     if (response > 0) {
                                       setState(() {
-                                        _futureTask = showAllTask();
+                                        futureTask = showAllTask();
                                         isVisibleAddEdit = false;
                                         // isEditTask = false;
                                       });
@@ -1859,7 +1960,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     final response = await addTask(taskName, categoryTask, taskDateTime);
                                     if (response == 200) {
                                       setState(() {
-                                        _futureTask = showAllTask();
+                                        futureTask = showAllTask();
                                         isVisibleAddEdit = false;
                                         // isEditTask = false;
                                       });
