@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:aquaria/classes/fish.dart';
 import 'package:aquaria/classes/task.dart';
-import 'package:aquaria/classes/timer.dart';
 import 'package:aquaria/classes/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -78,7 +77,7 @@ Future<Fish?> getFish(fish) async {
   return null;
 }
 
-Future<dynamic> getTimerByUser(userId) async {
+Future<List<dynamic>?> getTimerByUser(userId) async {
   final response = await http.post(
     Uri.parse("$uri/get-timer-by-user"),
     headers: <String, String>{
@@ -92,10 +91,11 @@ Future<dynamic> getTimerByUser(userId) async {
 
   if (response.statusCode == 200) {
     List<dynamic> body = jsonDecode(response.body);
+    print("aa");
+    List<dynamic> timerList = body.map((dynamic item) => print(item)).toList();
+    print("aa");
 
-    List<Timer> timerList = body.map((dynamic item) => Timer.fromJson(item)).toList();
-
-    return body;
+    return timerList;
   }
 
   return null;

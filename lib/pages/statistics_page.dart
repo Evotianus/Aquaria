@@ -118,170 +118,166 @@ class StatisticPage extends StatelessWidget {
       body: FutureBuilder(
         future: getProgressData(),
         builder: (BuildContext, AsyncSnapshot<List<dynamic>> snapshot) {
+          print(snapshot.data);
           if (snapshot.hasData) {
-            print(snapshot.data![0]['totalMinutes']);
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: screenWidth / 2 * 0.8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff35A6F6),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 15),
-                        child: const Column(
-                          children: [
-                            Text(
-                              "30",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "Completed Task",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Container(
-                        width: screenWidth / 2 * 0.8,
-                        decoration: const BoxDecoration(
-                          color: Color(0xff35A6F6),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 15),
-                        child: const Column(
-                          children: [
-                            Text(
-                              "5",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "Pending Task",
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 25),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20),
-                      ),
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            // print(snapshot.data![0]['totalMinutes']);
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Focused Time Distribution",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          child: Divider(color: Colors.black),
-                        ),
-                        const Row(
-                          children: [
-                            Text(
-                              "Total focused time: ",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "50",
-                              style: TextStyle(
-                                color: Color(0xff35A6F6),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              " mins",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        AspectRatio(
-                          aspectRatio: 1,
-                          child: BarChart(
-                            BarChartData(
-                              titlesData: titlesData,
-                              barTouchData: barTouchData,
-                              gridData: const FlGridData(
-                                show: true,
-                                drawVerticalLine: false,
-                                horizontalInterval: 20,
-                              ),
-                              alignment: BarChartAlignment.spaceAround,
-                              borderData: FlBorderData(show: false),
-                              barGroups: [
-                                for (var index = 0;
-                                    index < snapshot.data!.length;
-                                    index++)
-                                  // var item = snapshot.data![index];
-                                  BarChartGroupData(
-                                    x: index,
-                                    barRods: [
-                                      BarChartRodData(
-                                        width: 20,
-                                        toY: double.parse(snapshot.data![index]
-                                                ['totalMinutes']
-                                            .toString()),
-                                      ),
-                                    ],
-                                    showingTooltipIndicators: [0],
-                                  )
-                                // for (var (item, index) in snapshot.data.length)
-                                //   BarChartGroupData(
-                                //     x: index,
-                                //     barRods: [
-                                //       BarChartRodData(
-                                //         width: 20,
-                                //         toY: 60,
-                                //       ),
-                                //     ],
-                                //     showingTooltipIndicators: [0],
-                                //   ),
-                              ],
+                        Container(
+                          width: screenWidth / 2 * 0.8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xff35A6F6),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
                             ),
                           ),
-                        )
+                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                          child: const Column(
+                            children: [
+                              Text(
+                                "30",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "Completed Task",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Container(
+                          width: screenWidth / 2 * 0.8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xff35A6F6),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(20),
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                          child: const Column(
+                            children: [
+                              Text(
+                                "5",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "Pending Task",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 30),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20),
+                        ),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Focused Time Distribution",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            child: Divider(color: Colors.black),
+                          ),
+                          const Row(
+                            children: [
+                              Text(
+                                "Total focused time: ",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                "50",
+                                style: TextStyle(
+                                  color: Color(0xff35A6F6),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                " mins",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          AspectRatio(
+                            aspectRatio: 1,
+                            child: BarChart(
+                              BarChartData(
+                                titlesData: titlesData,
+                                barTouchData: barTouchData,
+                                gridData: const FlGridData(
+                                  show: true,
+                                  drawVerticalLine: false,
+                                  horizontalInterval: 20,
+                                ),
+                                alignment: BarChartAlignment.spaceAround,
+                                borderData: FlBorderData(show: false),
+                                barGroups: [
+                                  for (var index = 0; index < snapshot.data!.length; index++)
+                                    // var item = snapshot.data![index];
+                                    BarChartGroupData(
+                                      x: index,
+                                      barRods: [
+                                        BarChartRodData(
+                                          width: 20,
+                                          toY: double.parse(snapshot.data![index]['totalMinutes'].toString()),
+                                        ),
+                                      ],
+                                      showingTooltipIndicators: [0],
+                                    )
+                                  // for (var (item, index) in snapshot.data.length)
+                                  //   BarChartGroupData(
+                                  //     x: index,
+                                  //     barRods: [
+                                  //       BarChartRodData(
+                                  //         width: 20,
+                                  //         toY: 60,
+                                  //       ),
+                                  //     ],
+                                  //     showingTooltipIndicators: [0],
+                                  //   ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {

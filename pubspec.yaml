@@ -102,6 +102,9 @@ flutter:
     - assets/tasia.png
     - assets/dosen.png
     - assets/fish/stingray.svg
+    - assets/fish/pufferfish.svg
+    - assets/fish/salmon.svg
+    - assets/fish/clownfish.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

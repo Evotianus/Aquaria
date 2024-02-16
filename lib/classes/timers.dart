@@ -1,11 +1,11 @@
-class Timer {
+class Timers {
   int? id;
   int? minutes;
   int? userId;
   int? fishId;
   String? dayName;
 
-  Timer(
+  Timers(
     this.id,
     this.minutes,
     this.userId,
@@ -21,8 +21,8 @@ class Timer {
         "dayName": dayName,
       };
 
-  factory Timer.fromJson(Map<String, dynamic> json) {
-    return Timer(
+  factory Timers.fromJson(Map<String, dynamic> json) {
+    return Timers(
       json["id"],
       json["minutes"],
       json["userId"],

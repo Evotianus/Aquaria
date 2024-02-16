@@ -23,6 +23,8 @@ import 'package:rive/rive.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../services/globals.dart' as globals;
+
 double radius = 135;
 double strokeWidth = 40;
 
@@ -167,6 +169,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         AwesomeNotifications().requestPermissionToSendNotifications();
       }
     });
+
+    globals.isTimerRequestSent = false;
   }
 
   triggerNotification(id, title, body) {
@@ -401,9 +405,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                             trigger?.fire();
 
+                                            Timer(const Duration(seconds: 3), () async {});
+
+                                            globals.isTimerStarted = true;
+
                                             timer = Timer.periodic(const Duration(seconds: 1), (timer) {
                                               if (mounted) {
-                                                // print(value.toInt().ceil());
                                                 setState(() {
                                                   seconds = timerDuration.inSeconds - 1;
                                                   if (seconds < 0) {
@@ -417,10 +424,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                     int totalMinutes = value.toInt().ceil() == 0 ? 5 : value.toInt().ceil();
 
-                                                    Fish? fishCaught = timerFinished(totalMinutes) as Fish?;
+                                                    print(timerDuration.inMinutes);
 
-                                                    fishName = fishCaught!.name;
-                                                    fishImage = fishCaught.image;
+                                                    // Fish? fishCaught = timerFinished(totalMinutes) as Fish?;
+
+                                                    // fishName = fishCaught!.name;
+                                                    // fishImage = fishCaught.image;
                                                   } else {
                                                     timerDuration = Duration(seconds: seconds);
                                                   }
@@ -984,121 +993,129 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                      Visibility(
-                        visible: (isFinished == 0 ? false : true),
-                        child: Positioned.fill(
-                          top: 0,
-                          left: 0,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Opacity(
-                                  opacity: 0.4,
-                                  child: Container(
-                                    height: screenHeight,
-                                    width: screenWidth,
-                                    color: const Color(0xff000000),
-                                  ),
-                                ),
-                                SvgPicture.asset(
-                                  'assets/fish-caught.svg',
-                                  width: screenWidth * 0.95,
-                                ),
-                                Positioned(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Stack(
-                                        alignment: Alignment.center,
+                      FutureBuilder(
+                        future: timerFinished(minutes),
+                        builder: (BuildContext context, AsyncSnapshot<Fish?> snapshot) {
+                          print("Data: ${snapshot.data}");
+                          // if (snapshot.hasData) {
+                          Future.delayed(const Duration(seconds: 7));
+                          return Visibility(
+                            visible: (isFinished == 0 ? false : true),
+                            child: Positioned.fill(
+                              top: 0,
+                              left: 0,
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Opacity(
+                                      opacity: 0.4,
+                                      child: Container(
+                                        height: screenHeight,
+                                        width: screenWidth,
+                                        color: const Color(0xff000000),
+                                      ),
+                                    ),
+                                    SvgPicture.asset(
+                                      'assets/fish-caught.svg',
+                                      width: screenWidth * 0.95,
+                                    ),
+                                    Positioned(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          SvgPicture.asset(
-                                            'assets/fish-tank.svg',
-                                            width: screenWidth * 0.3,
-                                          ),
-                                          SvgPicture.asset(
-                                            'assets/fish/${(fishImage ?? "")}.svg',
-                                            width: screenWidth * 0.20,
+                                          Stack(
                                             alignment: Alignment.center,
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        (fishName ?? ""),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Container(
-                                        height: 200,
-                                        width: screenWidth * 0.65,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(40),
-                                          color: const Color(
-                                            0xff308BCC,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(23.0),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              const Text(
-                                                "You finished your focus time!",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 16,
-                                                ),
-                                                textAlign: TextAlign.center,
+                                              SvgPicture.asset(
+                                                'assets/fish-tank.svg',
+                                                width: screenWidth * 0.3,
                                               ),
-                                              const SizedBox(height: 15),
-                                              Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
-                                                    style: const TextStyle(
-                                                      color: Color(0xffFE2E00),
-                                                      fontSize: 24,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  const Text(
-                                                    " Minutes",
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 24,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 25),
-                                              MainButton(
-                                                onTap: () {
-                                                  setState(() {
-                                                    Navigator.of(context).pushReplacement(
-                                                      MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
-                                                    );
-                                                  });
-                                                },
-                                                label: "Confirm",
+                                              SvgPicture.asset(
+                                                'assets/fish/${(globals.fishCaught?.image ?? "")}.svg',
+                                                width: screenWidth * 0.17,
+                                                alignment: Alignment.center,
                                               ),
                                             ],
                                           ),
-                                        ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            (globals.fishCaught?.name ?? ""),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Container(
+                                            height: 220,
+                                            width: screenWidth * 0.65,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(40),
+                                              color: const Color(
+                                                0xff308BCC,
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(20.0),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const Text(
+                                                    "You finished your focus time!",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  const SizedBox(height: 15),
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Text(
+                                                        "${value.toInt().ceil() == 0 ? 5 : value.toInt().ceil()}",
+                                                        style: const TextStyle(
+                                                          color: Color(0xffFE2E00),
+                                                          fontSize: 24,
+                                                          fontWeight: FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      const Text(
+                                                        " Minutes",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 24,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 25),
+                                                  MainButton(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        Navigator.of(context).pushReplacement(
+                                                          MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
+                                                        );
+                                                      });
+                                                    },
+                                                    label: "Confirm",
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),
