@@ -203,3 +203,36 @@ Future<bool?> markTask(task) async {
   return null;
 }
 
+Future<User?> renewName(user) async {
+  final response = await http.post(
+    Uri.parse("$uri/change-email"),
+    headers: <String, String>{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: jsonEncode(user),
+  );
+
+  if (response.statusCode == 200) {
+    return User.fromJson(jsonDecode(response.body));
+  }
+
+  return null;
+}
+
+Future<User?> renewPassword(user) async {
+  final response = await http.post(
+    Uri.parse("$uri/change-password"),
+    headers: <String, String>{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: jsonEncode(user),
+  );
+
+  if (response.statusCode == 200) {
+    return User.fromJson(jsonDecode(response.body));
+  }
+
+  return null;
+}
