@@ -46,7 +46,7 @@ class BubbleButton extends StatelessWidget {
                   color: secondaryColor ?? color,
                   borderRadius: BorderRadius.circular(30.0),
                 ),
-                child: (type == "TextField" ? isTextField() : isButton()),
+                child: (type == "TextField" ? isTextField() : type == "Password" ? isTextField() : isButton()),
               ),
             ),
           ),
@@ -64,6 +64,7 @@ class BubbleButton extends StatelessWidget {
 
   Widget isTextField() {
     return TextField(
+      obscureText: type == "Password" ? true : false,
       controller: this.controller,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),

@@ -63,7 +63,7 @@ class LoginPage extends StatelessWidget {
                   // }
 
                   // For development purposes
-                  final response = await loginUser("Evo", "evo");
+                  final response = await loginUser("Evos", "evo");
 
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(

@@ -218,3 +218,48 @@ Future<List<dynamic>> getProgressData() async {
 
   return [];
 }
+
+Future<dynamic> changeName(newName) async {
+  User user = User(currentUser!.id, newName, currentUser!.email, currentUser!.password);
+  dynamic request = await renewName(user);
+
+  if (request is User) {
+    currentUser = User(request.id, request.username, request.email, request.password);
+
+    print(currentUser!.username);
+
+    return 200;
+  }
+
+  return 400;
+}
+
+Future<dynamic> changeEmail(newEmail) async {
+  User user = User(currentUser!.id, currentUser!.username, newEmail, currentUser!.password);
+  dynamic request = await renewName(user);
+
+  if (request is User) {
+    currentUser = User(request.id, request.username, request.email, request.password);
+
+    print(currentUser!.email);
+
+    return 200;
+  }
+
+  return 400;
+}
+
+Future<dynamic> changePassword(newPassword) async {
+  User user = User(currentUser!.id, currentUser!.username, currentUser!.email, newPassword);
+  dynamic request = await renewPassword(user);
+
+  if (request is User) {
+    currentUser = User(request.id, request.username, request.email, request.password);
+
+    print(currentUser!.password);
+
+    return 200;
+  }
+
+  return 400;
+}
