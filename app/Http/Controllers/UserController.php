@@ -52,24 +52,36 @@ class UserController extends Controller
     }
 
     public function changeUsername(Request $request) {
-        $updatedName = User::where('email', $request->email)
+        $updatedName = User::where('id', $request->id)
         ->update([
             'username' => $request->username
         ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
     }
 
     public function changeEmail(Request $request) {
-        $updatedEmail = User::where('email', $request->email)
+        $updatedEmail = User::where('id', $request->id)
         ->update([
-            'email' => $request->newEmail
+            'email' => $request->email
         ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
     }
 
     public function changePassword(Request $request) {
-        $updatedPassword = User::where('email', $request->email)
+        $updatedPassword = User::where('id', $request->id)
         ->update([
-            'password' => $request->newPassword
+            'password' => $request->password
         ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
     }
 
     /**
