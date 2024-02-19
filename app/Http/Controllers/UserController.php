@@ -46,6 +46,44 @@ class UserController extends Controller
         return response()->json(['Message' => 'Login Error'], 400);
     }
 
+    public function deleteUser(Request $request) {
+        $deletedUser = User::where('email', $request->email )
+        ->delete();
+    }
+
+    public function changeUsername(Request $request) {
+        $updatedName = User::where('id', $request->id)
+        ->update([
+            'username' => $request->username
+        ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
+    }
+
+    public function changeEmail(Request $request) {
+        $updatedEmail = User::where('id', $request->id)
+        ->update([
+            'email' => $request->email
+        ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
+    }
+
+    public function changePassword(Request $request) {
+        $updatedPassword = User::where('id', $request->id)
+        ->update([
+            'password' => $request->password
+        ]);
+
+        $user = User::where('id', $request->id)->first();
+
+        return response()->json($user, 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

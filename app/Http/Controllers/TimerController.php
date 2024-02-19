@@ -20,11 +20,16 @@ class TimerController extends Controller
 
         $timer = Timer::create([
             "minutes" => $request->minutes,
-            "user_id" => $request->user_id,
+            "user_id" => $request->userId,
             "fish_id" => $fish->id,
         ]);
 
         return response()->json($fish, 200);
     }
 
+    public function getTotalTimerByUserId(Request $request) {
+        $timers = Timer::where('user_id', $request->userId)->selectRaw('SUM(minutes) as daily_focus_time, DAYNAME(created_at) as dayname')->groupBy('dayname')->get();
+
+        return $timers;
+    }
 }

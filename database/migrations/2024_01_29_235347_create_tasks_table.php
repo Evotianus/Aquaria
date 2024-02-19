@@ -16,7 +16,8 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned()->index();
             $table->string('title');
             $table->enum('urgency', ['Critical', 'High', 'Medium', 'Low', 'Very Low']);
-            $table->timestamp('due');
+            $table->timestamp('due')->nullable();
+            $table->boolean('isFinished');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });

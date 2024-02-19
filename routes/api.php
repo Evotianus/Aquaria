@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\FishController;
 use App\Http\Controllers\TimerController;
+use App\Http\Controllers\TaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +24,19 @@ use App\Http\Controllers\TimerController;
 
 Route::post('/create-user', [UserController::class, 'register']);
 Route::post('/verify-user', [UserController::class, 'login']);
+Route::post('/delete-user', [UserController::class, 'deleteUser']);
+Route::post('/change-username', [UserController::class, 'changeUsername']);
+Route::post('/change-email', [UserController::class, 'changeEmail']);
+Route::post('/change-password', [UserController::class, 'changePassword']);
 
 Route::post('/create-timer', [TimerController::class, 'timerFinished']);
+Route::post('/get-timer-by-user', [TimerController::class, 'getTotalTimerByUserId']);
 Route::post('/get-fish',[FishController::class, 'fishcollection']);
 // Route::get('', [FishController])
+
+Route::post('/add-task', [TaskController::class, 'addTask']);
+Route::post('/delete-task', [TaskController::class, 'deleteTask']);
+Route::post('/update-task', [TaskController::class, 'updateTask']);
+Route::post('/show-task', [TaskController::class, 'showAllTask']);
+Route::post('/find-task', [TaskController::class, 'findTask']);
+Route::post('/check-task', [TaskController::class, 'checkTask']);
