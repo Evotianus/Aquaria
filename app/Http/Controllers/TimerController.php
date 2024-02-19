@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Timer;
 use App\Models\Fish;
@@ -28,8 +29,12 @@ class TimerController extends Controller
     }
 
     public function getTotalTimerByUserId(Request $request) {
-        $timers = Timer::where('user_id', $request->userId)->selectRaw('SUM(minutes) as daily_focus_time, DAYNAME(created_at) as dayname')->groupBy('dayname')->get();
+        $timersByWeek = Timer::where('user_id', $request->userId)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->selectRaw('SUM(minutes) as daily_focus_time, DAYNAME(created_at) as dayname')->groupBy('dayname')->get();
+        $timersByMonth = Timer::where('user_id', $request->userId)->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])->selectRaw('SUM(minutes) as daily_focus_time, DAYOFMONTH(created_at) as date')->groupBy('date')->get();
+        $recentCatch = Timer::where('user_id', $request->userId)->orderBy('created_at', 'DESC')->limit(3)->get();
+        $daysInMonth = Timer::selectRaw('DAY(LAST_DAY(created_at)) as days_in_month')->first();
 
-        return $timers;
+        // return response()->json(['timersByWeek' => $timersByWeek, 'timersByMonth'], 200, $headers);
+        return response()->json(['timers_by_week' => $timersByWeek, 'timers_by_month' => $timersByMonth, 'recent_catch' => $recentCatch, 'days_in_month' => $daysInMonth], 200);
     }
 }
