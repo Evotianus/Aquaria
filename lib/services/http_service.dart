@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:aquaria/classes/fish.dart';
+import 'package:aquaria/classes/task.dart';
 import 'package:aquaria/classes/timer.dart';
 import 'package:aquaria/classes/user.dart';
-import 'package:aquaria/classes/task.dart';
+import 'package:aquaria/functions/functions.dart';
 import 'package:http/http.dart' as http;
 
 String? uri = "http://10.0.2.2:8000/api";
@@ -62,17 +63,24 @@ Future<Fish?> createTimer(timer) async {
   return null;
 }
 
-Future<Fish?> getFish(fish) async {
-  final response = await http.get(
-    Uri.parse("$uri/verify-user"),
+Future<List<Fish>?> getFish(timer) async {
+  final response = await http.post(
+    Uri.parse("$uri/get-fish"),
     headers: <String, String>{
       "Content-Type": "application/json",
       "Accept": "application/json",
     },
+    body: jsonEncode(timer),
   );
 
+  print(jsonEncode(timer));
+  print(response.statusCode);
   if (response.statusCode == 200) {
-    return Fish.fromJson(jsonDecode(response.body));
+    List<dynamic> body = jsonDecode(response.body);
+
+    List<Fish> fishList = body.map((item) => Fish.fromJson(item)).toList();
+    print(response.body);
+    return fishList;
   }
 
   return null;
@@ -202,4 +210,3 @@ Future<bool?> markTask(task) async {
 
   return null;
 }
-
