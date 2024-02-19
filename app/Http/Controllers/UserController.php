@@ -37,7 +37,7 @@ class UserController extends Controller
 
     public function login(Request $request)
     {
-        $user = User::where('username', $request->username)->where('password', $request->password)->first()->get();
+        $user = User::where('username', $request->username)->where('password', $request->password)->first();
 
         if ($user->count() != 0) {
             return $user;
