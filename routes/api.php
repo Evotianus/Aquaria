@@ -31,6 +31,7 @@ Route::post('/change-password', [UserController::class, 'changePassword']);
 
 Route::post('/create-timer', [TimerController::class, 'timerFinished']);
 Route::post('/get-timer-by-user', [TimerController::class, 'getTotalTimerByUserId']);
+Route::post('/get-fish',[FishController::class, 'fishcollection']);
 // Route::get('', [FishController])
 
 Route::post('/add-task', [TaskController::class, 'addTask']);
