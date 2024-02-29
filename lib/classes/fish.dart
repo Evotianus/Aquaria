@@ -3,6 +3,7 @@ class Fish {
   String? name;
   String? description;
   String? image;
+
   DateTime? createdAt;
 
   Fish(

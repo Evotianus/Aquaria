@@ -64,18 +64,8 @@ Future<Fish?> timerFinished(int minutes) async {
     if (request is Fish) {
       print("masuk if");
 
-      globals.fishCaught = Fish(
-        request.id,
-        request.name,
-        request.description,
-        request.image,
-      );
-      return Fish(
-        request.id,
-        request.name,
-        request.description,
-        request.image,
-      );
+      globals.fishCaught = Fish(request.id, request.name, request.description, request.image, request.createdAt);
+      return Fish(request.id, request.name, request.description, request.image, request.createdAt);
     }
     print("luar if");
   }
@@ -83,12 +73,13 @@ Future<Fish?> timerFinished(int minutes) async {
 }
 
 Future<List<Fish>?> fishcollection() async {
-  Timer timer = Timer(null, null, 1, 4);
-  List<Fish>? request = await getFish(timer);
+  Timers timers = Timers(null, null, currentUser?.id, null, null);
+  List<dynamic>? request = await getFish(timers);
 
   // print(request);
   if (request is List<Fish>) {
-    print(request[0]);
+    print(request.runtimeType);
+    // print(request[0]);
     return request;
   }
   return null;

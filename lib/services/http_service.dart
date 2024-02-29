@@ -62,7 +62,7 @@ Future<Fish?> createTimer(timer) async {
   return null;
 }
 
-Future<List<Fish>?> getFish(timer) async {
+Future<List<dynamic>?> getFish(timer) async {
   final response = await http.post(
     Uri.parse("$uri/get-fish"),
     headers: <String, String>{
@@ -77,7 +77,7 @@ Future<List<Fish>?> getFish(timer) async {
   if (response.statusCode == 200) {
     List<dynamic> body = jsonDecode(response.body);
 
-    List<Fish> fishList = body.map((item) => Fish.fromJson(item)).toList();
+    List<dynamic> fishList = body.map((item) => Fish.fromJson(item)).toList();
     print(response.body);
     return fishList;
   }
