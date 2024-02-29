@@ -1,9 +1,12 @@
+import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/privacy_policy_page.dart';
 import 'package:aquaria/pages/profile_page.dart';
 import 'package:aquaria/pages/terms_of_use_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:aquaria/features/utils.dart';
+import 'package:aquaria/classes/user.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,12 +16,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final Color blueColor = const Color(0xff00B4ED);
-  bool isConfirm = false;
-  bool isEnableNotification = false;
-  bool isAnimationSound = false;
-  bool isCompletionSound = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,9 +30,15 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             );
           },
-          child: const Icon(Icons.close),
+          child: const Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
         ),
-        title: const Text('Settings'),
+        title: const Text(
+          'Settings',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -77,10 +80,10 @@ class _SettingsPageState extends State<SettingsPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'evotianus',
+                          Text(
+                            currentUser!.username!,
                             textAlign: TextAlign.left,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -169,11 +172,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                               ),
                               Switch(
-                                value: isConfirm,
+                                value: isConfirmDelete,
+                                inactiveThumbColor: orangeColor,
+                                inactiveTrackColor: orangeColor.withOpacity(0.5),
                                 activeColor: blueColor,
                                 onChanged: (value) => {
                                   setState(() {
-                                    isConfirm = value;
+                                    isConfirmDelete = value;
                                   })
                                 },
                               ),
@@ -199,20 +204,30 @@ class _SettingsPageState extends State<SettingsPage> {
                             onTap: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const HomePage(),
+                                  builder: (BuildContext context) => const HomePage(),
                                 ),
                               );
                             },
-                            child: const Row(
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   'Theme',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color(0xff808080),
                                   ),
+                                ),
+                                Switch(
+                                  value: isDarkTheme,
+                                  inactiveThumbColor: orangeColor,
+                                  inactiveTrackColor: orangeColor.withOpacity(0.5),
+                                  activeColor: blueColor,
+                                  onChanged: (value) => {
+                                    setState(() {
+                                      isDarkTheme = value;
+                                    })
+                                  },
                                 ),
                               ],
                             ),
@@ -321,6 +336,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Switch(
                                 value: isEnableNotification,
+                                inactiveThumbColor: orangeColor,
+                                inactiveTrackColor: orangeColor.withOpacity(0.5),
                                 activeColor: blueColor,
                                 onChanged: (value) => {
                                   setState(() {
@@ -358,6 +375,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Switch(
                                 value: isAnimationSound,
+                                inactiveThumbColor: orangeColor,
+                                inactiveTrackColor: orangeColor.withOpacity(0.5),
                                 activeColor: blueColor,
                                 onChanged: (value) => {
                                   setState(() {
@@ -395,6 +414,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                               Switch(
                                 value: isCompletionSound,
+                                inactiveThumbColor: orangeColor,
+                                inactiveTrackColor: orangeColor.withOpacity(0.5),
                                 activeColor: blueColor,
                                 onChanged: (value) => {
                                   setState(() {
@@ -424,8 +445,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             onTap: () {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      const HomePage(),
+                                  builder: (BuildContext context) => const HomePage(),
                                 ),
                               );
                             },
@@ -509,9 +529,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        const HomePage()),
+                                MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
                               );
                             },
                             child: const Row(
@@ -546,9 +564,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        TermsOfUsePage()),
+                                MaterialPageRoute(builder: (BuildContext context) => TermsOfUsePage()),
                               );
                             },
                             child: const Row(
@@ -583,9 +599,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        PrivacyPolicyPage()),
+                                MaterialPageRoute(builder: (BuildContext context) => PrivacyPolicyPage()),
                               );
                             },
                             child: const Row(

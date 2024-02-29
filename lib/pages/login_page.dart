@@ -66,7 +66,9 @@ class LoginPage extends StatelessWidget {
                   // For development purposes
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (BuildContext context) => const HomePage(),
+                      builder: (BuildContext context) {
+                        return const HomePage();
+                      },
                     ),
                   );
                 },

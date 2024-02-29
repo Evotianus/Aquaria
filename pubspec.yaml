@@ -47,6 +47,7 @@ dependencies:
   awesome_notifications: ^0.9.2
   http: ^1.1.0
   fl_chart: ^0.66.2
+  delayed_widget: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/confirmation-popup.png
     - assets/submit-button.png
     - assets/bubble-tint.png
     - assets/add-task-bubble.png
@@ -101,6 +103,9 @@ flutter:
     - assets/tasia.png
     - assets/dosen.png
     - assets/fish/stingray.svg
+    - assets/fish/pufferfish.svg
+    - assets/fish/salmon.svg
+    - assets/fish/clownfish.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

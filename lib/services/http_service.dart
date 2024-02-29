@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:aquaria/classes/fish.dart';
 import 'package:aquaria/classes/task.dart';
-import 'package:aquaria/classes/timer.dart';
 import 'package:aquaria/classes/user.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:http/http.dart' as http;
@@ -86,9 +85,9 @@ Future<List<Fish>?> getFish(timer) async {
   return null;
 }
 
-Future<List<Timer>?> getTimerByUser(userId) async {
+Future<List<dynamic>?> getTimerByUser(userId) async {
   final response = await http.post(
-    Uri.parse("$uri/get-timer"),
+    Uri.parse("$uri/get-timer-by-user"),
     headers: <String, String>{
       "Content-Type": "application/json",
       "Accept": "application/json",
@@ -96,10 +95,13 @@ Future<List<Timer>?> getTimerByUser(userId) async {
     body: jsonEncode({"userId": userId}),
   );
 
+  print(jsonEncode({"userId": userId}));
+
   if (response.statusCode == 200) {
     List<dynamic> body = jsonDecode(response.body);
-
-    List<Timer> timerList = body.map((dynamic item) => Timer.fromJson(item)).toList();
+    print("aa");
+    List<dynamic> timerList = body.map((dynamic item) => print(item)).toList();
+    print("aa");
 
     return timerList;
   }
@@ -184,7 +186,7 @@ Future<List<Task>?> viewTasks(user) async {
 
     // print(body);
 
-    List<Task> taskList = (body as List).map((itemWord) => Task.fromJson(itemWord)).toList();
+    List<Task> taskList = (body).map((itemWord) => Task.fromJson(itemWord)).toList();
 
     // print(taskList);
 
@@ -206,6 +208,40 @@ Future<bool?> markTask(task) async {
 
   if (response.statusCode == 200) {
     return jsonDecode(response.body)["isChecked"];
+  }
+
+  return null;
+}
+
+Future<User?> renewName(user) async {
+  final response = await http.post(
+    Uri.parse("$uri/change-email"),
+    headers: <String, String>{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: jsonEncode(user),
+  );
+
+  if (response.statusCode == 200) {
+    return User.fromJson(jsonDecode(response.body));
+  }
+
+  return null;
+}
+
+Future<User?> renewPassword(user) async {
+  final response = await http.post(
+    Uri.parse("$uri/change-password"),
+    headers: <String, String>{
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+    },
+    body: jsonEncode(user),
+  );
+
+  if (response.statusCode == 200) {
+    return User.fromJson(jsonDecode(response.body));
   }
 
   return null;
