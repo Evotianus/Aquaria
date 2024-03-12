@@ -75,8 +75,17 @@ Future<Fish?> timerFinished(int minutes) async {
   return null;
 }
 
-Future<dynamic> fishcollection(name, description, image) async {
-  Fish fish = Fish(null, name, description, image);
+Future<List<Fish>?> fishcollection() async {
+  Timers timers = Timers(null, null, currentUser?.id, null, null);
+  List<dynamic>? request = await getFish(timers);
+
+  // print(request);
+  if (request is List<Fish>) {
+    print(request.runtimeType);
+    // print(request[0]);
+    return request;
+  }
+  return null;
 }
 
 Future<List<Task>?> showAllTask() async {
