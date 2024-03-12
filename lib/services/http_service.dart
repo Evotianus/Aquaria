@@ -77,7 +77,7 @@ Future<Fish?> getFish(fish) async {
   return null;
 }
 
-Future<List<dynamic>?> getTimerByUser(userId) async {
+Future<dynamic> getTimerByUser(userId) async {
   final response = await http.post(
     Uri.parse("$uri/get-timer-by-user"),
     headers: <String, String>{
@@ -90,12 +90,9 @@ Future<List<dynamic>?> getTimerByUser(userId) async {
   print(jsonEncode({"userId": userId}));
 
   if (response.statusCode == 200) {
-    List<dynamic> body = jsonDecode(response.body);
-    print("aa");
-    List<dynamic> timerList = body.map((dynamic item) => print(item)).toList();
-    print("aa");
+    dynamic body = jsonDecode(response.body);
 
-    return timerList;
+    return body;
   }
 
   return null;

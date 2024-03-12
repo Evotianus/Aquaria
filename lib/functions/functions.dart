@@ -49,21 +49,15 @@ Future<Fish?> fishStrike(minutes) async {
 }
 
 Future<Fish?> timerFinished(int minutes) async {
-  print("wi");
   if (globals.isTimerStarted == false) {
     return null;
   } else {
     globals.isTimerStarted = false;
-    print("minit neh: $minutes");
-    // Timer(Duration(minutes: minutes - 1, seconds: 55), () async {
     await Future.delayed(const Duration(seconds: 5));
-    // Timer(const Duration(seconds: 5), () async {
     Timers timer = Timers(null, minutes, currentUser!.id, null, null);
     dynamic request = await createTimer(timer);
 
     if (request is Fish) {
-      print("masuk if");
-
       globals.fishCaught = Fish(
         request.id,
         request.name,
@@ -77,7 +71,6 @@ Future<Fish?> timerFinished(int minutes) async {
         request.image,
       );
     }
-    print("luar if");
   }
   return null;
 }
@@ -88,8 +81,6 @@ Future<dynamic> fishcollection(name, description, image) async {
 
 Future<List<Task>?> showAllTask() async {
   List<Task>? request = await viewTasks(currentUser);
-
-  // print(request);
 
   if (request is List<Task>) {
     print("berhasil 2");
@@ -151,72 +142,184 @@ Future<dynamic> checkTask(task) async {
   }
 }
 
-Future<List<dynamic>> getProgressData() async {
+Future<List<List<dynamic>?>> getProgressData() async {
   dynamic request = await getTimerByUser(currentUser!.id);
-  print("request $request");
 
-  if (request is List<dynamic>) {
-    // print("asdf");
-    List<dynamic> progressList = [
-      {
-        "totalMinutes": 0,
-        "dayName": "Monday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Tuesday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Wednesday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Thursday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Friday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Saturday",
-      },
-      {
-        "totalMinutes": 0,
-        "dayName": "Sunday",
-      },
-    ];
-    print("mantul bro $request");
+  bool isWeeklyEmpty = false;
+  bool isMonthlyEmpty = false;
+  bool isYearlyEmpty = false;
+  bool isTaskEmpty = false;
 
-    for (var item in request) {
-      print("item: $item");
-      // print("asdfff");
-      // print(progressList[0]['totalMinutes'].runtimeType);
-      // print(item['daily_focus_time'].runtimeType);
-      // print("${progressList[4]['totalMinutes'].runtimeType} - ${int.parse(item['daily_focus_time']).runtimeType}");
-      // if (item['dayname'] == "Monday") {
-      //   progressList[0]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Tuesday") {
-      //   progressList[1]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Wednesday") {
-      //   progressList[2]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Thursday") {
-      //   // print("woi");
-      //   progressList[3]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Friday") {
-      //   progressList[4]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Saturday") {
-      //   progressList[5]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // } else if (item['dayname'] == "Sunday") {
-      //   progressList[6]['totalMinutes'] += int.parse(item['daily_focus_time']);
-      // }
-    }
-    print("huhhhh");
-    return progressList;
+  if (request == null) {
+    return List.empty();
   }
 
-  return [];
+  List<List<dynamic>> allProgressList = [];
+
+  List<dynamic> weeklyProgressList = [
+    {
+      "totalMinutes": 0,
+      "dayName": "Monday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Tuesday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Wednesday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Thursday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Friday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Saturday",
+    },
+    {
+      "totalMinutes": 0,
+      "dayName": "Sunday",
+    },
+  ];
+  List<dynamic> monthlyProgressList = [];
+  List<dynamic> yearlyProgressList = [];
+
+  List<dynamic> taskUrgencyList = [
+    {
+      "color": "0xFF0463CA",
+      "chart": 0,
+    },
+    {
+      "color": "0xFF2A99E6",
+      "chart": 0,
+    },
+    {
+      "color": "0xFF09B1EC",
+      "chart": 0,
+    },
+    {
+      "color": "0xFF82CEF7",
+      "chart": 0,
+    },
+    {
+      "color": "0xFFB0D6F5",
+      "chart": 0,
+    },
+  ];
+
+  var daysInMonth = request['days_in_month']['days_in_month'];
+
+  if (request['timers_by_week'][0].toString() == "Empty") {
+    isWeeklyEmpty = true;
+  } else if (request['timers_by_month'][0].toString() == "Empty") {
+    isMonthlyEmpty = true;
+  } else if (request['timers_by_year'][0].toString() == "Empty") {
+    isYearlyEmpty = true;
+  } else if (request['task_total'] == 0) {
+    isTaskEmpty = true;
+  }
+
+  if (!isWeeklyEmpty) {
+    for (var item in request['timers_by_week']) {
+      if (item['dayname'] == "Monday") {
+        weeklyProgressList[0]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Tuesday") {
+        weeklyProgressList[1]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Wednesday") {
+        weeklyProgressList[2]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Thursday") {
+        weeklyProgressList[3]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Friday") {
+        weeklyProgressList[4]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Saturday") {
+        weeklyProgressList[5]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      } else if (item['dayname'] == "Sunday") {
+        weeklyProgressList[6]['totalMinutes'] += int.parse(item['daily_focus_time']);
+      }
+    }
+  }
+
+  if (!isMonthlyEmpty) {
+    for (var i = 0; i < daysInMonth; i++) {
+      monthlyProgressList.add({'day': i + 1, 'daily_total_minutes': 0});
+    }
+
+    for (var item in request['timers_by_month']) {
+      monthlyProgressList[item['date'] - 1]['daily_total_minutes'] = int.parse(item['monthly_focus_time']);
+    }
+  }
+
+  if (!isYearlyEmpty) {
+    for (var i = 0; i < 12; i++) {
+      yearlyProgressList.add({'month': i + 1, 'monthly_total_minutes': 0});
+    }
+
+    for (var item in request['timers_by_year']) {
+      yearlyProgressList[item['month'] - 1]['monthly_total_minutes'] = int.parse(item['yearly_focus_time']);
+    }
+  }
+
+  if (!isTaskEmpty) {
+    var totalTask = request['total_task'];
+
+    for (var item in request['task_urgency_list']) {
+      if (item['urgency'] == "Critical") {
+        taskUrgencyList[0]['chart'] = (item['urgencyCount'] / totalTask) * 100;
+      }
+      if (item['urgency'] == "High") {
+        taskUrgencyList[1]['chart'] = (item['urgencyCount'] / totalTask) * 100;
+      }
+      if (item['urgency'] == "Medium") {
+        taskUrgencyList[2]['chart'] = (item['urgencyCount'] / totalTask) * 100;
+      }
+      if (item['urgency'] == "Low") {
+        taskUrgencyList[3]['chart'] = (item['urgencyCount'] / totalTask) * 100;
+      }
+      if (item['urgency'] == "Very Low") {
+        taskUrgencyList[4]['chart'] = (item['urgencyCount'] / totalTask) * 100;
+      }
+    }
+  }
+
+  List<dynamic> taskCountList = [
+    {
+      "completed_task_count": request['completed_task_count'],
+    },
+    {
+      "pending_task_count": request['pending_task_count'],
+    },
+  ];
+
+  print("test: ${request['total_monthly_time'][0]['total_monthly_time']}");
+
+  List<dynamic> totalTimeList = [
+    {
+      "total_weekly_time": request['total_weekly_time'][0]['total_weekly_time'],
+    },
+    {
+      "total_monthly_time": request['total_monthly_time'][0]['total_monthly_time'],
+    },
+    {
+      "total_yearly_time": request['total_yearly_time'][0]['total_yearly_time'],
+    },
+  ];
+
+  allProgressList.add(request['recent_catch']);
+  allProgressList.add(weeklyProgressList);
+  allProgressList.add(monthlyProgressList);
+  allProgressList.add(yearlyProgressList);
+  allProgressList.add(taskUrgencyList);
+  allProgressList.add(taskCountList);
+  allProgressList.add(totalTimeList);
+
+  print("APL: $allProgressList");
+
+  return allProgressList;
 }
 
 Future<dynamic> changeName(newName) async {
