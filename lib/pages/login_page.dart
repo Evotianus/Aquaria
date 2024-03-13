@@ -52,7 +52,7 @@ class LoginPage extends StatelessWidget {
               ),
               MainButton(
                 onTap: () async {
-                  // // For deployment purposes
+                  // For deployment purposes
                   final username = _usernameController.text;
                   final password = _passwordController.text;
 
@@ -68,14 +68,16 @@ class LoginPage extends StatelessWidget {
                     print("Login Failed!");
                   }
 
-                  // For development purposes
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) {
-                        return const HomePage();
-                      },
-                    ),
-                  );
+                  // // For development purposes
+                  // final response = await loginUser("Evos", "evo");
+
+                  // Navigator.of(context).pushReplacement(
+                  //   MaterialPageRoute(
+                  //     builder: (BuildContext context) {
+                  //       return const HomePage();
+                  //     },
+                  //   ),
+                  // );
                 },
                 label: "Log In",
                 isDark: isDarkTheme ? true : false,
