@@ -15,7 +15,7 @@ class AboutUsPage extends StatelessWidget {
     return Scaffold(
         backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xff007d0fc),
+          backgroundColor: const Color(0xff07D0FC),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pushReplacement(

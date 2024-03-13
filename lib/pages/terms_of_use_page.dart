@@ -12,7 +12,7 @@ class TermsOfUsePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       appBar: AppBar(
-        backgroundColor: blueColor,
+        backgroundColor: const Color(0xff07D0FC),
         leading: GestureDetector(
           onTap: () {
             Navigator.of(context).pushReplacement(

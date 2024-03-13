@@ -106,7 +106,7 @@ class CollectionPageState extends State<CollectionPage> with TickerProviderState
     return Scaffold(
         backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xff007D0FC),
+          backgroundColor: const Color(0xff07D0FC),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pushReplacement(
@@ -138,52 +138,52 @@ class CollectionPageState extends State<CollectionPage> with TickerProviderState
                   fishList[1]['name'] = item.name;
                   fishList[1]['description'] = item.description;
                   fishList[1]['image'] = item.image;
-                  fishList[1]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[1]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 2) {
                   fishList[2]['name'] = item.name;
                   fishList[2]['description'] = item.description;
                   fishList[2]['image'] = item.image;
-                  fishList[2]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[2]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 3) {
                   fishList[3]['name'] = item.name;
                   fishList[3]['description'] = item.description;
                   fishList[3]['image'] = item.image;
-                  fishList[3]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[3]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 4) {
                   fishList[4]['name'] = item.name;
                   fishList[4]['description'] = item.description;
                   fishList[4]['image'] = item.image;
-                  fishList[4]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[4]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 5) {
                   fishList[5]['name'] = item.name;
                   fishList[5]['description'] = item.description;
                   fishList[5]['image'] = item.image;
-                  fishList[5]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[5]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 6) {
                   fishList[6]['name'] = item.name;
                   fishList[6]['description'] = item.description;
                   fishList[6]['image'] = item.image;
-                  fishList[6]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[6]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 7) {
                   fishList[7]['name'] = item.name;
                   fishList[7]['description'] = item.description;
                   fishList[7]['image'] = item.image;
-                  fishList[7]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[7]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 8) {
                   fishList[8]['name'] = item.name;
                   fishList[8]['description'] = item.description;
                   fishList[8]['image'] = item.image;
-                  fishList[8]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[8]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 9) {
                   fishList[9]['name'] = item.name;
                   fishList[9]['description'] = item.description;
                   fishList[9]['image'] = item.image;
-                  fishList[9]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[9]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 } else if (item.id == 10) {
                   fishList[10]['name'] = item.name;
                   fishList[10]['description'] = item.description;
                   fishList[10]['image'] = item.image;
-                  fishList[10]['catchDate'] = DateFormat('yyyy-MM-d').format(DateTime.parse(item.createdAt.toString()));
+                  fishList[10]['catchDate'] = DateFormat('yyyy-MM-dd').format(DateTime.parse(item.createdAt.toString()));
                 }
               }
             }

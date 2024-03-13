@@ -23,7 +23,7 @@ bool isConfirmDelete = true;
 bool isEnableNotification = false;
 bool isAnimationSound = false;
 bool isCompletionSound = false;
-bool isDarkTheme = true;
+bool isDarkTheme = false;
 
 const Color blueColor = const Color(0xff00B4ED);
 const Color lightBlueButtonColor = const Color(0xff3DBDD9);

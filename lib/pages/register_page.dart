@@ -25,6 +25,7 @@ class RegisterPage extends StatelessWidget {
             children: [
               const Image(
                 image: AssetImage("assets/logo.png"),
+                height: 90,
               ),
               const SizedBox(
                 height: 80,

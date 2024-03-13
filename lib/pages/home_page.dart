@@ -506,6 +506,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                               // trigger!.fire();
                                             });
+                                            timerColor = Colors.white;
+                                            todoColor = Colors.black.withOpacity(0.3);
                                             Navigator.of(context).pushReplacement(
                                               MaterialPageRoute(
                                                 builder: (BuildContext context) => const HomePage(),
@@ -555,88 +557,91 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           Container(
                             width: screenWidth - 70,
                             padding: const EdgeInsets.fromLTRB(35, 160, 35, 50),
+                            alignment: Alignment.topLeft,
                             child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Column(
                                 children: [
-                                  OverlayPortal(
-                                    controller: _confirmController,
-                                    overlayChildBuilder: (context) {
-                                      return Positioned(
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: SizedBox(
-                                            width: 350,
-                                            height: 150,
-                                            child: Stack(
-                                              children: [
-                                                const Image(
-                                                  image: AssetImage('assets/confirmation-popup.png'),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                                const Align(
-                                                  alignment: Alignment(-0.15, -0.5),
-                                                  child: Text(
-                                                    "Are you sure to delete?",
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20,
+                                  Visibility(
+                                    visible: isConfirmDelete,
+                                    child: OverlayPortal(
+                                      controller: _confirmController,
+                                      overlayChildBuilder: (context) {
+                                        return Positioned(
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: SizedBox(
+                                              width: 350,
+                                              height: 150,
+                                              child: Stack(
+                                                children: [
+                                                  const Image(
+                                                    image: AssetImage('assets/confirmation-popup.png'),
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  const Align(
+                                                    alignment: Alignment(-0.15, -0.5),
+                                                    child: Text(
+                                                      "Are you sure to delete?",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                Positioned(
-                                                  top: 70,
-                                                  right: 70,
-                                                  child: Row(
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          _confirmController.hide();
-                                                        },
-                                                        child: Text(
-                                                          'Cancel',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                  Positioned(
+                                                    top: 70,
+                                                    right: 70,
+                                                    child: Row(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            _confirmController.hide();
+                                                          },
+                                                          child: Text(
+                                                            'Cancel',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 25,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () async {
-                                                          final response = await deleteTask(currentTask);
-
-                                                          if (response > 0) {
-                                                            setState(() {
-                                                              futureTask = showAllTask();
-                                                              isVisibleAddEdit = false;
-                                                              _confirmController.hide();
-                                                              // isEditTask = false;
-                                                            });
-                                                          }
-                                                        },
-                                                        child: BubbleButton(
-                                                          color: const Color(0xffFF7E4C),
-                                                          secondaryColor: orangeColor,
-                                                          label: 'Done',
-                                                          length: 90,
-                                                          textColor: Colors.white,
-                                                          padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                        const SizedBox(
+                                                          width: 25,
                                                         ),
-                                                      ),
-                                                    ],
+                                                        GestureDetector(
+                                                          onTap: () async {
+                                                            final response = await deleteTask(currentTask);
+
+                                                            if (response > 0) {
+                                                              setState(() {
+                                                                futureTask = showAllTask();
+                                                                isVisibleAddEdit = false;
+                                                                _confirmController.hide();
+                                                                // isEditTask = false;
+                                                              });
+                                                            }
+                                                          },
+                                                          child: BubbleButton(
+                                                            color: const Color(0xffFF7E4C),
+                                                            secondaryColor: orangeColor,
+                                                            label: 'Done',
+                                                            length: 90,
+                                                            textColor: Colors.white,
+                                                            padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  // const SizedBox(
+                                        );
+                                      },
+                                    ),
+                                  ), // const SizedBox(
                                   //   height: 160,
                                   // ),
                                   FutureBuilder(
@@ -645,7 +650,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       List<Task>? taskList = snapshot.data;
                                       if (taskList != null) {
                                         return Wrap(
-                                          alignment: WrapAlignment.start,
+                                          //   runAlignment: WrapAlignment.start,
+                                          //   alignment: WrapAlignment.start,
+                                          //   crossAxisAlignment: WrapCrossAlignment.start,
                                           direction: Axis.vertical,
                                           spacing: 20,
                                           children: taskList.map((Task task) {
@@ -953,6 +960,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const CollectionPage(),
@@ -983,6 +992,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const StatisticPage(),
@@ -1011,6 +1022,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const AboutUsPage(),
@@ -1039,6 +1052,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const SettingsPage(),
@@ -1067,6 +1082,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => LoginPage(),
@@ -1198,6 +1215,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   MainButton(
                                                     onTap: () {
                                                       setState(() {
+                                                        timerColor = Colors.white;
+                                                        todoColor = Colors.black.withOpacity(0.3);
                                                         Navigator.of(context).pushReplacement(
                                                           MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
                                                         );
