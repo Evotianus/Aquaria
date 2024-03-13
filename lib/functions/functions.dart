@@ -63,12 +63,14 @@ Future<Fish?> timerFinished(int minutes) async {
         request.name,
         request.description,
         request.image,
+        request.createdAt,
       );
       return Fish(
         request.id,
         request.name,
         request.description,
         request.image,
+        request.createdAt,
       );
     }
   }
