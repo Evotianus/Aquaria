@@ -11,12 +11,12 @@ import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:aquaria/pages/statistics_page.dart';
 import 'package:aquaria/widgets/bubble_button.dart';
+import 'package:aquaria/widgets/flutter_time_picker_spinner.dart';
 import 'package:aquaria/widgets/main_button.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:aquaria/widgets/flutter_time_picker_spinner.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rive/rive.dart';
@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final OverlayPortalController _dateController = OverlayPortalController();
   final OverlayPortalController _timeController = OverlayPortalController();
   final OverlayPortalController _confirmController = OverlayPortalController();
+  final OverlayPortalController _confirmGiveupController = OverlayPortalController();
   TimePickerCallback? onTimeChange;
 
   Duration timerDuration = const Duration(minutes: 5);
@@ -489,30 +490,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         absorbing: !isAbsorb,
                                         child: GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              if (value == 0) {
-                                                timerDuration = const Duration(minutes: 5);
-                                              } else {
-                                                timerDuration = Duration(minutes: (value).ceil().toInt());
-                                              }
+                                            if (isConfirmGiveup) {
+                                              print("halo");
+                                              _confirmGiveupController.show();
+                                            } else {
+                                              //   final response = await deleteTask(currentTask);
 
-                                              opacityLevel = 1;
-                                              isStopped = true;
-
-                                              isAbsorb = false;
-
-                                              stateMachineController!.isActive = false;
-                                              // stateMachineController!.
-
-                                              // trigger!.fire();
-                                            });
-                                            timerColor = Colors.white;
-                                            todoColor = Colors.black.withOpacity(0.3);
-                                            Navigator.of(context).pushReplacement(
-                                              MaterialPageRoute(
-                                                builder: (BuildContext context) => const HomePage(),
-                                              ),
-                                            );
+                                              //   if (response > 0) {
+                                              //     setState(() {
+                                              //       futureTask = showAllTask();
+                                              //       isVisibleAddEdit = false;
+                                              //       // isEditTask = false;
+                                              //     });
+                                              //   }
+                                            }
                                           },
                                           child: Opacity(
                                             opacity: (opacityLevel == 0 ? 1 : 0),
@@ -539,17 +530,113 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
-                                    // Positioned(
-                                    //   top: 0,
-                                    //   right: 0,
-                                    //   child: ElevatedButton(
-                                    //     onPressed: () {
-                                    //       timerDuration -= const Duration(seconds: 15);
-                                    //     },
-                                    //     child: const Text("Cut"),
-                                    //   ),
-                                    // ),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          timerDuration -= const Duration(seconds: 15);
+                                        },
+                                        style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll(blueColor)),
+                                        child: const SizedBox(),
+                                      ),
+                                    ),
                                   ],
+                                ),
+                              ),
+                              Visibility(
+                                visible: isConfirmGiveup,
+                                child: OverlayPortal(
+                                  controller: _confirmGiveupController,
+                                  overlayChildBuilder: (context) {
+                                    return Positioned(
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: SizedBox(
+                                          width: 350,
+                                          height: 150,
+                                          child: Stack(
+                                            children: [
+                                              const Image(
+                                                image: AssetImage('assets/confirmation-popup.png'),
+                                                fit: BoxFit.fill,
+                                              ),
+                                              const Align(
+                                                alignment: Alignment(-0.15, -0.5),
+                                                child: Text(
+                                                  "Are you sure want to give up?",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                              Positioned(
+                                                top: 70,
+                                                right: 70,
+                                                child: Row(
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        _confirmGiveupController.hide();
+                                                      },
+                                                      child: const Text(
+                                                        'No',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          //   color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 25,
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () async {
+                                                        setState(() {
+                                                          if (value == 0) {
+                                                            timerDuration = const Duration(minutes: 5);
+                                                          } else {
+                                                            timerDuration = Duration(minutes: (value).ceil().toInt());
+                                                          }
+
+                                                          opacityLevel = 1;
+                                                          isStopped = true;
+
+                                                          isAbsorb = false;
+
+                                                          stateMachineController!.isActive = false;
+                                                          // stateMachineController!.
+
+                                                          // trigger!.fire();
+                                                        });
+                                                        timerColor = Colors.white;
+                                                        todoColor = Colors.black.withOpacity(0.3);
+                                                        Navigator.of(context).pushReplacement(
+                                                          MaterialPageRoute(
+                                                            builder: (BuildContext context) => const HomePage(),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: BubbleButton(
+                                                        color: const Color(0xffFF7E4C),
+                                                        secondaryColor: orangeColor,
+                                                        label: 'Yes',
+                                                        length: 90,
+                                                        textColor: Colors.white,
+                                                        padding: const EdgeInsets.fromLTRB(25, 10, 10, 10),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             ],
@@ -933,7 +1020,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         opacity: opacityLevel,
                         child: SlidingUpPanel(
                           controller: _panelController,
-                          color: isDarkTheme ? Color(0xffEEEEEE) : Colors.white,
+                          color: isDarkTheme ? const Color(0xffEEEEEE) : Colors.white,
                           maxHeight: 310,
                           minHeight: 55,
                           borderRadius: const BorderRadius.only(
@@ -1491,7 +1578,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                               //   // No need to call `setState()` here
                                                               //   _focusedDay = focusedDay;
                                                               // },
-                                                              headerStyle: HeaderStyle(
+                                                              headerStyle: const HeaderStyle(
                                                                 titleCentered: true,
                                                                 formatButtonVisible: false,
                                                                 leftChevronIcon: Icon(
@@ -1620,7 +1707,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                                     int addedDays = 7 - _focusedDay.weekday;
                                                                     _selectedDay = _focusedDay.add(Duration(days: addedDays));
-                                                                    ;
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[4][0],
@@ -1652,7 +1738,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                 fontSize: 42,
                                                                 color: orangeColor.withOpacity(0.5),
                                                               ),
-                                                              highlightedTextStyle: TextStyle(
+                                                              highlightedTextStyle: const TextStyle(
                                                                 fontSize: 42,
                                                                 color: orangeColor,
                                                               ),
@@ -1686,7 +1772,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                     _checkDeadlineButton2(1);
                                                                     isNoTime = false;
 
-                                                                    TimeOfDay addedTime = TimeOfDay(hour: 24, minute: 0);
+                                                                    TimeOfDay addedTime = const TimeOfDay(hour: 24, minute: 0);
                                                                     DateTime tempTime = DateTime(_focusedDay.year, _focusedDay.month, _focusedDay.day,
                                                                         addedTime.hour, addedTime.minute);
                                                                   },
@@ -1768,7 +1854,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                               children: [
                                                                 Row(
                                                                   children: [
-                                                                    Icon(
+                                                                    const Icon(
                                                                       Icons.notifications_outlined,
                                                                       color: orangeColor,
                                                                       size: 30,
@@ -1893,9 +1979,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                       child: Container(
                                                         width: 80,
                                                         height: 25,
-                                                        decoration: BoxDecoration(
+                                                        decoration: const BoxDecoration(
                                                           color: orangeColor,
-                                                          borderRadius: const BorderRadius.all(
+                                                          borderRadius: BorderRadius.all(
                                                             Radius.circular(30),
                                                           ),
                                                         ),

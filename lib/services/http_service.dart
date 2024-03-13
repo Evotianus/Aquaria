@@ -6,8 +6,8 @@ import 'package:aquaria/classes/task.dart';
 import 'package:aquaria/classes/user.dart';
 import 'package:http/http.dart' as http;
 
-// String? uri = "http://10.68.104.169:8000/api";
-String? uri = "http://10.0.2.2:8000/api";
+String? uri = "http://10.68.104.169:8000/api";
+// String? uri = "http://10.0.2.2:8000/api";
 
 Future<User?> createUser(user) async {
   final response = await http.post(

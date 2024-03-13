@@ -811,7 +811,7 @@ class _StatisticPageState extends State<StatisticPage> {
                                 gridData: const FlGridData(
                                   show: true,
                                   drawVerticalLine: false,
-                                  horizontalInterval: 20,
+                                  horizontalInterval: 200,
                                 ),
                                 alignment: BarChartAlignment.spaceAround,
                                 borderData: FlBorderData(show: false),
@@ -901,27 +901,30 @@ class _StatisticPageState extends State<StatisticPage> {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    item['minutes'].toString(),
-                                                    style: const TextStyle(fontSize: 16),
-                                                  ),
-                                                  const Text(
-                                                    " mins",
-                                                    style: TextStyle(fontSize: 16),
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                DateFormat('d MMM yyyy').format(DateTime.parse(item['created_at'])).toString(),
-                                                style: const TextStyle(fontSize: 16, color: Color(0xff808080)),
-                                              ),
-                                            ],
+                                          SizedBox(
+                                            width: 190,
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      item['minutes'].toString(),
+                                                      style: const TextStyle(fontSize: 16),
+                                                    ),
+                                                    const Text(
+                                                      " mins",
+                                                      style: TextStyle(fontSize: 16),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  DateFormat('d MMM yyyy').format(DateTime.parse(item['created_at'])).toString(),
+                                                  style: const TextStyle(fontSize: 16, color: Color(0xff808080)),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),

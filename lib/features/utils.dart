@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:aquaria/classes/task.dart';
 import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
 
 const fullAngleInRadians = math.pi * 2;
 
@@ -24,9 +24,10 @@ bool isEnableNotification = false;
 bool isAnimationSound = false;
 bool isCompletionSound = false;
 bool isDarkTheme = false;
+bool isConfirmGiveup = true;
 
-const Color blueColor = const Color(0xff00B4ED);
-const Color lightBlueButtonColor = const Color(0xff3DBDD9);
-const Color lightBlueButtonBorderColor = const Color(0xff37A1E5);
+const Color blueColor = Color(0xff00B4ED);
+const Color lightBlueButtonColor = Color(0xff3DBDD9);
+const Color lightBlueButtonBorderColor = Color(0xff37A1E5);
 const Color darkBlueColor = Color(0xff021337);
-const Color orangeColor = const Color(0xffFE4600);
+const Color orangeColor = Color(0xffFE4600);
