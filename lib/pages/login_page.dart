@@ -1,4 +1,5 @@
 import 'package:aquaria/classes/user.dart';
+import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/register_page.dart';
@@ -15,7 +16,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff00B4ED),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 160),
@@ -32,6 +33,8 @@ class LoginPage extends StatelessWidget {
                 icon: Icons.person_2_outlined,
                 controller: _usernameController,
                 label: "Enter your username...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 25,
@@ -41,6 +44,8 @@ class LoginPage extends StatelessWidget {
                 controller: _passwordController,
                 type: "password",
                 label: "Enter your password...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 45,
@@ -73,6 +78,7 @@ class LoginPage extends StatelessWidget {
                   );
                 },
                 label: "Log In",
+                isDark: isDarkTheme ? true : false,
               ),
               const SizedBox(
                 height: 25,
@@ -80,7 +86,12 @@ class LoginPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Don't have an account?"),
+                  Text(
+                    "Don't have an account?",
+                    style: TextStyle(
+                      color: isDarkTheme ? Colors.white : Colors.black,
+                    ),
+                  ),
                   const SizedBox(
                     width: 5,
                   ),
@@ -92,11 +103,12 @@ class LoginPage extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Sign Up",
                       style: TextStyle(
-                        color: Color(0xffFE4600),
+                        color: isDarkTheme ? lightBlueButtonBorderColor : orangeColor,
                         decoration: TextDecoration.underline,
+                        decorationColor: isDarkTheme ? lightBlueButtonBorderColor : orangeColor,
                       ),
                     ),
                   ),

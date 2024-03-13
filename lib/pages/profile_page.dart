@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xffEEEEEE),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       appBar: AppBar(
         backgroundColor: blueColor,
         leading: GestureDetector(
@@ -71,7 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
-                  color: const Color(0xffEEEEEE),
+                  color: isDarkTheme ? darkBlueColor : blueColor,
                   child: Column(
                     children: [
                       Padding(

@@ -19,7 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffEEEEEE),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       appBar: AppBar(
         backgroundColor: blueColor,
         leading: GestureDetector(

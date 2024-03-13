@@ -5,12 +5,16 @@ class BubbleTextField extends StatelessWidget {
   TextEditingController controller;
   String label;
   String? type;
+  Color? color;
+  Color? textIconColor;
 
   BubbleTextField({
     super.key,
     required this.icon,
     required this.controller,
     required this.label,
+    required this.color,
+    required this.textIconColor,
     this.type,
   });
 
@@ -26,7 +30,7 @@ class BubbleTextField extends StatelessWidget {
             ),
             Icon(
               icon,
-              color: const Color(0xffFE4600),
+              color: textIconColor,
               size: 30,
             )
           ],
@@ -45,15 +49,15 @@ class BubbleTextField extends StatelessWidget {
                   // enableSuggestions: (type == "password" ? false : true),
                   // autocorrect: (type == "password" ? false : true),
                   controller: controller,
-                  style: const TextStyle(
-                    color: Color(0xffFE4600),
+                  style: TextStyle(
+                    color: textIconColor,
                     decoration: TextDecoration.none,
                   ),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                     border: InputBorder.none,
-                    focusColor: const Color(0xffFE4600),
-                    hintStyle: const TextStyle(color: Color(0xffFE4600)),
+                    focusColor: color,
+                    hintStyle: TextStyle(color: textIconColor),
                     enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.transparent),
                     ),

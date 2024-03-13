@@ -72,10 +72,12 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/main-button2.png
     - assets/confirmation-popup.png
     - assets/submit-button.png
     - assets/bubble-tint.png
     - assets/add-task-bubble.png
+    - assets/add-task-bubble2.png
     - assets/evotianus.png
     - assets/logo.png
     - assets/paddle.png
@@ -86,11 +88,13 @@ flutter:
     - assets/textfield-bubble.png
     - assets/main-button.png
     - assets/cast-button.png
+    - assets/cast-button2.png
     - assets/unchecked-bubble.png
     - assets/checked-bubble.png
     - assets/waves.png
     - assets/test-vid.riv
     - assets/fish.riv
+    - assets/dark_theme.riv
     - assets/fish-caught.svg
     - assets/fish-tank.svg
     - assets/fish-coll.svg

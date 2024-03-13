@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:aquaria/classes/fish.dart';
+import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/services/http_service.dart';
@@ -103,7 +104,7 @@ class CollectionPageState extends State<CollectionPage> with TickerProviderState
     ];
 
     return Scaffold(
-        backgroundColor: const Color(0xff00B4ED),
+        backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
         appBar: AppBar(
           backgroundColor: const Color(0xff007D0FC),
           leading: GestureDetector(
