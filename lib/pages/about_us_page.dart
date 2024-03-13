@@ -22,9 +22,15 @@ class AboutUsPage extends StatelessWidget {
                 MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
               );
             },
-            child: const Icon(Icons.close),
+            child: const Icon(
+              Icons.close,
+              color: Colors.white,
+            ),
           ),
-          title: const Text('About Us'),
+          title: const Text(
+            'About Us',
+            style: TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
         ),
         body: SingleChildScrollView(

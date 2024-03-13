@@ -25,9 +25,10 @@ class LoginPage extends StatelessWidget {
             children: [
               const Image(
                 image: AssetImage("assets/logo.png"),
+                height: 90,
               ),
               const SizedBox(
-                height: 110,
+                height: 100,
               ),
               BubbleTextField(
                 icon: Icons.person_2_outlined,

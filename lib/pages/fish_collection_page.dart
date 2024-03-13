@@ -115,9 +115,15 @@ class CollectionPageState extends State<CollectionPage> with TickerProviderState
                 ),
               );
             },
-            child: const Icon(Icons.close),
+            child: const Icon(
+              Icons.close,
+              color: Colors.white,
+            ),
           ),
-          title: const Text('Fish Collection'),
+          title: const Text(
+            'Fish Collection',
+            style: TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
         ),
         body: FutureBuilder(

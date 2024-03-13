@@ -21,9 +21,15 @@ class TermsOfUsePage extends StatelessWidget {
               ),
             );
           },
-          child: const Icon(Icons.arrow_back_rounded),
+          child: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white,
+          ),
         ),
-        title: const Text('Terms of Use'),
+        title: const Text(
+          'Terms of Use',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
