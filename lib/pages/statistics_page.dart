@@ -1,3 +1,4 @@
+import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/functions/functions.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -169,7 +170,7 @@ class _StatisticPageState extends State<StatisticPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color(0xff00B4ED),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       appBar: AppBar(
         backgroundColor: const Color(0xff07D0FC),
         leading: GestureDetector(
@@ -187,7 +188,9 @@ class _StatisticPageState extends State<StatisticPage> {
         ),
         title: const Text(
           'Your Progress',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
       ),

@@ -1,6 +1,8 @@
 import 'package:aquaria/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
+import 'package:aquaria/features/utils.dart';
+
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
 
@@ -11,19 +13,24 @@ class AboutUsPage extends StatelessWidget {
     double screenHeight = screenSize.height;
 
     return Scaffold(
-        backgroundColor: const Color(0xff00B4ED),
+        backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
         appBar: AppBar(
-          backgroundColor: const Color(0xff007d0fc),
+          backgroundColor: const Color(0xff07D0FC),
           leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const HomePage()),
+                MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
               );
             },
-            child: const Icon(Icons.close),
+            child: const Icon(
+              Icons.close,
+              color: Colors.white,
+            ),
           ),
-          title: const Text('About Us'),
+          title: const Text(
+            'About Us',
+            style: TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -37,18 +44,19 @@ class AboutUsPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(40),
                   ),
                   width: 450,
-                  height: 410,
+                  height: 500,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const ClipRRect(
                         child: Image(
                           image: AssetImage('assets/logo.png'),
+                          height: 70,
                         ),
                       ),
                       const SizedBox(height: 25),
                       Container(
-                        padding: const EdgeInsets.fromLTRB(25, 10, 25, 0),
+                        padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
                         width: 370,
                         child: const Column(
                           mainAxisAlignment: MainAxisAlignment.center,

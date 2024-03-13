@@ -19,11 +19,14 @@ Color todoColor = Colors.black.withOpacity(0.3);
 Color dateColor = Colors.white;
 Color timeColor = Colors.black.withOpacity(0.3);
 
-final Color blueColor = const Color(0xff00B4ED);
-final Color orangeColor = const Color(0xffFE4600);
-
 bool isConfirmDelete = true;
 bool isEnableNotification = false;
 bool isAnimationSound = false;
 bool isCompletionSound = false;
 bool isDarkTheme = false;
+
+const Color blueColor = const Color(0xff00B4ED);
+const Color lightBlueButtonColor = const Color(0xff3DBDD9);
+const Color lightBlueButtonBorderColor = const Color(0xff37A1E5);
+const Color darkBlueColor = Color(0xff021337);
+const Color orangeColor = const Color(0xffFE4600);

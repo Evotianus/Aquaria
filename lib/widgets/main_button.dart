@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class MainButton extends StatelessWidget {
   String label;
   VoidCallback onTap;
+  bool isDark;
 
   MainButton({
     super.key,
     required this.onTap,
     required this.label,
+    required this.isDark,
   });
 
   @override
@@ -26,12 +28,15 @@ class MainButton extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          const Image(
-            image: AssetImage("assets/main-button.png"),
+          Image(
+            image: isDark ? const AssetImage("assets/main-button2.png") : const AssetImage("assets/main-button.png"),
           ),
           Text(
             label,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
           ),
         ],
       ),

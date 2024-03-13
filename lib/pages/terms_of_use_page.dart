@@ -1,3 +1,4 @@
+import 'package:aquaria/features/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:aquaria/pages/settings_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -9,9 +10,9 @@ class TermsOfUsePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffFFFFFF),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       appBar: AppBar(
-        backgroundColor: blueColor,
+        backgroundColor: const Color(0xff07D0FC),
         leading: GestureDetector(
           onTap: () {
             Navigator.of(context).pushReplacement(
@@ -20,18 +21,27 @@ class TermsOfUsePage extends StatelessWidget {
               ),
             );
           },
-          child: const Icon(Icons.arrow_back_rounded),
+          child: const Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.white,
+          ),
         ),
-        title: const Text('Terms of Use'),
+        title: const Text(
+          'Terms of Use',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
             vertical: 25,
             horizontal: 20,
           ),
           child: Text(
+              style: TextStyle(
+                color: isDarkTheme ? Colors.white : Colors.black,
+              ),
               textAlign: TextAlign.justify,
               '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque ornare aenean euismod elementum nisi. Gravida neque convallis a cras semper auctor. Egestas pretium aenean pharetra magna ac placerat. Dui sapien eget mi proin sed libero. Dictumst quisque sagittis purus sit amet volutpat. Interdum velit laoreet id donec ultrices. Magna etiam tempor orci eu lobortis. Dignissim cras tincidunt lobortis feugiat. Vel pharetra vel turpis nunc. Amet venenatis urna cursus eget nunc scelerisque. Dictum non consectetur a erat nam. Amet luctus venenatis lectus magna fringilla urna. Viverra mauris in aliquam sem fringilla ut morbi tincidunt augue. Nunc lobortis mattis aliquam faucibus purus.
 

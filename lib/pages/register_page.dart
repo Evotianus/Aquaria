@@ -1,3 +1,4 @@
+import 'package:aquaria/features/utils.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/login_page.dart';
 import 'package:aquaria/widgets/bubble_text_field.dart';
@@ -15,7 +16,7 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff00B4ED),
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 140),
@@ -24,6 +25,7 @@ class RegisterPage extends StatelessWidget {
             children: [
               const Image(
                 image: AssetImage("assets/logo.png"),
+                height: 90,
               ),
               const SizedBox(
                 height: 80,
@@ -32,6 +34,8 @@ class RegisterPage extends StatelessWidget {
                 icon: Icons.person_2_outlined,
                 controller: _usernameController,
                 label: "Enter your username...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 25,
@@ -40,6 +44,8 @@ class RegisterPage extends StatelessWidget {
                 icon: Icons.mail_outline_rounded,
                 controller: _emailController,
                 label: "Enter your email...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 25,
@@ -49,6 +55,8 @@ class RegisterPage extends StatelessWidget {
                 controller: _passwordController,
                 type: "password",
                 label: "Enter your password...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 25,
@@ -58,6 +66,8 @@ class RegisterPage extends StatelessWidget {
                 controller: _confirmPasswordController,
                 type: "password",
                 label: "Confirm your password...",
+                textIconColor: isDarkTheme ? Colors.white : orangeColor,
+                color: isDarkTheme ? Colors.white.withOpacity(0.35) : Colors.white.withOpacity(0.3),
               ),
               const SizedBox(
                 height: 45,
@@ -93,6 +103,7 @@ class RegisterPage extends StatelessWidget {
                   );
                 },
                 label: "Sign Up",
+                isDark: isDarkTheme ? true : false,
               ),
               const SizedBox(
                 height: 25,
@@ -100,7 +111,12 @@ class RegisterPage extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Already have an account?"),
+                  Text(
+                    "Already have an account?",
+                    style: TextStyle(
+                      color: isDarkTheme ? Colors.white : Colors.black,
+                    ),
+                  ),
                   const SizedBox(
                     width: 5,
                   ),
@@ -112,11 +128,12 @@ class RegisterPage extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       "Log In",
                       style: TextStyle(
-                        color: Color(0xffFE4600),
+                        color: isDarkTheme ? lightBlueButtonBorderColor : orangeColor,
                         decoration: TextDecoration.underline,
+                        decorationColor: isDarkTheme ? lightBlueButtonBorderColor : orangeColor,
                       ),
                     ),
                   ),

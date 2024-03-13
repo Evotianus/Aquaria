@@ -16,7 +16,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
+import 'package:aquaria/widgets/flutter_time_picker_spinner.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:rive/rive.dart';
@@ -67,6 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final OverlayPortalController _dateController = OverlayPortalController();
   final OverlayPortalController _timeController = OverlayPortalController();
   final OverlayPortalController _confirmController = OverlayPortalController();
+  TimePickerCallback? onTimeChange;
 
   Duration timerDuration = const Duration(minutes: 5);
   int minutes = 0;
@@ -257,7 +258,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     double screenDimValue = 0.5;
 
     return Scaffold(
-      backgroundColor: blueColor,
+      backgroundColor: isDarkTheme ? darkBlueColor : blueColor,
       body: GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus?.unfocus();
@@ -286,7 +287,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     children: [
                       Container(
                         height: 100,
-                        color: blueColor,
+                        color: isDarkTheme ? darkBlueColor : blueColor,
                       ),
                       PageView(
                         physics: const NeverScrollableScrollPhysics(),
@@ -296,7 +297,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             children: [
                               _fishingArtboard == null ? const SizedBox() : Rive(artboard: _fishingArtboard!),
                               RiveAnimation.asset(
-                                'assets/fish.riv',
+                                isDarkTheme ? 'assets/dark_theme.riv' : 'assets/fish.riv',
                                 fit: BoxFit.cover,
                                 controllers: [_controller],
                               ),
@@ -464,13 +465,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           },
                                           child: Opacity(
                                             opacity: opacityLevel,
-                                            child: const Stack(
+                                            child: Stack(
                                               alignment: Alignment.center,
                                               children: [
                                                 Image(
-                                                  image: AssetImage("assets/cast-button.png"),
+                                                  image: isDarkTheme
+                                                      ? const AssetImage("assets/cast-button2.png")
+                                                      : const AssetImage("assets/cast-button.png"),
                                                 ),
-                                                Text(
+                                                const Text(
                                                   "Cast!",
                                                   style: TextStyle(fontSize: 16, color: Colors.white),
                                                 ),
@@ -503,6 +506,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                               // trigger!.fire();
                                             });
+                                            timerColor = Colors.white;
+                                            todoColor = Colors.black.withOpacity(0.3);
                                             Navigator.of(context).pushReplacement(
                                               MaterialPageRoute(
                                                 builder: (BuildContext context) => const HomePage(),
@@ -552,88 +557,91 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           Container(
                             width: screenWidth - 70,
                             padding: const EdgeInsets.fromLTRB(35, 160, 35, 50),
+                            alignment: Alignment.topLeft,
                             child: SingleChildScrollView(
                               scrollDirection: Axis.vertical,
                               child: Column(
                                 children: [
-                                  OverlayPortal(
-                                    controller: _confirmController,
-                                    overlayChildBuilder: (context) {
-                                      return Positioned(
-                                        child: Align(
-                                          alignment: Alignment.center,
-                                          child: SizedBox(
-                                            width: 350,
-                                            height: 150,
-                                            child: Stack(
-                                              children: [
-                                                const Image(
-                                                  image: AssetImage('assets/confirmation-popup.png'),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                                const Align(
-                                                  alignment: Alignment(-0.15, -0.5),
-                                                  child: Text(
-                                                    "Are you sure to delete?",
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20,
+                                  Visibility(
+                                    visible: isConfirmDelete,
+                                    child: OverlayPortal(
+                                      controller: _confirmController,
+                                      overlayChildBuilder: (context) {
+                                        return Positioned(
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: SizedBox(
+                                              width: 350,
+                                              height: 150,
+                                              child: Stack(
+                                                children: [
+                                                  const Image(
+                                                    image: AssetImage('assets/confirmation-popup.png'),
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  const Align(
+                                                    alignment: Alignment(-0.15, -0.5),
+                                                    child: Text(
+                                                      "Are you sure to delete?",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 20,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                Positioned(
-                                                  top: 70,
-                                                  right: 70,
-                                                  child: Row(
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          _confirmController.hide();
-                                                        },
-                                                        child: Text(
-                                                          'Cancel',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                  Positioned(
+                                                    top: 70,
+                                                    right: 70,
+                                                    child: Row(
+                                                      children: [
+                                                        GestureDetector(
+                                                          onTap: () {
+                                                            _confirmController.hide();
+                                                          },
+                                                          child: Text(
+                                                            'Cancel',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: const Color(0xff2F86C5).withOpacity(0.5),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 25,
-                                                      ),
-                                                      GestureDetector(
-                                                        onTap: () async {
-                                                          final response = await deleteTask(currentTask);
-
-                                                          if (response > 0) {
-                                                            setState(() {
-                                                              futureTask = showAllTask();
-                                                              isVisibleAddEdit = false;
-                                                              _confirmController.hide();
-                                                              // isEditTask = false;
-                                                            });
-                                                          }
-                                                        },
-                                                        child: BubbleButton(
-                                                          color: const Color(0xffFF7E4C),
-                                                          secondaryColor: orangeColor,
-                                                          label: 'Done',
-                                                          length: 90,
-                                                          textColor: Colors.white,
-                                                          padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                        const SizedBox(
+                                                          width: 25,
                                                         ),
-                                                      ),
-                                                    ],
+                                                        GestureDetector(
+                                                          onTap: () async {
+                                                            final response = await deleteTask(currentTask);
+
+                                                            if (response > 0) {
+                                                              setState(() {
+                                                                futureTask = showAllTask();
+                                                                isVisibleAddEdit = false;
+                                                                _confirmController.hide();
+                                                                // isEditTask = false;
+                                                              });
+                                                            }
+                                                          },
+                                                          child: BubbleButton(
+                                                            color: const Color(0xffFF7E4C),
+                                                            secondaryColor: orangeColor,
+                                                            label: 'Done',
+                                                            length: 90,
+                                                            textColor: Colors.white,
+                                                            padding: const EdgeInsets.fromLTRB(20, 10, 10, 10),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  // const SizedBox(
+                                        );
+                                      },
+                                    ),
+                                  ), // const SizedBox(
                                   //   height: 160,
                                   // ),
                                   FutureBuilder(
@@ -642,7 +650,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       List<Task>? taskList = snapshot.data;
                                       if (taskList != null) {
                                         return Wrap(
-                                          alignment: WrapAlignment.start,
+                                          //   runAlignment: WrapAlignment.start,
+                                          //   alignment: WrapAlignment.start,
+                                          //   crossAxisAlignment: WrapCrossAlignment.start,
                                           direction: Axis.vertical,
                                           spacing: 20,
                                           children: taskList.map((Task task) {
@@ -709,7 +719,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                             children: [
                                                               Container(
                                                                 height: 20,
-                                                                width: 90,
+                                                                width: 105,
                                                                 alignment: Alignment.center,
                                                                 decoration: BoxDecoration(
                                                                   color: findCategoryColor(task.urgency),
@@ -795,7 +805,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       width: 80,
                                       height: 25,
                                       decoration: BoxDecoration(
-                                        color: orangeColor,
+                                        color: isDarkTheme ? lightBlueButtonColor : orangeColor,
                                         borderRadius: const BorderRadius.all(
                                           Radius.circular(30),
                                         ),
@@ -898,15 +908,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   categoryTask = 'No Category';
                                 });
                               },
-                              child: const Stack(
+                              child: Stack(
                                 fit: StackFit.expand,
                                 alignment: Alignment.center,
                                 children: [
                                   Image(
-                                    image: AssetImage('assets/add-task-bubble.png'),
+                                    image: isDarkTheme
+                                        ? const AssetImage('assets/add-task-bubble2.png')
+                                        : const AssetImage('assets/add-task-bubble.png'),
                                     fit: BoxFit.fill,
                                   ),
-                                  Icon(
+                                  const Icon(
                                     Icons.add,
                                     size: 40,
                                     color: Colors.white,
@@ -921,6 +933,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         opacity: opacityLevel,
                         child: SlidingUpPanel(
                           controller: _panelController,
+                          color: isDarkTheme ? Color(0xffEEEEEE) : Colors.white,
                           maxHeight: 310,
                           minHeight: 55,
                           borderRadius: const BorderRadius.only(
@@ -936,7 +949,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   height: 7,
                                   width: 55,
                                   decoration: BoxDecoration(
-                                    color: blueColor,
+                                    color: isDarkTheme ? darkBlueColor : blueColor,
                                     borderRadius: const BorderRadius.all(
                                       Radius.circular(50),
                                     ),
@@ -947,6 +960,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const CollectionPage(),
@@ -977,6 +992,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const StatisticPage(),
@@ -1005,6 +1022,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const AboutUsPage(),
@@ -1033,6 +1052,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => const SettingsPage(),
@@ -1061,6 +1082,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                                 GestureDetector(
                                   onTap: () {
+                                    timerColor = Colors.white;
+                                    todoColor = Colors.black.withOpacity(0.3);
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute(
                                         builder: (BuildContext context) => LoginPage(),
@@ -1192,12 +1215,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                   MainButton(
                                                     onTap: () {
                                                       setState(() {
+                                                        timerColor = Colors.white;
+                                                        todoColor = Colors.black.withOpacity(0.3);
                                                         Navigator.of(context).pushReplacement(
                                                           MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
                                                         );
                                                       });
                                                     },
                                                     label: "Confirm",
+                                                    isDark: isDarkTheme ? true : false,
                                                   ),
                                                 ],
                                               ),
@@ -1226,7 +1252,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   width: screenWidth,
                   height: 200,
                   decoration: BoxDecoration(
-                    color: blueColor,
+                    color: isDarkTheme ? darkBlueColor : blueColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30.0),
                       topRight: Radius.circular(30.0),
@@ -1437,6 +1463,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                                                 // Using `isSameDay` is recommended to disregard
                                                                 // the time-part of compared DateTime objects.
+                                                                // day = _selectedDay!;
+
+                                                                // print(day);
+
                                                                 return isSameDay(_selectedDay, day);
                                                               },
                                                               onDaySelected: (selectedDay, focusedDay) {
@@ -1495,7 +1525,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   color: Colors.black.withOpacity(0.3),
                                                                   fontSize: 18,
                                                                 ),
-                                                                isTodayHighlighted: true,
+                                                                isTodayHighlighted: false,
                                                               ),
                                                               weekendDays: const [DateTime.sunday],
                                                               daysOfWeekStyle: const DaysOfWeekStyle(
@@ -1520,6 +1550,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton(0);
                                                                     isNoDate = true;
+                                                                    setState(() {});
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[0][0],
@@ -1535,6 +1566,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton(1);
                                                                     isNoDate = false;
+
+                                                                    _selectedDay = _focusedDay;
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[1][0],
@@ -1550,6 +1583,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton(2);
                                                                     isNoDate = false;
+
+                                                                    _selectedDay = _focusedDay.add(const Duration(days: 1));
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[2][0],
@@ -1565,6 +1600,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton(3);
                                                                     isNoDate = false;
+
+                                                                    _selectedDay = _focusedDay.add(const Duration(days: 3));
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[3][0],
@@ -1580,6 +1617,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton(4);
                                                                     isNoDate = false;
+
+                                                                    int addedDays = 7 - _focusedDay.weekday;
+                                                                    _selectedDay = _focusedDay.add(Duration(days: addedDays));
+                                                                    ;
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor[4][0],
@@ -1615,10 +1656,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                 fontSize: 42,
                                                                 color: orangeColor,
                                                               ),
-                                                              onTimeChange: (time) {
-                                                                _focusedTime = time;
-                                                                isNoTime = false;
-                                                              },
+                                                              onTimeChange: onTimeChange,
                                                             ),
                                                             const SizedBox(
                                                               height: 40,
@@ -1647,6 +1685,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                                   onTap: () {
                                                                     _checkDeadlineButton2(1);
                                                                     isNoTime = false;
+
+                                                                    TimeOfDay addedTime = TimeOfDay(hour: 24, minute: 0);
+                                                                    DateTime tempTime = DateTime(_focusedDay.year, _focusedDay.month, _focusedDay.day,
+                                                                        addedTime.hour, addedTime.minute);
                                                                   },
                                                                   child: BubbleButton(
                                                                     color: deadlineColor2[1][0],
@@ -1901,6 +1943,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                               dateColor = Colors.black.withOpacity(0.3);
                                                               timeColor = Colors.white;
                                                             });
+
+                                                            onTimeChange = (time) {
+                                                              _focusedTime = time;
+                                                              isNoTime = false;
+                                                            };
                                                           },
                                                           child: Container(
                                                             padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
