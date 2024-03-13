@@ -171,7 +171,7 @@ class _StatisticPageState extends State<StatisticPage> {
     return Scaffold(
       backgroundColor: const Color(0xff00B4ED),
       appBar: AppBar(
-        backgroundColor: const Color(0xff007d0fc),
+        backgroundColor: const Color(0xff07D0FC),
         leading: GestureDetector(
           onTap: () {
             Navigator.of(context).pushReplacement(
@@ -180,7 +180,10 @@ class _StatisticPageState extends State<StatisticPage> {
               ),
             );
           },
-          child: const Icon(Icons.close),
+          child: const Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
         ),
         title: const Text(
           'Your Progress',
@@ -227,7 +230,7 @@ class _StatisticPageState extends State<StatisticPage> {
                               Radius.circular(20),
                             ),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                           child: Column(
                             children: [
                               Text(
@@ -371,6 +374,7 @@ class _StatisticPageState extends State<StatisticPage> {
                       height: 30,
                     ),
                     Container(
+                      padding: const EdgeInsets.only(top: 25),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.all(
@@ -379,6 +383,22 @@ class _StatisticPageState extends State<StatisticPage> {
                       ),
                       child: Column(
                         children: [
+                          Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.only(left: 15),
+                            child: const Text(
+                              "Task Distribution",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                            child: Divider(color: Colors.black),
+                          ),
                           AspectRatio(
                             aspectRatio: 1.3,
                             child: Row(
@@ -623,7 +643,7 @@ class _StatisticPageState extends State<StatisticPage> {
                                           width: 15,
                                         ),
                                         const Text(
-                                          "Very Low",
+                                          "No Category",
                                           style: TextStyle(fontSize: 16),
                                         ),
                                       ],
@@ -661,7 +681,7 @@ class _StatisticPageState extends State<StatisticPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "February's Focus Time Distribution",
+                            "March's Focus Time Distribution",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

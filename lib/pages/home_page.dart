@@ -537,16 +537,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
-                                    Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          timerDuration -= const Duration(seconds: 15);
-                                        },
-                                        child: const Text("Cut"),
-                                      ),
-                                    ),
+                                    // Positioned(
+                                    //   top: 0,
+                                    //   right: 0,
+                                    //   child: ElevatedButton(
+                                    //     onPressed: () {
+                                    //       timerDuration -= const Duration(seconds: 15);
+                                    //     },
+                                    //     child: const Text("Cut"),
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -645,6 +645,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       List<Task>? taskList = snapshot.data;
                                       if (taskList != null) {
                                         return Wrap(
+                                          alignment: WrapAlignment.start,
                                           direction: Axis.vertical,
                                           spacing: 20,
                                           children: taskList.map((Task task) {
