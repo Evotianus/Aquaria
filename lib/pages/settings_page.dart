@@ -1,4 +1,5 @@
 import 'package:aquaria/functions/functions.dart';
+import 'package:aquaria/pages/help_page.dart';
 import 'package:aquaria/pages/home_page.dart';
 import 'package:aquaria/pages/privacy_policy_page.dart';
 import 'package:aquaria/pages/profile_page.dart';
@@ -529,7 +530,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (BuildContext context) => const HomePage()),
+                                MaterialPageRoute(builder: (BuildContext context) => const HelpPage()),
                               );
                             },
                             child: const Row(

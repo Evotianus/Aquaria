@@ -125,6 +125,13 @@ flutter:
     - assets/fish/goldfish_black.svg
     - assets/fish/shark_black.svg
     - assets/fish/redsnapperfish_black.svg
+    - assets/help (1).png
+    - assets/help (2).png
+    - assets/help (3).png
+    - assets/help (4).png
+    - assets/help (5).png
+    - assets/help (6).png
+    - assets/help (7).png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
