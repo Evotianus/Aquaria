@@ -33,14 +33,22 @@ class TermsOfUsePage extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
+          vertical: 25,
+          horizontal: 20,
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
             vertical: 25,
             horizontal: 20,
           ),
-          child: Text(
+          decoration: const BoxDecoration(
+            color: Color(0xff308BCB),
+            borderRadius: BorderRadius.all(Radius.circular(20.0)),
+          ),
+          child: const Text(
               style: TextStyle(
-                color: isDarkTheme ? Colors.white : Colors.black,
+                color: Colors.white
               ),
               textAlign: TextAlign.justify,
               '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque ornare aenean euismod elementum nisi. Gravida neque convallis a cras semper auctor. Egestas pretium aenean pharetra magna ac placerat. Dui sapien eget mi proin sed libero. Dictumst quisque sagittis purus sit amet volutpat. Interdum velit laoreet id donec ultrices. Magna etiam tempor orci eu lobortis. Dignissim cras tincidunt lobortis feugiat. Vel pharetra vel turpis nunc. Amet venenatis urna cursus eget nunc scelerisque. Dictum non consectetur a erat nam. Amet luctus venenatis lectus magna fringilla urna. Viverra mauris in aliquam sem fringilla ut morbi tincidunt augue. Nunc lobortis mattis aliquam faucibus purus.

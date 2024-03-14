@@ -381,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 365,
                         height: 285,
                         decoration: BoxDecoration(
-                          color: blueColor,
+                          color: const Color(0xff70C3FE),
                           borderRadius: BorderRadius.circular(20.0),
                           boxShadow: [
                             BoxShadow(
@@ -406,7 +406,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: currentUser!.username!,
                               length: 300,
                               controller: _changeNameTextController,
@@ -417,7 +417,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: "Confirm Password",
                               length: 300,
                               controller: _changeConfirmPasswordTextController,
@@ -500,8 +500,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     }
                                   },
                                   child: BubbleButton(
-                                    color: const Color(0xffFF7E4C),
-                                    secondaryColor: orangeColor,
+                                    color: isDarkTheme ? Color(0xff37A1E5) : Color(0xffFF7E4C),
+                                    secondaryColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor,
                                     label: 'Done',
                                     length: 90,
                                     textColor: Colors.white,
@@ -533,7 +533,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 365,
                         height: 285,
                         decoration: BoxDecoration(
-                          color: blueColor,
+                          color: const Color(0xff70C3FE),
                           borderRadius: BorderRadius.circular(20.0),
                           boxShadow: [
                             BoxShadow(
@@ -558,7 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: currentUser!.email!,
                               length: 300,
                               controller: _changeEmailTextController,
@@ -569,7 +569,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: "Confirm Password",
                               length: 300,
                               controller: _changeConfirmPasswordTextController,
@@ -651,8 +651,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     }
                                   },
                                   child: BubbleButton(
-                                    color: const Color(0xffFF7E4C),
-                                    secondaryColor: orangeColor,
+                                    color: isDarkTheme ? Color(0xff37A1E5) : Color(0xffFF7E4C),
+                                    secondaryColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor,
                                     label: 'Done',
                                     length: 90,
                                     textColor: Colors.white,
@@ -684,7 +684,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         width: 365,
                         height: 355,
                         decoration: BoxDecoration(
-                          color: blueColor,
+                          color: const Color(0xff70C3FE),
                           borderRadius: BorderRadius.circular(20.0),
                           boxShadow: [
                             BoxShadow(
@@ -709,7 +709,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: "Old Password",
                               length: 300,
                               controller: _changeOldPasswordTextController,
@@ -720,7 +720,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: "New Password",
                               length: 300,
                               controller: _changePasswordTextController,
@@ -731,7 +731,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             BubbleButton(
                               color: Colors.white.withOpacity(0.3),
-                              textColor: orangeColor.withOpacity(0.75),
+                              textColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor.withOpacity(0.75),
                               label: "Confirm Password",
                               length: 300,
                               controller: _changeConfirmPasswordTextController,
@@ -822,8 +822,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     }
                                   },
                                   child: BubbleButton(
-                                    color: const Color(0xffFF7E4C),
-                                    secondaryColor: orangeColor,
+                                    color: isDarkTheme ? Color(0xff37A1E5) : Color(0xffFF7E4C),
+                                    secondaryColor: isDarkTheme ? Color(0xff3DBDD9) : orangeColor,
                                     label: 'Done',
                                     length: 90,
                                     textColor: Colors.white,
